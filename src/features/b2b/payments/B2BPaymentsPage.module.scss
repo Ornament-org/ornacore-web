@@ -1,0 +1,73 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/mixins' as *;
+
+.page { padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.pageHeader { @include flex-between; flex-wrap: wrap; gap: 1rem; }
+.pageTitle { font-family: $font-primary; font-size: $text-3xl; font-weight: $weight-semibold; color: $text-primary; }
+.pageSubtitle { font-family: $font-secondary; font-size: $text-sm; color: $text-muted; margin-top: 0.25rem; }
+
+.summaryGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+
+  p:first-child { font-family: $font-secondary; font-size: $text-xs; color: $text-muted; text-transform: uppercase; letter-spacing: $tracking-wide; }
+
+  &--pending { border-left: 3px solid $warning; svg { color: $warning; } }
+  &--done    { border-left: 3px solid $success; svg { color: $success; } }
+  &--limit   { border-left: 3px solid $info;    svg { color: $info; } }
+}
+
+.amount { font-family: $font-secondary; font-size: $text-xl; font-weight: $weight-bold; color: $text-primary; margin-top: 0.25rem; }
+
+.section { background: $background; border: 1px solid $border-light; border-radius: 12px; overflow: hidden; }
+.sectionTitle { font-family: $font-secondary; font-size: $text-base; font-weight: $weight-semibold; color: $text-primary; padding: 1.25rem 1.5rem; border-bottom: 1px solid $border-light; }
+
+.table { overflow-x: auto; }
+.tableHead {
+  display: grid;
+  grid-template-columns: 90px 120px 120px 1fr 1fr 100px;
+  padding: 0.75rem 1.5rem;
+  background: $background-section;
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: $tracking-wide;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 90px 120px 120px 1fr 1fr 100px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $border-light;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-secondary;
+  align-items: center;
+  &:hover { background: $background-section; }
+}
+
+.payId { color: $primary-gold; font-weight: $weight-semibold; }
+.payAmt { font-weight: $weight-semibold; color: $text-primary; }
+.ref { font-size: $text-xs; color: $text-muted; }
+
+.badge {
+  display: inline-block;
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  padding: 3px 10px;
+  border-radius: 100px;
+
+  &--success { background: $success-light; color: $success; }
+  &--warning { background: $warning-light; color: $warning; }
+}

@@ -1,0 +1,137 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.section {
+  @include section-padding;
+  background: $background-section;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+
+  @include md { grid-template-columns: 1fr auto 1fr; }
+}
+
+.tag {
+  @include label-caps($text-xs);
+  color: $primary-gold;
+  display: block;
+  margin-bottom: 0.875rem;
+}
+
+// ── Left ─────────────────────────────────────────────────────
+.left {}
+
+.title {
+  font-family: $font-primary;
+  font-size: clamp($text-2xl, 3.5vw, $text-3xl);
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  margin-bottom: 0.75rem;
+  line-height: $leading-snug;
+}
+
+.subtitle {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-secondary;
+  line-height: $leading-relaxed;
+  margin-bottom: 1.5rem;
+}
+
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-secondary;
+}
+
+.checkIcon {
+  color: $success;
+  flex-shrink: 0;
+}
+
+.registerBtn {
+  @include btn-outline-gold;
+  display: inline-flex;
+}
+
+// ── Center ────────────────────────────────────────────────────
+.center {
+  display: none;
+  @include md { display: flex; align-items: center; justify-content: center; }
+}
+
+.illustration {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba($primary-gold, 0.08);
+  border: 2px solid rgba($primary-gold, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustrationIcon {
+  font-size: 4.5rem;
+}
+
+// ── Right ────────────────────────────────────────────────────
+.right {
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: $shadow-sm;
+}
+
+.loginTitle {
+  font-family: $font-primary;
+  font-size: $text-2xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  margin-bottom: 0.5rem;
+}
+
+.loginSub {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  margin-bottom: 1.5rem;
+}
+
+.loginBtn {
+  @include btn-gold;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.registerHint {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  text-align: center;
+}
+
+.registerLink {
+  color: $primary-gold;
+  font-weight: $weight-semibold;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

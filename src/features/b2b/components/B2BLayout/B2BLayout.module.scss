@@ -1,0 +1,14 @@
+@use '@/styles/colors' as *;
+@use '@/styles/breakpoints' as *;
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 130px);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  background: $background-light;
+  overflow-y: auto;
+}

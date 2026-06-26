@@ -1,0 +1,43 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.section {
+  @include section-padding;
+  background: $background;
+}
+
+.header {
+  @include flex-between;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-family: $font-primary;
+  font-size: $text-2xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+}
+
+.viewAll {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $primary-gold;
+  transition: gap 0.15s ease;
+
+  &:hover { gap: 0.625rem; }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @include sm { grid-template-columns: repeat(3, 1fr); }
+  @include lg { grid-template-columns: repeat(5, 1fr); }
+}

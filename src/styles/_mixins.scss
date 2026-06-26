@@ -1,0 +1,154 @@
+@use 'colors' as *;
+@use 'typography' as *;
+@use 'breakpoints' as *;
+
+// ── Flex helpers ─────────────────────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+// ── Typography ───────────────────────────────────────────────
+@mixin heading-serif($size: $text-3xl, $weight: $weight-semibold) {
+  font-family: $font-primary;
+  font-size: $size;
+  font-weight: $weight;
+  line-height: $leading-tight;
+  color: $text-primary;
+}
+
+@mixin body-sans($size: $text-base, $weight: $weight-regular) {
+  font-family: $font-secondary;
+  font-size: $size;
+  font-weight: $weight;
+  line-height: $leading-normal;
+  color: $text-secondary;
+}
+
+@mixin label-caps($size: $text-xs) {
+  font-family: $font-secondary;
+  font-size: $size;
+  font-weight: $weight-semibold;
+  letter-spacing: $tracking-widest;
+  text-transform: uppercase;
+}
+
+// ── Gold Button ──────────────────────────────────────────────
+@mixin btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: $primary-gold;
+  color: $text-inverse;
+  border: none;
+  border-radius: 4px;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-semibold;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    background: $primary-gold-dark;
+    box-shadow: $shadow-gold;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@mixin btn-outline-gold {
+  @include btn-gold;
+  background: transparent;
+  color: $primary-gold;
+  border: 1.5px solid $primary-gold;
+
+  &:hover {
+    background: $gold-50;
+    box-shadow: none;
+  }
+}
+
+// ── Card ─────────────────────────────────────────────────────
+@mixin card {
+  background: $card;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+// ── Truncate ─────────────────────────────────────────────────
+@mixin truncate($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// ── Container ────────────────────────────────────────────────
+@mixin container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @include md {
+    padding: 0 1.5rem;
+  }
+
+  @include xl {
+    padding: 0 2rem;
+  }
+}
+
+// ── Section padding ──────────────────────────────────────────
+@mixin section-padding {
+  padding: 3rem 0;
+
+  @include lg {
+    padding: 5rem 0;
+  }
+}
+
+// ── Gold gradient ─────────────────────────────────────────────
+@mixin gold-gradient {
+  background: linear-gradient(135deg, $gold-400 0%, $primary-gold 50%, $gold-600 100%);
+}
+
+// ── Scrollbar hide ───────────────────────────────────────────
+@mixin hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}

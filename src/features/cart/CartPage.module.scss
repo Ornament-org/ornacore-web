@@ -1,0 +1,193 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  padding: 2.5rem 0 5rem;
+  min-height: 70vh;
+}
+
+.title {
+  font-family: $font-primary;
+  font-size: $text-3xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  margin-bottom: 2rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @include lg { grid-template-columns: 1fr 360px; align-items: start; }
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.item {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  background: $card;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: $background-section;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.itemEmoji { font-size: 2.5rem; }
+
+.itemInfo {
+  flex: 1;
+  min-width: 140px;
+}
+
+.itemName {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $text-primary;
+  margin-bottom: 0.375rem;
+}
+
+.itemPrice {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+}
+
+.itemControls {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.qtyControl {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid $border;
+  border-radius: 6px;
+  overflow: hidden;
+
+  button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $background-section;
+    font-size: $text-lg;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border: none;
+
+    &:hover { background: $gold-50; color: $primary-gold; }
+  }
+
+  span {
+    width: 40px;
+    text-align: center;
+    font-family: $font-secondary;
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    color: $text-primary;
+  }
+}
+
+.itemTotal {
+  font-family: $font-secondary;
+  font-size: $text-base;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  min-width: 100px;
+  text-align: right;
+}
+
+.removeBtn {
+  color: $text-muted;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease, background 0.15s ease;
+
+  &:hover { color: $error; background: $error-light; }
+}
+
+// ── Summary ──────────────────────────────────────────────────
+.summary {
+  background: $background-section;
+  border: 1px solid $border-light;
+  border-radius: 16px;
+  padding: 1.75rem;
+  position: sticky;
+  top: 90px;
+}
+
+.summaryTitle {
+  font-family: $font-primary;
+  font-size: $text-xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  margin-bottom: 1.25rem;
+}
+
+.summaryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $border;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-secondary;
+
+  &--total {
+    font-size: $text-base;
+    font-weight: $weight-semibold;
+    color: $text-primary;
+    padding-top: 1rem;
+    border-top: 1px solid $border;
+    margin-top: 0;
+  }
+}
+
+.continueShopping {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  transition: color 0.15s ease;
+
+  &:hover { color: $primary-gold; }
+}

@@ -1,0 +1,59 @@
+// ── Brand Gold ─────────────────────────────────────────────
+$primary-gold: #b8860b;
+$primary-gold-dark: #8b6508;
+$primary-gold-light: #d4a017;
+$secondary-gold: #f5c842;
+$gold-50: #fdf8ec;
+$gold-100: #faefd0;
+$gold-200: #f5d990;
+$gold-300: #f0c050;
+$gold-400: #e8a820;
+$gold-500: #b8860b;
+$gold-600: #8b6508;
+$gold-700: #5e4406;
+
+// ── Backgrounds ─────────────────────────────────────────────
+$background: #ffffff;
+$background-cream: #fdf8f0;
+$background-light: #fafaf8;
+$background-section: #f9f5f0;
+$background-dark: #1a1410;
+$background-footer: #1c1a16;
+
+// ── Text ────────────────────────────────────────────────────
+$text-primary: #1a1410;
+$text-secondary: #5c4f3a;
+$text-muted: #9e8c72;
+$text-light: #c8b89a;
+$text-inverse: #ffffff;
+$text-gold: $primary-gold;
+
+// ── Borders ─────────────────────────────────────────────────
+$border: #e8ddd0;
+$border-light: #f0e8de;
+$border-dark: #c8b89a;
+$border-gold: rgba($primary-gold, 0.3);
+
+// ── Cards ────────────────────────────────────────────────────
+$card: #ffffff;
+$card-hover: #fdf8f0;
+
+// ── Status ──────────────────────────────────────────────────
+$success: #2d7a4f;
+$success-light: #e8f5ee;
+$error: #c0392b;
+$error-light: #fdeaea;
+$warning: #d4820a;
+$warning-light: #fef3e2;
+$info: #2563eb;
+$info-light: #eff6ff;
+
+// ── Shadows ─────────────────────────────────────────────────
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+$shadow-gold: 0 4px 20px rgba($primary-gold, 0.20);
+
+// ── Overlay ─────────────────────────────────────────────────
+$overlay: rgba(26, 20, 16, 0.5);
+$overlay-light: rgba(26, 20, 16, 0.3);

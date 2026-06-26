@@ -1,0 +1,38 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+
+.page {
+  min-height: 60vh;
+  padding: 2.5rem 0 5rem;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.pageTitle {
+  font-family: $font-primary;
+  font-size: $text-3xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+}
+
+.count {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @include sm { grid-template-columns: repeat(3, 1fr); }
+  @include lg { grid-template-columns: repeat(4, 1fr); }
+  @include xl { grid-template-columns: repeat(5, 1fr); }
+}

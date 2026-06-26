@@ -1,0 +1,74 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.page { padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+.pageHeader { @include flex-between; flex-wrap: wrap; gap: 1rem; }
+.pageTitle { font-family: $font-primary; font-size: $text-3xl; font-weight: $weight-semibold; color: $text-primary; }
+.pageSubtitle { font-family: $font-secondary; font-size: $text-sm; color: $text-muted; margin-top: 0.25rem; }
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.summaryCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+
+  &--due    { border-left: 3px solid $error; }
+  &--paid   { border-left: 3px solid $success; }
+  &--credit { border-left: 3px solid $info; }
+}
+
+.summaryIcon {
+  .summaryCard--due    & { color: $error; }
+  .summaryCard--paid   & { color: $success; }
+  .summaryCard--credit & { color: $info; }
+}
+
+.summaryLabel { font-family: $font-secondary; font-size: $text-xs; color: $text-muted; font-weight: $weight-semibold; text-transform: uppercase; letter-spacing: $tracking-wide; }
+.summaryValue { font-family: $font-secondary; font-size: $text-2xl; font-weight: $weight-bold; color: $text-primary; margin-top: 0.25rem; }
+
+.ledgerSection { background: $background; border: 1px solid $border-light; border-radius: 12px; overflow: hidden; }
+.sectionTitle { font-family: $font-secondary; font-size: $text-base; font-weight: $weight-semibold; color: $text-primary; padding: 1.25rem 1.5rem; border-bottom: 1px solid $border-light; }
+
+.table { overflow-x: auto; }
+.tableHead {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 120px 120px;
+  padding: 0.75rem 1.5rem;
+  background: $background-section;
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: $tracking-wide;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 120px 120px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $border-light;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-secondary;
+  align-items: center;
+
+  &:hover { background: $background-section; }
+}
+
+.desc { color: $text-primary; font-weight: $weight-medium; }
+.debit { color: $error; font-weight: $weight-semibold; }
+.credit { color: $success; font-weight: $weight-semibold; }
+.balance { font-weight: $weight-semibold; color: $text-primary; }

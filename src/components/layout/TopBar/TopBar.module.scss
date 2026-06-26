@@ -1,0 +1,52 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+
+.topbar {
+  background: $background-dark;
+  color: $text-inverse;
+  padding: 8px 0;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.left,
+.right {
+  @include max-md { display: none; }
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: center;
+
+  @include md { flex: unset; justify-content: unset; }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: $font-secondary;
+  font-size: 11px;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover { color: $secondary-gold; }
+
+  svg { flex-shrink: 0; }
+}
+
+.divider {
+  color: rgba(255,255,255,0.3);
+  font-size: $text-xs;
+}

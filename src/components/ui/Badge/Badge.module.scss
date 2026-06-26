@@ -1,0 +1,24 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 100px;
+  font-family: $font-secondary;
+  font-weight: $weight-semibold;
+  white-space: nowrap;
+
+  &--xs { padding: 2px 8px; font-size: 0.65rem; }
+  &--sm { padding: 3px 10px; font-size: $text-xs; }
+  &--md { padding: 5px 14px; font-size: $text-sm; }
+
+  &--default  { background: $background-section; color: $text-secondary; }
+  &--gold     { background: $gold-50; color: $primary-gold; border: 1px solid rgba($primary-gold, 0.3); }
+  &--success  { background: $success-light; color: $success; }
+  &--error    { background: $error-light; color: $error; }
+  &--warning  { background: $warning-light; color: $warning; }
+  &--info     { background: $info-light; color: $info; }
+  &--dark     { background: $text-primary; color: $text-inverse; }
+  &--new      { background: $primary-gold; color: $text-inverse; }
+}

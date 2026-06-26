@@ -1,0 +1,156 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  min-height: calc(100vh - 130px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $background-cream;
+  padding: 2rem 1rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: $shadow-lg;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.logoIcon {
+  color: $primary-gold;
+  font-size: 1.75rem;
+}
+
+.logoMain {
+  font-family: $font-secondary;
+  font-size: $text-xl;
+  font-weight: $weight-bold;
+  letter-spacing: $tracking-widest;
+  color: $text-primary;
+  line-height: 1;
+}
+
+.logoSub {
+  font-family: $font-primary;
+  font-size: 0.65rem;
+  letter-spacing: $tracking-wider;
+  color: $primary-gold;
+  font-style: italic;
+}
+
+.title {
+  font-family: $font-primary;
+  font-size: $text-2xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  text-align: center;
+  margin-bottom: 0.375rem;
+}
+
+.subtitle {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.errorAlert {
+  background: $error-light;
+  border: 1px solid rgba($error, 0.2);
+  color: $error;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.forgotRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.25rem;
+}
+
+.forgotLink {
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  color: $primary-gold;
+
+  &:hover { text-decoration: underline; }
+}
+
+.switchPrompt {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+.switchLink {
+  color: $primary-gold;
+  font-weight: $weight-semibold;
+
+  &:hover { text-decoration: underline; }
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0 1rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: $border-light;
+  }
+
+  span {
+    position: relative;
+    background: $background;
+    padding: 0 1rem;
+    font-family: $font-secondary;
+    font-size: $text-xs;
+    color: $text-light;
+  }
+}
+
+.b2bLink {
+  display: block;
+  text-align: center;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-semibold;
+  color: $primary-gold;
+  border: 1.5px solid rgba($primary-gold, 0.35);
+  border-radius: 6px;
+  padding: 0.75rem;
+  transition: all 0.15s ease;
+
+  &:hover { background: $gold-50; }
+}

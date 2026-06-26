@@ -1,0 +1,72 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.page { padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+.pageHeader { @include flex-between; flex-wrap: wrap; gap: 1rem; }
+.pageTitle { font-family: $font-primary; font-size: $text-3xl; font-weight: $weight-semibold; color: $text-primary; }
+.pageSubtitle { font-family: $font-secondary; font-size: $text-sm; color: $text-muted; margin-top: 0.25rem; }
+
+.newOrderBtn { @include btn-gold; gap: 0.5rem; }
+
+.statusTabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid $border-light;
+  padding-bottom: 1rem;
+}
+
+.tab {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $text-muted;
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  border: 1.5px solid $border-light;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover { border-color: $primary-gold; color: $primary-gold; }
+  &--active { background: $primary-gold; border-color: $primary-gold; color: white; }
+}
+
+.list { display: flex; flex-direction: column; gap: 1rem; }
+
+.orderCard {
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  transition: box-shadow 0.15s ease;
+  &:hover { box-shadow: $shadow-md; }
+}
+
+.orderTop { @include flex-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+
+.orderId { font-family: $font-secondary; font-size: $text-base; font-weight: $weight-semibold; color: $primary-gold; }
+.orderDate { font-family: $font-secondary; font-size: $text-xs; color: $text-muted; margin-top: 2px; }
+.orderProducts { font-family: $font-secondary; font-size: $text-sm; color: $text-secondary; margin-top: 6px; }
+
+.orderRight { text-align: right; }
+.orderAmount { font-family: $font-secondary; font-size: $text-xl; font-weight: $weight-bold; color: $text-primary; }
+
+.statusBadge {
+  display: inline-block;
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-top: 0.5rem;
+
+  &--success { background: $success-light; color: $success; }
+  &--info    { background: $info-light; color: $info; }
+  &--gold    { background: $gold-50; color: $primary-gold; }
+  &--warning { background: $warning-light; color: $warning; }
+  &--error   { background: $error-light; color: $error; }
+}

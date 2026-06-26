@@ -1,0 +1,216 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pageHeader {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pageTitle {
+  font-family: $font-primary;
+  font-size: $text-3xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+}
+
+.pageSubtitle {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  margin-top: 0.25rem;
+}
+
+.newOrderBtn {
+  @include btn-gold;
+  gap: 0.5rem;
+}
+
+// ── Stats ─────────────────────────────────────────────────────
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @include lg { grid-template-columns: repeat(4, 1fr); }
+}
+
+.statCard {
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &--gold  { border-left: 3px solid $primary-gold; }
+  &--warning { border-left: 3px solid $warning; }
+  &--success { border-left: 3px solid $success; }
+  &--info  { border-left: 3px solid $info; }
+}
+
+.statHeader {
+  @include flex-between;
+}
+
+.statLabel {
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: $tracking-wide;
+}
+
+.statIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--gold    { background: $gold-50; color: $primary-gold; }
+  &--warning { background: $warning-light; color: $warning; }
+  &--success { background: $success-light; color: $success; }
+  &--info    { background: $info-light; color: $info; }
+}
+
+.statValue {
+  font-family: $font-secondary;
+  font-size: $text-2xl;
+  font-weight: $weight-bold;
+  color: $text-primary;
+}
+
+.statChange {
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  color: $text-muted;
+}
+
+// ── Section ───────────────────────────────────────────────────
+.section {
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  @include flex-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid $border-light;
+}
+
+.sectionTitle {
+  font-family: $font-secondary;
+  font-size: $text-base;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+}
+
+.sectionLink {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $primary-gold;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── Table ─────────────────────────────────────────────────────
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableHead {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1fr 1.5fr 1fr;
+  padding: 0.875rem 1.5rem;
+  background: $background-section;
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: $tracking-wide;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1fr 1.5fr 1fr;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $border-light;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-secondary;
+  align-items: center;
+  transition: background 0.15s ease;
+
+  &:hover { background: $background-section; }
+}
+
+.orderId {
+  font-weight: $weight-semibold;
+  color: $primary-gold;
+}
+
+.amount {
+  font-weight: $weight-semibold;
+  color: $text-primary;
+}
+
+.statusBadge {
+  display: inline-block;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  padding: 3px 10px;
+  border-radius: 100px;
+
+  &--success { background: $success-light; color: $success; }
+  &--info    { background: $info-light; color: $info; }
+  &--gold    { background: $gold-50; color: $primary-gold; }
+  &--warning { background: $warning-light; color: $warning; }
+}
+
+// ── Quick actions ─────────────────────────────────────────────
+.quickActions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.quickAction {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.5rem;
+  background: $background;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $text-secondary;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: $primary-gold;
+    color: $primary-gold;
+    background: $gold-50;
+  }
+}

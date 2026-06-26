@@ -1,0 +1,35 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+}
+
+.icon {
+  color: $text-light;
+  svg { width: 56px; height: 56px; }
+}
+
+.title {
+  font-family: $font-primary;
+  font-size: $text-2xl;
+  color: $text-primary;
+}
+
+.description {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  max-width: 360px;
+  line-height: $leading-relaxed;
+}
+
+.action {
+  margin-top: 0.5rem;
+}

@@ -1,0 +1,73 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.label {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $text-secondary;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-primary;
+  background: $background;
+  border: 1.5px solid $border;
+  border-radius: 6px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder { color: $text-light; }
+
+  &:focus {
+    border-color: $primary-gold;
+    box-shadow: 0 0 0 3px rgba($primary-gold, 0.12);
+  }
+
+  &--iconLeft  { padding-left: 2.75rem; }
+  &--iconRight { padding-right: 2.75rem; }
+}
+
+.iconLeft,
+.iconRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+
+  svg { width: 18px; height: 18px; }
+}
+.iconLeft  { left: 0.875rem; }
+.iconRight { right: 0.875rem; pointer-events: auto; cursor: pointer; }
+
+.error {
+  font-size: $text-xs;
+  color: $error;
+}
+
+.hint {
+  font-size: $text-xs;
+  color: $text-muted;
+}
+
+.wrapper--error .input {
+  border-color: $error;
+  &:focus { box-shadow: 0 0 0 3px rgba($error, 0.12); }
+}

@@ -1,0 +1,222 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: $background;
+  border-bottom: 1px solid $border-light;
+  transition: box-shadow 0.2s ease;
+
+  &--scrolled {
+    box-shadow: $shadow-md;
+  }
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 72px;
+}
+
+// ── Logo ─────────────────────────────────────────────────────
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoIcon {
+  color: $primary-gold;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logoMain {
+  font-family: $font-secondary;
+  font-size: $text-lg;
+  font-weight: $weight-bold;
+  letter-spacing: $tracking-widest;
+  color: $text-primary;
+}
+
+.logoSub {
+  font-family: $font-primary;
+  font-size: 0.65rem;
+  font-weight: $weight-light;
+  letter-spacing: $tracking-wider;
+  color: $primary-gold;
+  font-style: italic;
+}
+
+// ── Desktop Nav ──────────────────────────────────────────────
+.nav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  justify-content: center;
+
+  @include lg { display: flex; }
+}
+
+.navLink {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $text-secondary;
+  padding: 0.5rem 0.875rem;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: $primary-gold;
+    background: $gold-50;
+  }
+}
+
+// ── Actions ──────────────────────────────────────────────────
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+
+  @include lg { margin-left: 0; }
+}
+
+.actionBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: $text-secondary;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    color: $primary-gold;
+    background: $gold-50;
+  }
+}
+
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: $primary-gold;
+  color: $text-inverse;
+  font-family: $font-secondary;
+  font-size: 10px;
+  font-weight: $weight-bold;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.signInBtn {
+  display: none;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid $border;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+
+  @include sm { display: inline-flex; }
+
+  &:hover {
+    border-color: $primary-gold;
+    color: $primary-gold;
+    background: $gold-50;
+  }
+}
+
+// ── Mobile menu button ────────────────────────────────────────
+.menuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  color: $text-secondary;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover { color: $primary-gold; }
+
+  @include lg { display: none; }
+}
+
+// ── Mobile Menu ──────────────────────────────────────────────
+.mobileMenu {
+  border-top: 1px solid $border-light;
+  background: $background;
+
+  @include lg { display: none; }
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0;
+}
+
+.mobileNavLink {
+  font-family: $font-secondary;
+  font-size: $text-base;
+  font-weight: $weight-medium;
+  color: $text-secondary;
+  padding: 0.875rem 1.5rem;
+  transition: color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    color: $primary-gold;
+    background: $gold-50;
+  }
+}
+
+.mobileDivider {
+  height: 1px;
+  background: $border-light;
+  margin: 0.5rem 1.5rem;
+}
+
+.mobileBusinessLink {
+  font-family: $font-secondary;
+  font-size: $text-base;
+  font-weight: $weight-semibold;
+  color: $primary-gold;
+  padding: 0.875rem 1.5rem;
+
+  &:hover { background: $gold-50; }
+}

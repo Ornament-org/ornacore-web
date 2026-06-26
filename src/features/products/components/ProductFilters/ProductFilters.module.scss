@@ -1,0 +1,95 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid $border-light;
+  margin-bottom: 2rem;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.metalTabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.metalTab {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $text-secondary;
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  border: 1.5px solid $border;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover { border-color: $primary-gold; color: $primary-gold; }
+
+  &--active {
+    background: $primary-gold;
+    border-color: $primary-gold;
+    color: $text-inverse;
+  }
+}
+
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sortSelect {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-secondary;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid $border;
+  border-radius: 6px;
+  background: $background;
+  cursor: pointer;
+  outline: none;
+
+  &:focus { border-color: $primary-gold; }
+}
+
+.chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-family: $font-secondary;
+  font-size: $text-xs;
+  font-weight: $weight-medium;
+  color: $text-muted;
+  padding: 0.375rem 0.875rem;
+  border-radius: 100px;
+  border: 1px solid $border-light;
+  background: $background;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover { border-color: $primary-gold; color: $primary-gold; }
+
+  &--active {
+    background: $gold-50;
+    border-color: rgba($primary-gold, 0.4);
+    color: $primary-gold;
+  }
+}

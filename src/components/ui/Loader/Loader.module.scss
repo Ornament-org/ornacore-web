@@ -1,0 +1,28 @@
+@use '@/styles/colors' as *;
+
+.container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &--centered {
+    width: 100%;
+    min-height: 200px;
+  }
+}
+
+.spinner {
+  border-radius: 50%;
+  border-style: solid;
+  border-color: $border rgba($primary-gold, 0.2);
+  border-top-color: $primary-gold;
+  animation: spin 0.65s linear infinite;
+
+  &--sm  { width: 20px; height: 20px; border-width: 2px; }
+  &--md  { width: 32px; height: 32px; border-width: 3px; }
+  &--lg  { width: 48px; height: 48px; border-width: 4px; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

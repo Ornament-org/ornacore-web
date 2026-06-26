@@ -1,0 +1,116 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: $background-dark;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.logoIcon {
+  color: $primary-gold;
+  font-size: 1.5rem;
+}
+
+.logoMain {
+  font-family: $font-secondary;
+  font-size: $text-base;
+  font-weight: $weight-bold;
+  letter-spacing: $tracking-widest;
+  color: $text-inverse;
+  line-height: 1;
+}
+
+.logoSub {
+  font-family: $font-secondary;
+  font-size: 10px;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wider;
+  color: $primary-gold;
+  text-transform: uppercase;
+}
+
+.nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: rgba(255,255,255,0.6);
+  transition: all 0.15s ease;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.9);
+  }
+
+  &--active {
+    background: rgba($primary-gold, 0.15);
+    color: $primary-gold;
+
+    .navIcon { color: $primary-gold; }
+  }
+}
+
+.navIcon {
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.4);
+  transition: color 0.15s ease;
+}
+
+.navItem:hover .navIcon {
+  color: rgba(255,255,255,0.7);
+}
+
+.footer {
+  padding: 1rem 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.logoutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: rgba(255,255,255,0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba($error, 0.12);
+    color: $error;
+  }
+}

@@ -1,0 +1,191 @@
+@use '@/styles/colors' as *;
+@use '@/styles/typography' as *;
+@use '@/styles/breakpoints' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  min-height: calc(100vh - 130px);
+  display: flex;
+  align-items: stretch;
+}
+
+.layout {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  @include lg { flex-direction: row; }
+}
+
+// ── Left panel ────────────────────────────────────────────────
+.left {
+  background: linear-gradient(135deg, $primary-gold-dark 0%, $primary-gold 60%, $gold-400 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  min-height: 200px;
+
+  @include lg {
+    flex: 0 0 45%;
+    min-height: unset;
+    padding: 4rem 3.5rem;
+  }
+}
+
+.leftContent {
+  max-width: 400px;
+}
+
+.logoIcon {
+  font-size: 2.5rem;
+  color: rgba(255,255,255,0.9);
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.leftTitle {
+  font-family: $font-primary;
+  font-size: clamp($text-2xl, 3vw, $text-3xl);
+  font-weight: $weight-semibold;
+  color: $text-inverse;
+  margin-bottom: 1rem;
+  line-height: $leading-snug;
+}
+
+.leftSub {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: rgba(255,255,255,0.8);
+  line-height: $leading-relaxed;
+  margin-bottom: 2rem;
+}
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: rgba(255,255,255,0.9);
+}
+
+.checkIcon {
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+// ── Right panel ───────────────────────────────────────────────
+.right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background: $background-cream;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: $background;
+  border: 1px solid $border-light;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: $shadow-lg;
+}
+
+.briefcaseIcon {
+  color: $primary-gold;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  font-family: $font-primary;
+  font-size: $text-2xl;
+  font-weight: $weight-semibold;
+  color: $text-primary;
+  margin-bottom: 0.375rem;
+}
+
+.subtitle {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  margin-bottom: 1.75rem;
+}
+
+.errorAlert {
+  background: $error-light;
+  border: 1px solid rgba($error, 0.2);
+  color: $error;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.registerPrompt {
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+.registerLink {
+  color: $primary-gold;
+  font-weight: $weight-semibold;
+  &:hover { text-decoration: underline; }
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0 1rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 1px;
+    background: $border-light;
+  }
+
+  span {
+    position: relative;
+    background: $background;
+    padding: 0 1rem;
+    font-family: $font-secondary;
+    font-size: $text-xs;
+    color: $text-light;
+  }
+}
+
+.customerLink {
+  display: block;
+  text-align: center;
+  font-family: $font-secondary;
+  font-size: $text-sm;
+  color: $text-muted;
+  transition: color 0.15s ease;
+
+  &:hover { color: $primary-gold; }
+}
