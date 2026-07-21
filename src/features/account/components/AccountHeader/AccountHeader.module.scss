@@ -27,10 +27,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  padding: 0;
+  border: none;
+  background: none;
   color: #ffbd36;
   font-size: 0.86rem;
   font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .actionGroup {

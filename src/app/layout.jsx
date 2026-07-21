@@ -69,7 +69,10 @@ const themeInitScript = `
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      {/* suppressHydrationWarning: browser extensions (ColorZilla, Grammarly,
+          etc.) inject attributes like `cz-shortcut-listen` onto <body> before
+          React hydrates, which otherwise trips a hydration mismatch. */}
+      <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <ThemeProvider>
           <ReduxProvider>

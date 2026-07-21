@@ -49,37 +49,58 @@
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: var(--accent-gradient, linear-gradient(135deg, #f0cf6b, #a8791f));
+  // A real uploaded logo stays exactly as-is regardless of the active metal
+  // tab — only the placeholder (no logo configured yet) uses the metal's
+  // themed gradient, via `--fallback` below.
+  background: db.$db-bg-elevated;
   color: #1a1410;
-  box-shadow: 0 4px 14px var(--accent-soft, rgba(212, 175, 55, 0.3));
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+
+  &--fallback {
+    background: var(--accent-gradient, linear-gradient(135deg, #f0cf6b, #a8791f));
+    box-shadow: 0 4px 14px var(--accent-soft, rgba(212, 175, 55, 0.3));
+  }
 }
 
 .brandName {
   font-family: var(--font-display, 'Poppins', sans-serif);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0;
   color: db.$db-text-primary;
-  display: none;
+  // Shown on every screen size now (matches the desktop header); truncates
+  // rather than hiding so it never pushes the account selector off-screen.
+  display: inline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
-  @include sm {
-    display: inline;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  @include md {
+    font-size: 1.05rem;
   }
 }
 
 // ── Search ────────────────────────────────────────────
-.search {
+// Wrapper carries the grid placement (full-width own row on mobile, middle
+// column on desktop) and anchors the results dropdown.
+.searchWrap {
+  position: relative;
   grid-column: 1 / -1;
   order: 3;
+  min-width: 0;
+
+  @include md {
+    grid-column: auto;
+    order: initial;
+  }
+}
+
+.search {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -91,8 +112,6 @@
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 
   @include md {
-    grid-column: auto;
-    order: initial;
     gap: 0.6rem;
     padding: 0.6rem 1.1rem;
   }
@@ -100,6 +119,129 @@
   &:focus-within {
     border-color: var(--accent, #d4af37);
     box-shadow: 0 0 0 3px var(--accent-soft, rgba(212, 175, 55, 0.15));
+  }
+}
+
+// ── Search results dropdown ───────────────────────────
+.results {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 80;
+  max-height: min(60vh, 440px);
+  overflow-y: auto;
+  padding: 0.4rem;
+  background: db.$db-bg-elevated;
+  border: 1px solid db.$db-border;
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+}
+
+.resultsState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.1rem;
+  color: db.$db-text-muted;
+  font-size: 0.8rem;
+}
+
+.spin {
+  animation: appHeaderSpin 0.8s linear infinite;
+}
+
+@keyframes appHeaderSpin {
+  to { transform: rotate(360deg); }
+}
+
+.resultsGroup {
+  & + & {
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid db.$db-border;
+  }
+}
+
+.resultsLabel {
+  display: block;
+  padding: 0.35rem 0.5rem 0.2rem;
+  color: db.$db-text-muted;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.resultRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.42rem 0.5rem;
+  border-radius: 9px;
+  text-align: left;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: db.$db-bg-card;
+  }
+}
+
+.resultThumb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid db.$db-border;
+  background: db.$db-bg-card;
+  color: var(--accent, #d4af37);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.resultInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  strong {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: db.$db-text-primary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  span {
+    font-size: 0.66rem;
+    color: db.$db-text-muted;
+  }
+}
+
+.resultsAll {
+  display: block;
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.55rem;
+  border-top: 1px solid db.$db-border;
+  color: var(--accent, #d4af37);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-align: center;
+
+  &:hover {
+    text-decoration: underline;
   }
 }
 
@@ -140,14 +282,7 @@
 }
 
 .themeToggle {
-  display: none;
-
-  @include sm {
-    display: inline-flex;
-  }
-}
-
-.themeToggle {
+  display: inline-flex;
   border-color: db.$db-border;
   background: db.$db-bg-elevated;
   color: db.$db-text-muted;
@@ -193,25 +328,26 @@
 }
 
 .businessInfo {
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   line-height: 1.25;
   text-align: left;
-
-  @include md {
-    display: flex;
-  }
 }
 
 .businessName {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 600;
   color: db.$db-text-primary;
-  max-width: 160px;
+  max-width: 96px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @include md {
+    font-size: 0.8rem;
+    max-width: 160px;
+  }
 }
 
 .businessMeta {
@@ -230,12 +366,18 @@
   font-weight: 600;
 }
 
-.businessChevron {
-  color: db.$db-text-muted;
-  flex-shrink: 0;
+// Below the desktop breakpoint only the check icon shows — the "Verified"
+// label is dropped to keep the header compact on phones.
+.verifiedText {
   display: none;
 
   @include md {
-    display: block;
+    display: inline;
   }
+}
+
+.businessChevron {
+  color: db.$db-text-muted;
+  flex-shrink: 0;
+  display: block;
 }

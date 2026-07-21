@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addItem, updateQuantity } from '@/redux/slices/cartSlice';
 import { ROUTES } from '@/constants/routes';
 import { isProductOutOfStock, isVariantOutOfStock } from '@/utils/inventory';
+import { cardBadgeLabel } from '@/utils/tunch';
 import { useMetalTheme } from '../../context/MetalThemeContext';
 import VariantPickerSheet from '../VariantPickerSheet/VariantPickerSheet';
 import styles from './ProductCardB2B.module.scss';
@@ -87,7 +88,7 @@ export default function ProductCardB2B({ product }) {
           {outOfStock ? (
             <span className={styles.outOfStockBadge}>Out of Stock</span>
           ) : (
-            <span className={styles.purityTag}>{product.purity}</span>
+            <span className={styles.purityTag}>{cardBadgeLabel(product.tunch, product.purity)}</span>
           )}
         </div>
 

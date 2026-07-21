@@ -54,6 +54,7 @@ const toCardProduct = (product) => {
     name: product.name,
     imageUrl: primaryImage(product),
     purity: variant.publicPurity || variant.purity || (variant.publicKarat ? `${Number(variant.publicKarat)}K` : null),
+    tunch: variant.tunch ?? null,
     weight: Number(variant.weightGrams),
     price: price !== null && price !== undefined ? Math.round(Number(price)) : null,
     variants: product.variants ?? [],
@@ -61,7 +62,7 @@ const toCardProduct = (product) => {
   };
 };
 
-function ProductsBrowser({ collectionSlug, categorySlugParam, categoryIdParam }) {
+function ProductsBrowser({ collectionSlug, categorySlugParam, categoryIdParam, searchQuery }) {
   const { metalId, metal } = useMetalTheme();
   const metalIdMap = useMetalIdMap();
   const isAllMetals = metalId === 'all';
@@ -133,6 +134,7 @@ function ProductsBrowser({ collectionSlug, categorySlugParam, categoryIdParam })
       if (backendMetalId) params.metalId = backendMetalId;
       if (collectionSlug) params.collection = collectionSlug;
       if (categoryFilter !== 'all') params.categoryId = categoryFilter;
+      if (searchQuery) params.search = searchQuery;
 
       try {
         const response = await productApi.getAll(params);
@@ -149,7 +151,7 @@ function ProductsBrowser({ collectionSlug, categorySlugParam, categoryIdParam })
     return () => {
       alive = false;
     };
-  }, [metalIdMap, backendMetalId, collectionSlug, categoryFilter]);
+  }, [metalIdMap, backendMetalId, collectionSlug, categoryFilter, searchQuery]);
 
   const purityOptions = useMemo(
     () => Array.from(new Set(products.map((product) => product.purity).filter(Boolean))),
@@ -193,7 +195,11 @@ function ProductsBrowser({ collectionSlug, categorySlugParam, categoryIdParam })
     });
   };
 
-  const pageTitle = isAllMetals ? 'All Jewellery' : `${metal.label} Jewellery`;
+  const pageTitle = searchQuery
+    ? `Results for “${searchQuery}”`
+    : isAllMetals
+      ? 'All Jewellery'
+      : `${metal.label} Jewellery`;
 
   return (
     <main className={styles.page}>
@@ -345,6 +351,7 @@ function ProductsPageInner() {
   const collectionSlug = searchParams.get('collection') || null;
   const categorySlugParam = searchParams.get('category') || null;
   const categoryIdParam = searchParams.get('categoryId') || null;
+  const searchQuery = searchParams.get('search') || null;
 
   return (
     <MetalThemeProvider defaultMetal={defaultMetal}>
@@ -354,6 +361,7 @@ function ProductsPageInner() {
         collectionSlug={collectionSlug}
         categorySlugParam={categorySlugParam}
         categoryIdParam={categoryIdParam}
+        searchQuery={searchQuery}
       />
     </MetalThemeProvider>
   );

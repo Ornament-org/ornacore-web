@@ -786,6 +786,36 @@
   font-weight: 700;
 }
 
+.ledgerDetail {
+  margin: 0.4rem 0 0.55rem;
+  padding: 0.42rem 0.55rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid db.$db-border;
+  color: db.$db-text-secondary;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.ledgerBalance {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 700;
+
+  &--due {
+    color: #fbbf24;
+  }
+
+  &--advance {
+    color: #4ade80;
+  }
+
+  &--cleared {
+    color: db.$db-text-muted;
+  }
+}
+
 @media (max-width: 760px) {
   .page {
     padding: 0.72rem 0.55rem 6.45rem;
@@ -831,7 +861,9 @@
     display: grid;
     gap: 0.32rem;
     padding: 0.32rem;
-    border-radius: 999px;
+    // Squared on the left (docks flush against the page edge) with a reduced,
+    // rounded right — instead of the full pill it used to be.
+    border-radius: 0 18px 18px 0;
     background: db.$db-glass-bg;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);

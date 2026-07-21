@@ -67,7 +67,7 @@ export default function CartPage() {
                 </div>
                 <div className={styles.itemInfo}>
                   <p className={styles.itemName}>{item.name}</p>
-                  <p className={styles.itemPrice}>₹{item.price?.toLocaleString('en-IN')}</p>
+                  {/* <p className={styles.itemPrice}>₹{item.price?.toLocaleString('en-IN')}</p> */}
                   {Number(item.weight) > 0 ? (
                     <p className={styles.itemWeight}>{Number(item.weight).toFixed(3).replace(/\.?0+$/, '')} g</p>
                   ) : null}
@@ -78,7 +78,6 @@ export default function CartPage() {
                     <span>{item.quantity}</span>
                     <button onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))}>+</button>
                   </div>
-                  <p className={styles.itemTotal}>₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
                   <button className={styles.removeBtn} onClick={() => dispatch(removeItem(item.id))}>
                     <Trash2 size={16} />
                   </button>
@@ -95,7 +94,7 @@ export default function CartPage() {
                 metalWeights.map(([metalName, weight]) => (
                   <div className={styles.summaryRow} key={metalName}>
                     <span>{metalName} Weight</span>
-                    <span>{formatWeight(weight)}</span>
+                    <span className={styles.itemWeight}>{formatWeight(weight)}</span>
                   </div>
                 ))
               ) : (
@@ -104,10 +103,10 @@ export default function CartPage() {
                   <span>{formatWeight(totalWeight)}</span>
                 </div>
               )}
-              <div className={[styles.summaryRow, styles['summaryRow--total']].join(' ')}>
+              {/* <div className={[styles.summaryRow, styles['summaryRow--total']].join(' ')}>
                 <span>Delivery</span>
                 <span>{delivery === 0 ? 'Free' : `₹${delivery}`}</span>
-              </div>
+              </div> */}
             </div>
 
             <p className={styles.weightNotice}>

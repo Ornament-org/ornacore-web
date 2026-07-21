@@ -101,7 +101,7 @@ const TRUST_FEATURES = [
   { icon: Users, title: 'B2B Exclusive', description: 'Special pricing for business partners' },
   { icon: ShieldCheck, title: 'Trusted Quality', description: 'Certified jewellery with assured purity' },
   { icon: Package, title: 'Secure Packaging', description: 'Safe and tamper-proof delivery' },
-  { icon: Undo2, title: 'Easy Returns', description: 'Hassle-free returns within 7 days' },
+  { icon: Undo2, title: 'Easy Returns', description: 'Hassle-free returns' },
 ];
 
 const TABS = [
@@ -494,13 +494,14 @@ export default function ProductDetailPage({ slug }) {
                 </div>
               ) : (
                 <Button
+                  className={styles.addToCartBtn}
                   disabled={outOfStock}
                   fullWidth
                   icon={<ShoppingBag size={18} />}
                   size="lg"
                   onClick={handleAddToCart}
                 >
-                  {outOfStock ? 'Out of Stock' : 'Add to Quick Order'}
+                  {outOfStock ? 'Out of Stock' : 'Add to Cart'}
                 </Button>
               )}
               <button

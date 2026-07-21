@@ -1,10 +1,17 @@
 'use client';
 import { useEffect } from 'react';
-import { Minus, Plus, X } from 'lucide-react';
+import { Gem, Minus, Plus, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem, updateQuantity } from '@/redux/slices/cartSlice';
 import { isVariantOutOfStock } from '@/utils/inventory';
 import styles from './VariantPickerSheet.module.scss';
+
+// Prefer an image specifically attached to this variant, falling back to the
+// product's main image so every row still shows a thumbnail.
+const variantImage = (product, variant) => {
+  const own = product.images?.find((image) => String(image.productVariantId) === String(variant.id));
+  return own?.media?.secureUrl ?? own?.url ?? product.imageUrl ?? null;
+};
 
 // A variant's "size" is whichever of its attribute values belongs to an
 // attribute literally named Size — falls back to the variant's own free-text
@@ -26,6 +33,8 @@ function VariantRow({ product, variant }) {
   const price = variant.yourPrice ?? variant.publicPrice;
   const label = variantLabel(variant);
   const outOfStock = isVariantOutOfStock(variant);
+  const image = variantImage(product, variant);
+  const weightLabel = formatWeight(variant.weightGrams);
 
   const handleAdd = () => {
     if (outOfStock) return;
@@ -39,7 +48,7 @@ function VariantRow({ product, variant }) {
         variantLabel: label,
         price: price !== null && price !== undefined ? Number(price) : null,
         weight: Number(variant.weightGrams ?? 0),
-        imageUrl: product.imageUrl,
+        imageUrl: image,
         metalName: product.metalName ?? null,
       }),
     );
@@ -49,16 +58,21 @@ function VariantRow({ product, variant }) {
 
   return (
     <div className={[styles.row, outOfStock && styles['row--outOfStock']].filter(Boolean).join(' ')}>
+      <span className={styles.rowThumb}>
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element -- product image host is admin-configurable from toolbox media
+          <img src={image} alt="" />
+        ) : (
+          <Gem size={20} strokeWidth={1.5} />
+        )}
+      </span>
       <div className={styles.rowInfo}>
         <strong>{label}</strong>
-        <span>{outOfStock ? 'Out of Stock' : formatWeight(variant.weightGrams)}</span>
+        <span>{outOfStock ? 'Out of Stock' : weightLabel}</span>
       </div>
       <div className={styles.rowRight}>
-        <span className={styles.rowPrice}>
-          {price !== null && price !== undefined ? `₹${Number(price).toLocaleString('en-IN')}` : 'Price on request'}
-        </span>
         {outOfStock ? (
-          <button type="button" className={styles.addBtn} disabled aria-label={`${label} is out of stock`}>
+          <button type="button" className={styles.oosBtn} disabled aria-label={`${label} is out of stock`}>
             Out of Stock
           </button>
         ) : quantity > 0 ? (
@@ -72,7 +86,8 @@ function VariantRow({ product, variant }) {
             </button>
           </div>
         ) : (
-          <button type="button" className={styles.addBtn} onClick={handleAdd} aria-label={`Add ${label}`}>
+          <button type="button" className={styles.addBtn} onClick={handleAdd} aria-label={`Add ${label} (${weightLabel})`}>
+            <span>{weightLabel}</span>
             <Plus size={15} strokeWidth={2.7} />
           </button>
         )}

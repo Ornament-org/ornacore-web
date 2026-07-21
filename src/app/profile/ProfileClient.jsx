@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   AlertTriangle,
   ArrowRight,
@@ -125,7 +126,7 @@ const SECTION_PAYLOAD_BUILDERS = {
 const MENU_ITEMS = [
   {
     id: 'profile',
-    title: 'My Profile',
+    title: 'Profile',
     description: 'View and manage your shop profile',
     icon: UserRound,
   },
@@ -468,11 +469,52 @@ function OrdersPanel() {
 // Same three kinds admin's shopkeeper Ledger tab shows: a metal collection,
 // a cash collection (converted to fine weight at the day's rate), or a
 // delivery against the shop's account.
+const formatMoneyINR = (value) =>
+  `₹${Number(value ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+
 const ledgerEntryMeta = (entry) => {
   if (entry.entryType === 'DELIVERY') return { label: 'Delivery', tone: 'red' };
   if (entry.collectionType === 'CASH') return { label: 'Cash', tone: 'amber' };
   if (entry.collectionType === 'METAL') return { label: 'Metal', tone: 'green' };
   return { label: entry.entryType?.replaceAll('_', ' ') ?? 'Entry', tone: 'neutral' };
+};
+
+// Delivery rows lead with the order number (that's what a shop looks for);
+// collections get a plain heading and let the detail line carry the numbers.
+const ledgerEntryTitle = (entry) => {
+  if (entry.entryType === 'DELIVERY') return entry.orderNumber || 'Delivery';
+  if (entry.collectionType === 'CASH') return 'Cash collection';
+  if (entry.collectionType === 'METAL') return 'Metal collection';
+  return entry.description || 'Ledger entry';
+};
+
+// The human-readable breakdown of what actually happened:
+//  • Cash    → ₹ received @ rate / 10g → fine credited
+//  • Metal   → grams of metal received
+//  • Delivery→ grams of fine metal delivered
+const ledgerEntryDetail = (entry) => {
+  const metal = entry.metal?.name ?? 'metal';
+  if (entry.entryType === 'DELIVERY') {
+    return `${formatWeight(entry.debitFine)} fine ${metal} delivered`;
+  }
+  if (entry.collectionType === 'CASH') {
+    return `${formatMoneyINR(entry.cashAmount)} received @ ${formatMoneyINR(entry.metalRate)}/10g → ${formatWeight(
+      entry.fineCredit,
+    )} fine ${metal}`;
+  }
+  if (entry.collectionType === 'METAL') {
+    return `${formatWeight(entry.receivedQuantity)} ${metal} received`;
+  }
+  return null;
+};
+
+// A positive running balance means the shop still owes that much metal (Due);
+// a negative one means they've deposited more than owed (Advance).
+const ledgerBalance = (runningBalance) => {
+  const value = Number(runningBalance ?? 0);
+  if (value > 0.0005) return { label: 'Due', amount: formatWeight(value), tone: 'due' };
+  if (value < -0.0005) return { label: 'Advance', amount: formatWeight(Math.abs(value)), tone: 'advance' };
+  return { label: 'Cleared', amount: formatWeight(0), tone: 'cleared' };
 };
 
 function TransactionsPanel() {
@@ -575,21 +617,28 @@ function TransactionsPanel() {
       <div className={styles.ordersList}>
         {visibleEntries.map((entry) => {
           const meta = ledgerEntryMeta(entry);
+          const detail = ledgerEntryDetail(entry);
+          const balance = ledgerBalance(entry.runningBalance);
           const isCredit = Number(entry.creditFine) > 0;
           const isDebit = Number(entry.debitFine) > 0;
           return (
             <div key={entry.id} className={styles.orderRow}>
               <div className={styles.orderRowTop}>
                 <div>
-                  <strong>{entry.description}</strong>
+                  <strong>{ledgerEntryTitle(entry)}</strong>
                   <span>{formatDate(entry.entryDate)} · {entry.metal?.name ?? 'Metal'}</span>
                 </div>
                 <span className={[styles.orderStatusPill, styles[`orderStatusPill--${meta.tone}`]].join(' ')}>
                   {meta.label}
                 </span>
               </div>
+
+              {detail ? <p className={styles.ledgerDetail}>{detail}</p> : null}
+
               <div className={styles.orderRowBottom}>
-                <span>Balance: {formatWeight(entry.runningBalance)}</span>
+                <span className={[styles.ledgerBalance, styles[`ledgerBalance--${balance.tone}`]].join(' ')}>
+                  {balance.label === 'Cleared' ? 'Cleared' : `${balance.label}: ${balance.amount}`}
+                </span>
                 {isCredit ? (
                   <span className={styles.ledgerCredit}>+{formatWeight(entry.creditFine)}</span>
                 ) : isDebit ? (
@@ -605,6 +654,7 @@ function TransactionsPanel() {
 }
 
 export default function ProfileClient({ initialTab = 'profile' }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [editingSections, setEditingSections] = useState({});
   const [sectionErrors, setSectionErrors] = useState({});
@@ -699,6 +749,17 @@ export default function ProfileClient({ initialTab = 'profile' }) {
     setValues((current) => ({ ...current, [key]: value }));
   };
 
+  // The account sub-views are in-page tabs, so back from one returns to the
+  // Profile tab (a Link to the same /profile URL would do nothing); from the
+  // Profile tab itself, back leaves the account section for Home.
+  const handleBack = () => {
+    if (activeTab === 'profile') {
+      router.push(ROUTES.HOME);
+    } else {
+      setActiveTab('profile');
+    }
+  };
+
   if (loading) {
     return (
       <main className={styles.page}>
@@ -720,7 +781,12 @@ export default function ProfileClient({ initialTab = 'profile' }) {
 
   return (
     <main className={styles.page}>
-      <AccountHeader title={activeMenu.title} description={activeMenu.description} />
+      <AccountHeader
+        title={activeMenu.title}
+        description={activeMenu.description}
+        backLabel={activeTab === 'profile' ? 'Home' : 'Profile'}
+        onBack={handleBack}
+      />
 
       <div className={styles.workspace}>
         <aside className={styles.sidebar}>

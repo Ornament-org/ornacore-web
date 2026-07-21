@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ChevronRight,
   Circle,
-  Download,
   Gem,
   Heart,
   Minus,
@@ -31,6 +30,7 @@ import { productApi } from '@/services/productApi';
 import { ROUTES } from '@/constants/routes';
 import { METALS } from '@/constants/metals';
 import { isProductOutOfStock, isVariantOutOfStock } from '@/utils/inventory';
+import { cardBadgeLabel, formatTunch } from '@/utils/tunch';
 import styles from './ShopByCategoriesPage.module.scss';
 
 const CATEGORY_ICONS = [
@@ -94,6 +94,7 @@ const toProductCard = (product) => {
     name: product.name,
     imageUrl: primaryImage(product),
     purity: variant.publicPurity || variant.purity || (variant.publicKarat ? `${Number(variant.publicKarat)}K` : null),
+    tunch: variant.tunch ?? null,
     weight: Number(variant.weightGrams),
     price: normalizeMoney(variant.yourPrice ?? variant.publicPrice),
     variants: product.variants ?? [],
@@ -111,13 +112,6 @@ const WEIGHT_BUCKETS = [
   { id: '10-plus', label: '10 gm & above', test: (w) => w >= 10 },
 ];
 
-const PRICE_BUCKETS = [
-  { id: 'all', label: 'Price Range' },
-  { id: 'under-20k', label: 'Under ₹20,000', test: (p) => p < 20000 },
-  { id: '20k-40k', label: '₹20,000 - ₹40,000', test: (p) => p >= 20000 && p < 40000 },
-  { id: '40k-plus', label: '₹40,000 & above', test: (p) => p >= 40000 },
-];
-
 function CategoryBrowser() {
   const searchParams = useSearchParams();
   const { metalId, metal } = useMetalTheme();
@@ -131,9 +125,8 @@ function CategoryBrowser() {
   const [sortMode, setSortMode] = useState('latest');
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(false);
-  const [purityFilter, setPurityFilter] = useState('all');
+  const [tunchFilter, setTunchFilter] = useState('all');
   const [weightFilter, setWeightFilter] = useState('all');
-  const [priceFilter, setPriceFilter] = useState('all');
 
   const backendMetalId = useMemo(() => {
     const code = metalCodeForTheme(metalId);
@@ -160,30 +153,47 @@ function CategoryBrowser() {
   // product fetch instead of the (nonexistent) page-level metal filter.
   const productsMetalId = isAllMetals ? selectedCategory?.metalId ?? null : backendMetalId;
 
-  const activeCategoryId = activeFilterId === 'all' ? selectedCategory?.id : activeFilterId;
+  // "All" means the selected category AND everything nested under it —
+  // products are usually mapped to a leaf subcategory, so scoping to just the
+  // parent id would show nothing. A specific subcategory chip scopes to that
+  // one category (plus its own descendants, if any).
+  const activeCategoryIds = useMemo(() => {
+    const collect = (category) => {
+      if (!category) return [];
+      const ids = [category.id];
+      (category.children ?? []).forEach((child) => ids.push(...collect(child)));
+      return ids;
+    };
+    if (activeFilterId === 'all') return collect(selectedCategory);
+    const chip = selectedCategory?.children?.find((child) => String(child.id) === String(activeFilterId));
+    return chip ? collect(chip) : activeFilterId ? [activeFilterId] : [];
+  }, [activeFilterId, selectedCategory]);
+  const categoryIdsKey = activeCategoryIds.join(',');
   const requestedCategorySlug = searchParams.get('category');
 
-  const purityOptions = useMemo(
-    () => Array.from(new Set(products.map((product) => product.purity).filter(Boolean))),
+  // Options come straight from what's already in the catalog for this
+  // category — no static/hardcoded list — so the dropdown only ever offers
+  // tunch values a shop has actually created products at.
+  const tunchOptions = useMemo(
+    () =>
+      Array.from(new Set(products.map((product) => product.tunch).filter((tunch) => tunch != null && Number(tunch) > 0)))
+        .sort((a, b) => Number(a) - Number(b)),
     [products],
   );
 
-  const activeFilterCount = [purityFilter, weightFilter, priceFilter].filter((value) => value !== 'all').length;
+  const activeFilterCount = [tunchFilter, weightFilter].filter((value) => value !== 'all').length;
 
   const clearAllFilters = () => {
-    setPurityFilter('all');
+    setTunchFilter('all');
     setWeightFilter('all');
-    setPriceFilter('all');
   };
 
   const visibleProducts = useMemo(() => {
     const weightBucket = WEIGHT_BUCKETS.find((bucket) => bucket.id === weightFilter);
-    const priceBucket = PRICE_BUCKETS.find((bucket) => bucket.id === priceFilter);
 
     const filtered = products.filter((product) => {
-      if (purityFilter !== 'all' && product.purity !== purityFilter) return false;
+      if (tunchFilter !== 'all' && String(product.tunch) !== tunchFilter) return false;
       if (weightBucket?.test && !weightBucket.test(product.weight)) return false;
-      if (priceBucket?.test && !priceBucket.test(product.price ?? -1)) return false;
       return true;
     });
 
@@ -195,7 +205,7 @@ function CategoryBrowser() {
       sorted.sort((a, b) => (b.price ?? -1) - (a.price ?? -1));
     }
     return sorted;
-  }, [products, sortMode, purityFilter, weightFilter, priceFilter]);
+  }, [products, sortMode, tunchFilter, weightFilter]);
 
   useEffect(() => {
     let alive = true;
@@ -301,18 +311,17 @@ function CategoryBrowser() {
 
     const loadProducts = async () => {
       setLoadingProducts(true);
-      setPurityFilter('all');
+      setTunchFilter('all');
       setWeightFilter('all');
-      setPriceFilter('all');
 
-      if (!productsMetalId || !activeCategoryId) {
+      if (!productsMetalId || !categoryIdsKey) {
         setProducts([]);
         setLoadingProducts(false);
         return;
       }
 
       try {
-        const response = await productApi.getAll({ metalId: productsMetalId, categoryId: activeCategoryId, limit: 24 });
+        const response = await productApi.getAll({ metalId: productsMetalId, categoryIds: categoryIdsKey, limit: 24 });
         if (alive) setProducts((response.data ?? []).map(toProductCard));
       } catch {
         if (alive) setProducts([]);
@@ -326,7 +335,7 @@ function CategoryBrowser() {
     return () => {
       alive = false;
     };
-  }, [activeCategoryId, productsMetalId]);
+  }, [categoryIdsKey, productsMetalId]);
 
   const selectCategory = (categoryId) => {
     setSelectedCategoryId(categoryId);
@@ -384,149 +393,137 @@ function CategoryBrowser() {
               <div className={styles.emptySide}>Create {metal.label} categories in toolbox.</div>
             )}
           </div>
-
-          <button type="button" className={styles.priceListButton}>
-            <Download size={18} />
-            <span>
-              Download Price List
-              <small>({isAllMetals ? selectedCategory?.metal?.name ?? 'All Metals' : metal.label})</small>
-            </span>
-          </button>
         </aside>
 
         <section className={styles.content}>
-          <div className={styles.contentScroll}>
-            <div className={styles.contentHeader}>
-              <div>
-                <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-                  <span>{isAllMetals ? selectedCategory?.metal?.name ?? 'All Metals' : metal.label}</span>
-                  {selectedCategory ? (
-                    <>
-                      <ChevronRight size={12} />
-                      <span>{selectedCategory.name}</span>
-                    </>
-                  ) : null}
-                </nav>
-                <h2>
-                  {selectedCategory?.name ?? `${metal.label} Categories`}
-                  <span>({selectedCategory?.productCount ?? products.length} Products)</span>
-                </h2>
-                {selectedCategory?.shortDescription ? <p>{selectedCategory.shortDescription}</p> : null}
-              </div>
-
-              <div className={styles.actions}>
-                <button type="button" onClick={cycleSort}>
-                  <ArrowDownUp size={16} />
-                  {sortMode === 'latest' ? 'Sort By' : sortMode === 'price-low' ? 'Low to High' : 'High to Low'}
-                </button>
-              </div>
+        <div className={styles.contentScroll}>
+          <div className={styles.contentHeader}>
+            <div>
+              <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+                <span>{isAllMetals ? selectedCategory?.metal?.name ?? 'All Metals' : metal.label}</span>
+                {selectedCategory ? (
+                  <>
+                    <ChevronRight size={12} />
+                    <span>{selectedCategory.name}</span>
+                  </>
+                ) : null}
+              </nav>
+              <h2>
+                {selectedCategory?.name ?? `${metal.label} Categories`}
+                <span>({products.length} Products)</span>
+              </h2>
+              {selectedCategory?.shortDescription ? <p>{selectedCategory.shortDescription}</p> : null}
             </div>
 
-            {selectedCategory?.children?.length ? (
-              <div className={styles.chips} aria-label="Subcategories">
-                <button
-                  type="button"
-                  className={[styles.chip, activeFilterId === 'all' && styles['chip--active']].filter(Boolean).join(' ')}
-                  onClick={() => setActiveFilterId('all')}
-                >
-                  All
-                </button>
-                {selectedCategory.children.map((child) => (
+            <div className={styles.actions}>
+              <button type="button" onClick={cycleSort}>
+                <ArrowDownUp size={16} />
+                {sortMode === 'latest' ? 'Sort By' : sortMode === 'price-low' ? 'Low to High' : 'High to Low'}
+              </button>
+            </div>
+          </div>
+
+          {selectedCategory?.children?.length ? (
+            <div className={styles.chips} aria-label="Subcategories">
+              <button
+                type="button"
+                className={[styles.chip, activeFilterId === 'all' && styles['chip--active']].filter(Boolean).join(' ')}
+                onClick={() => setActiveFilterId('all')}
+              >
+                All
+              </button>
+              {selectedCategory.children.map((child) => {
+                const ChildIcon = getCategoryIcon(child.name);
+                return (
                   <button
                     type="button"
                     key={child.id}
                     className={[styles.chip, String(activeFilterId) === String(child.id) && styles['chip--active']].filter(Boolean).join(' ')}
                     onClick={() => setActiveFilterId(child.id)}
                   >
+                    <span className={styles.chipIcon}>
+                      {child.image?.secureUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- category image host is admin-configurable from toolbox media
+                        <img src={child.image.secureUrl} alt="" />
+                      ) : (
+                        <ChildIcon size={11} strokeWidth={1.8} />
+                      )}
+                    </span>
                     {child.name}
                   </button>
-                ))}
-              </div>
-            ) : null}
-
-            {products.length ? (
-              <div className={styles.filterBar} aria-label="Product filters">
-                <span className={styles.filterBarLabel}>
-                  <SlidersHorizontal size={14} />
-                  Filters{activeFilterCount ? ` (${activeFilterCount})` : ''}
-                </span>
-
-                <label
-                  className={[styles.filterSelect, purityFilter !== 'all' && styles['filterSelect--active']]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  <select value={purityFilter} onChange={(event) => setPurityFilter(event.target.value)}>
-                    <option value="all">Purity</option>
-                    {purityOptions.map((purity) => (
-                      <option key={purity} value={purity}>
-                        Purity: {purity}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown size={13} />
-                </label>
-
-                <label
-                  className={[styles.filterSelect, weightFilter !== 'all' && styles['filterSelect--active']]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  <select value={weightFilter} onChange={(event) => setWeightFilter(event.target.value)}>
-                    {WEIGHT_BUCKETS.map((bucket) => (
-                      <option key={bucket.id} value={bucket.id}>
-                        {bucket.id === 'all' ? bucket.label : `Weight: ${bucket.label}`}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown size={13} />
-                </label>
-
-                <label
-                  className={[styles.filterSelect, priceFilter !== 'all' && styles['filterSelect--active']]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  <select value={priceFilter} onChange={(event) => setPriceFilter(event.target.value)}>
-                    {PRICE_BUCKETS.map((bucket) => (
-                      <option key={bucket.id} value={bucket.id}>
-                        {bucket.id === 'all' ? bucket.label : `Price: ${bucket.label}`}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown size={13} />
-                </label>
-
-                {activeFilterCount ? (
-                  <button type="button" className={styles.filterClear} onClick={clearAllFilters}>
-                    <RotateCcw size={13} /> Clear All
-                  </button>
-                ) : null}
-              </div>
-            ) : null}
-
-            <div className={styles.productGrid}>
-              {loadingProducts ? (
-                Array.from({ length: 6 }).map((_, index) => <div key={index} className={styles.skeleton} />)
-              ) : visibleProducts.length ? (
-                visibleProducts.map((product) => <CategoryProductCard key={product.id} product={product} />)
-              ) : products.length ? (
-                <div className={styles.emptyProducts}>
-                  <PackageSearch size={36} />
-                  <p>No products match your filters.</p>
-                  <button type="button" className={styles.filterClear} onClick={clearAllFilters}>
-                    <RotateCcw size={13} /> Clear All
-                  </button>
-                </div>
-              ) : (
-                <div className={styles.emptyProducts}>
-                  <PackageSearch size={36} />
-                  <p>No active products found for this category.</p>
-                  <span>Add products from toolbox and publish them to show here.</span>
-                </div>
-              )}
+                );
+              })}
             </div>
+          ) : null}
+
+          {products.length ? (
+            <div className={styles.filterBar} aria-label="Product filters">
+              <span className={styles.filterBarLabel}>
+                <SlidersHorizontal size={14} />
+                Filters{activeFilterCount ? ` (${activeFilterCount})` : ''}
+              </span>
+
+              <label
+                className={[styles.filterSelect, tunchFilter !== 'all' && styles['filterSelect--active']]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                <select value={tunchFilter} onChange={(event) => setTunchFilter(event.target.value)}>
+                  <option value="all">Tunch</option>
+                  {tunchOptions.map((tunch) => (
+                    <option key={tunch} value={String(tunch)}>
+                      Tunch: {formatTunch(tunch)}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={13} />
+              </label>
+
+              <label
+                className={[styles.filterSelect, weightFilter !== 'all' && styles['filterSelect--active']]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                <select value={weightFilter} onChange={(event) => setWeightFilter(event.target.value)}>
+                  {WEIGHT_BUCKETS.map((bucket) => (
+                    <option key={bucket.id} value={bucket.id}>
+                      {bucket.id === 'all' ? bucket.label : `Weight: ${bucket.label}`}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={13} />
+              </label>
+
+              {activeFilterCount ? (
+                <button type="button" className={styles.filterClear} onClick={clearAllFilters}>
+                  <RotateCcw size={13} /> Clear All
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className={styles.productGrid}>
+            {loadingProducts ? (
+              Array.from({ length: 6 }).map((_, index) => <div key={index} className={styles.skeleton} />)
+            ) : visibleProducts.length ? (
+              visibleProducts.map((product) => <CategoryProductCard key={product.id} product={product} />)
+            ) : products.length ? (
+              <div className={styles.emptyProducts}>
+                <PackageSearch size={36} />
+                <p>No products match your filters.</p>
+                <button type="button" className={styles.filterClear} onClick={clearAllFilters}>
+                  <RotateCcw size={13} /> Clear All
+                </button>
+              </div>
+            ) : (
+              <div className={styles.emptyProducts}>
+                <PackageSearch size={36} />
+                <p>No active products found for this category.</p>
+                <span>Add products from toolbox and publish them to show here.</span>
+              </div>
+            )}
           </div>
+        </div>
         </section>
       </section>
     </main>
@@ -609,8 +606,8 @@ function CategoryProductCard({ product }) {
           </button>
           {outOfStock ? (
             <span className={styles.outOfStockBadge}>Out of Stock</span>
-          ) : product.purity ? (
-            <span className={styles.purity}>{product.purity}</span>
+          ) : cardBadgeLabel(product.tunch, product.purity) ? (
+            <span className={styles.purity}>{cardBadgeLabel(product.tunch, product.purity)}</span>
           ) : null}
           {product.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- product image host is admin-configurable from toolbox media
@@ -624,7 +621,6 @@ function CategoryProductCard({ product }) {
         <div className={styles.productInfo}>
           <h3>{product.name}</h3>
           {!isVariable ? <p>{weightLabel}</p> : null}
-          <strong>{product.price !== null ? `₹${product.price.toLocaleString('en-IN')}` : 'Price on request'}</strong>
           {outOfStock ? (
             <button type="button" className={styles.addButton} disabled aria-label={`${product.name} is out of stock`}>
               <span className={styles.addWeight}>Out of Stock</span>

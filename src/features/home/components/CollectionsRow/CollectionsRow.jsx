@@ -20,6 +20,7 @@ const toCardProduct = (product) => {
     name: product.name,
     weight: Number(defaultVariant.weightGrams ?? 0),
     purity: defaultVariant.publicPurity || defaultVariant.purity || '—',
+    tunch: defaultVariant.tunch ?? null,
     price: defaultVariant.publicPrice !== null && defaultVariant.publicPrice !== undefined
       ? Number(defaultVariant.publicPrice)
       : null,

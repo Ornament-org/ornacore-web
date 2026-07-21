@@ -199,46 +199,29 @@ $pane-max-height: calc(100dvh - #{$sticky-header-offset} - #{$pane-bottom-gutter
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: db.$db-bg-elevated;
   color: var(--accent, #d4af37);
+  overflow: hidden;
   flex-shrink: 0;
 
+  .categoryButton--active & {
+    border-color: var(--accent, #d4af37);
+  }
+
   @include lg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-  }
-}
-
-.priceListButton {
-  display: none;
-
-  @include lg {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: auto 0.75rem 0.75rem;
-    min-height: 50px;
-    padding: 0.65rem 0.7rem;
-    border: 1px solid rgba(240, 207, 107, 0.55);
-    border-radius: db.$db-radius-sm;
-    color: #ffd86d;
-    font-size: 0.74rem;
-    font-weight: 700;
-
-    small {
-      display: block;
-      margin-top: 0.15rem;
-      color: db.$db-text-primary;
-      font-size: 0.68rem;
-      font-weight: 500;
-    }
+    object-fit: cover;
+    border-radius: 50%;
   }
 }
 
@@ -427,6 +410,9 @@ $pane-max-height: calc(100dvh - #{$sticky-header-offset} - #{$pane-bottom-gutter
 }
 
 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
   min-width: max-content;
   height: 28px;
   padding: 0 0.58rem;
@@ -441,6 +427,25 @@ $pane-max-height: calc(100dvh - #{$sticky-header-offset} - #{$pane-bottom-gutter
     background: var(--accent-gradient, linear-gradient(135deg, #f0cf6b, #a8791f));
     color: #1a1410;
     font-weight: 800;
+  }
+}
+
+.chipIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
