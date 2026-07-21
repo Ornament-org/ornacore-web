@@ -1,15 +1,16 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useDispatch } from 'react-redux';
 import {
-  LayoutDashboard, ShoppingBag, BookOpen,
+  ShoppingBag, BookOpen,
   Wallet, BarChart3, User, LogOut, Package
 } from 'lucide-react';
+import { logoutUser } from '@/redux/actions/authActions';
 import { ROUTES } from '@/constants/routes';
 import styles from './B2BSidebar.module.scss';
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', icon: LayoutDashboard, href: ROUTES.BUSINESS.DASHBOARD },
   { label: 'Catalog', icon: Package, href: ROUTES.BUSINESS.CATALOG },
   { label: 'Orders', icon: ShoppingBag, href: ROUTES.BUSINESS.ORDERS },
   { label: 'Khatabook', icon: BookOpen, href: ROUTES.BUSINESS.KHATABOOK },
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
 
 export default function B2BSidebar() {
   const pathname = usePathname();
+  const dispatch = useDispatch();
 
   return (
     <aside className={styles.sidebar}>
@@ -51,7 +53,7 @@ export default function B2BSidebar() {
 
       {/* Logout */}
       <div className={styles.footer}>
-        <button className={styles.logoutBtn}>
+        <button type="button" className={styles.logoutBtn} onClick={() => dispatch(logoutUser())}>
           <LogOut size={16} />
           <span>Logout</span>
         </button>

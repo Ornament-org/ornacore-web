@@ -1,4 +1,6 @@
+'use client';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
 import { Truck, RefreshCw, Award, Shield } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import styles from './Footer.module.scss';
@@ -32,6 +34,9 @@ const FOOTER_LINKS = {
 };
 
 export default function Footer() {
+  const displayName = useSelector((state) => state.branding.displayName);
+  const logo = useSelector((state) => state.branding.logo);
+
   return (
     <footer className={styles.footer}>
       {/* Trust badges strip */}
@@ -55,9 +60,12 @@ export default function Footer() {
           {/* Brand */}
           <div className={styles.brand}>
             <div className={styles.logo}>
-              <span className={styles.logoIcon}>✦</span>
+              <span className={styles.logoIcon}>
+                {/* eslint-disable-next-line @next/next/no-img-element -- logo host is admin-configurable from toolbox settings */}
+                {logo ? <img src={logo} alt="" /> : '✦'}
+              </span>
               <div>
-                <p className={styles.logoMain}>ORNACORE</p>
+                <p className={styles.logoMain}>{displayName}</p>
                 <p className={styles.logoSub}>Timeless Elegance</p>
               </div>
             </div>
@@ -91,7 +99,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className={styles.bottomBar}>
         <div className={`container ${styles.bottomInner}`}>
-          <p className={styles.copyright}>© {new Date().getFullYear()} OrnaCo. All rights reserved.</p>
+          <p className={styles.copyright}>© {new Date().getFullYear()} {displayName}. All rights reserved.</p>
           <div className={styles.bottomLinks}>
             <Link href="/privacy" className={styles.bottomLink}>Privacy Policy</Link>
             <Link href="/terms" className={styles.bottomLink}>Terms of Service</Link>

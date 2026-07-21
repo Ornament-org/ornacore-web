@@ -1,0 +1,112 @@
+@use '@/styles/dark-theme' as db;
+@use '@/styles/breakpoints' as *;
+
+.nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 70;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0.55rem 0.5rem calc(0.55rem + env(safe-area-inset-bottom, 0px));
+  background: db.$db-glass-bg;
+  border-top: 1px solid db.$db-border;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+
+  @include md {
+    left: 50%;
+    right: auto;
+    bottom: 0.65rem;
+    width: min(calc(100vw - 2rem), 1160px);
+    transform: translateX(-50%);
+    align-items: center;
+    border: 1px solid db.$db-border;
+    border-radius: 999px;
+    padding: 0.42rem 1.4rem;
+    box-shadow: db.$db-shadow-lift;
+  }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+  color: db.$db-text-muted;
+  padding: 0.3rem 0;
+  transition: color 0.2s ease;
+
+  &--active {
+    color: var(--accent, #d4af37);
+  }
+
+  @include md {
+    gap: 0.22rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+
+    &--active {
+      background: var(--accent-soft, rgba(212, 175, 55, 0.14));
+      box-shadow: inset 0 0 0 1px var(--accent, #d4af37);
+    }
+  }
+}
+
+.label {
+  font-size: 0.62rem;
+  font-weight: 600;
+
+  @include md {
+    font-size: 0.76rem;
+  }
+}
+
+.primaryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+  transform: translateY(-14px);
+
+  @include md {
+    transform: translateY(-10px);
+  }
+}
+
+.primaryBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--accent-gradient, linear-gradient(135deg, #f0cf6b, #a8791f));
+  color: #1a1410;
+  box-shadow: 0 8px 20px var(--accent-soft, rgba(212, 175, 55, 0.4)), 0 0 0 5px db.$db-bg;
+  transition: transform 0.2s ease;
+
+  @include md {
+    width: 52px;
+    height: 52px;
+    box-shadow: 0 8px 20px var(--accent-soft, rgba(212, 175, 55, 0.4)), 0 0 0 5px db.$db-bg;
+  }
+}
+
+.primaryItem:active .primaryBtn {
+  transform: scale(0.94);
+}
+
+.primaryLabel {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--accent, #d4af37);
+
+  @include md {
+    font-size: 0.78rem;
+  }
+}

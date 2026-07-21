@@ -1,7 +1,5 @@
 import ProductsPage from '@/features/products/pages/ProductsPage';
 
-export const metadata = { title: 'Products — OrnaCo' };
+export const metadata = { title: 'Products' };
 
-export default function Page({ searchParams }) {
-  return <ProductsPage searchParams={searchParams} />;
-}
+export default ProductsPage;

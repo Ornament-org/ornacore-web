@@ -23,12 +23,16 @@ export const API_ENDPOINTS = {
     CART: '/shopkeeper/cart',
     PAYMENTS: '/shopkeeper/payments',
     LEDGER: '/shopkeeper/ledger',
+    KHATABOOK_LEDGER: '/shopkeeper/khatabook/ledger',
   },
 
   // Public catalog
   METALS: '/metals',
+  METAL_RATES: '/shopkeeper/metal-rates',
   CATEGORIES: '/categories',
   PRODUCTS: '/products',
-  PRODUCT_DETAIL: (id) => `/products/${id}`,
+  PRODUCT_DETAIL: (slug) => `/products/slug/${slug}`,
   SEARCH: '/products/search',
+  COLLECTIONS: '/collections',
+  BANNERS: '/banners',
 };

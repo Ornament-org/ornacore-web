@@ -1,111 +1,175 @@
 'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, Briefcase, Check } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  ShieldCheck,
+  Store,
+  Tag,
+  Truck,
+  UserRound,
+} from 'lucide-react';
 import { loginB2B } from '@/redux/actions/authActions';
-import Button from '@/components/ui/Button/Button';
-import Input from '@/components/ui/Input/Input';
 import { ROUTES } from '@/constants/routes';
 import styles from './BusinessLoginPage.module.scss';
 
-const BENEFITS = [
-  'Exclusive B2B Pricing',
-  'Credit Facility & Khatabook',
-  'Dedicated Account Manager',
-  'Bulk Order Support',
+const TRUST_ITEMS = [
+  {
+    title: 'Secure & Reliable',
+    description: 'Bank-level security for your business data',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'Best Wholesale Prices',
+    description: 'Competitive pricing on gold, silver & diamonds',
+    icon: Tag,
+  },
+  {
+    title: 'Pan India Delivery',
+    description: 'Fast and secure delivery across the country',
+    icon: Truck,
+  },
 ];
 
 export default function BusinessLoginPage() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { loading, error } = useSelector((s) => s.auth);
+  const { loading, error } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ identifier: '', password: '' });
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const set = (key) => (event) => {
+    setForm((current) => ({ ...current, [key]: event.target.value }));
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     const result = await dispatch(loginB2B(form));
-    if (loginB2B.fulfilled.match(result)) router.push(ROUTES.BUSINESS.DASHBOARD);
+    if (!loginB2B.fulfilled.match(result)) return;
+
+    const isApproved = result.payload.user?.shopkeeper?.status === 'APPROVED';
+    router.push(isApproved ? ROUTES.HOME : ROUTES.BUSINESS.APPROVAL);
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.layout}>
-        {/* Left: Benefits panel */}
-        <div className={styles.left}>
-          <div className={styles.leftContent}>
-            <span className={styles.logoIcon}>✦</span>
-            <h2 className={styles.leftTitle}>OrnaCo Business Platform</h2>
-            <p className={styles.leftSub}>
-              Grow your jewellery business with exclusive B2B tools, credit facility, and dedicated support.
-            </p>
-            <ul className={styles.benefits}>
-              {BENEFITS.map((b) => (
-                <li key={b} className={styles.benefit}>
-                  <Check size={16} className={styles.checkIcon} />
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </div>
+    <main className={styles.page}>
+      <section className={styles.brandPanel}>
+        <Link href={ROUTES.HOME} className={styles.brand}>
+          <span className={styles.brandMark}>
+            <ShieldCheck size={36} />
+          </span>
+          <span>
+            <strong>Akash Jewellers</strong>
+            <small>B2B Jewellery Platform</small>
+          </span>
+        </Link>
+
+        <div className={styles.heroCopy}>
+          <h1>
+            Trusted by Jewellers.
+            <span>Built for Business.</span>
+          </h1>
+          <i />
+          <p>
+            Join thousands of jewellery businesses across India who trust Akash Jewellers for
+            quality, pricing and reliability.
+          </p>
         </div>
 
-        {/* Right: Login form */}
-        <div className={styles.right}>
-          <div className={styles.card}>
-            <Briefcase size={32} className={styles.briefcaseIcon} />
-            <h1 className={styles.title}>Business Login</h1>
-            <p className={styles.subtitle}>Access your business dashboard</p>
+        <div className={styles.trustList}>
+          {TRUST_ITEMS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article key={item.title} className={styles.trustItem}>
+                <span>
+                  <Icon size={24} />
+                </span>
+                <div>
+                  <strong>{item.title}</strong>
+                  <p>{item.description}</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
 
-            {error && <div className={styles.errorAlert}>{error}</div>}
+        <div className={styles.jewelleryScene} aria-hidden="true">
+          <div className={styles.bust} />
+          <div className={styles.bangles} />
+          <div className={styles.ring} />
+        </div>
+      </section>
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <Input
-                label="Email or Mobile Number"
-                type="text"
-                placeholder="email@example.com or +91 98765 43210"
-                icon={<Mail size={16} />}
-                value={form.identifier}
-                onChange={set('identifier')}
-                required
-              />
-              <Input
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                icon={<Lock size={16} />}
-                iconRight={
-                  <button type="button" onClick={() => setShowPassword((v) => !v)}>
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                }
-                value={form.password}
-                onChange={set('password')}
-                required
-              />
+      <section className={styles.formPanel}>
+        <div className={styles.card}>
+          <div className={styles.cardIcon}>
+            <Store size={44} />
+          </div>
+          <h2>Business Login</h2>
+          <p className={styles.subtitle}>Access your business dashboard</p>
 
-              <Button type="submit" fullWidth loading={loading} size="lg">
-                Login to Dashboard
-              </Button>
-            </form>
+          {error ? <div className={styles.errorAlert}>{error}</div> : null}
 
-            <p className={styles.registerPrompt}>
-              New Business Partner?{' '}
-              <Link href={ROUTES.BUSINESS.REGISTER} className={styles.registerLink}>Register Now</Link>
-            </p>
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <label className={styles.field}>
+              <span>Email or Mobile Number</span>
+              <span className={styles.inputShell}>
+                <UserRound size={22} />
+                <input
+                  type="text"
+                  value={form.identifier}
+                  onChange={set('identifier')}
+                  placeholder="email@example.com or +91 98765 43210"
+                  autoComplete="username"
+                  required
+                />
+              </span>
+            </label>
 
-            <div className={styles.divider}><span>or</span></div>
+            <label className={styles.field}>
+              <span>Password</span>
+              <span className={styles.inputShell}>
+                <Lock size={22} />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={form.password}
+                  onChange={set('password')}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  required
+                />
+                <button
+                  className={styles.eyeButton}
+                  type="button"
+                  onClick={() => setShowPassword((value) => !value)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </span>
+            </label>
 
-            <Link href={ROUTES.LOGIN} className={styles.customerLink}>
-              Customer Login
+            <Link href="/forgot-password" className={styles.forgotLink}>
+              Forgot Password?
             </Link>
-          </div>
+
+            <button className={styles.submitButton} type="submit" disabled={loading}>
+              <Lock size={22} />
+              {loading ? 'Logging in...' : 'Login to Dashboard'}
+            </button>
+          </form>
+
+          <p className={styles.registerPrompt}>
+            New Business Partner?{' '}
+            <Link href={ROUTES.BUSINESS.REGISTER}>Register Now</Link>
+          </p>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

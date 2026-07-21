@@ -1,0 +1,68 @@
+@use '@/styles/dark-theme' as db;
+@use '@/styles/breakpoints' as *;
+
+.page {
+  width: min(100%, 1360px);
+  margin: 0 auto;
+  padding: 1rem 0.8rem 6.5rem;
+
+  @include md {
+    padding: 1.25rem 1.25rem 6.75rem;
+  }
+}
+
+.headingRow {
+  margin-bottom: 0.9rem;
+
+  h1 {
+    font-family: var(--font-display, 'Poppins', sans-serif);
+    font-size: var(--type-page-title, 1.55rem);
+    font-weight: 700;
+    color: db.$db-text-primary;
+    line-height: var(--leading-title, 1.22);
+  }
+
+  p {
+    margin-top: 0.15rem;
+    color: db.$db-text-muted;
+    font-size: 0.78rem;
+  }
+}
+
+.content {
+  position: relative;
+  min-height: 320px;
+  border: 1px solid db.$db-border;
+  border-radius: db.$db-radius-md;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.75rem;
+  overflow: hidden;
+
+  @include md {
+    padding: 1rem;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+
+  @include sm {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include lg {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+}
+
+.bgIcon {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  color: db.$db-border;
+  opacity: 0.35;
+  pointer-events: none;
+}

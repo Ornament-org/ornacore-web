@@ -1,0 +1,18 @@
+@use '@/styles/dark-theme' as db;
+
+.canvas {
+  --font-primary: 'Poppins', 'Inter', sans-serif;
+  --font-secondary: 'Poppins', 'Inter', sans-serif;
+  --font-display: 'Poppins', 'Inter', sans-serif;
+
+  min-height: 100dvh;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  background: db.$db-bg;
+  color: db.$db-text-primary;
+  font-family: var(--font-secondary);
+  transition: background 0.4s ease;
+
+  @media (min-width: 768px) {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  }
+}

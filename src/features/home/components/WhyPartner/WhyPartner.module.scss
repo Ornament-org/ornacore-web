@@ -1,0 +1,72 @@
+@use '@/styles/dark-theme' as db;
+@use '@/styles/breakpoints' as *;
+
+.section {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+
+  @include md {
+    padding: 2rem 1.5rem 2.5rem;
+  }
+}
+
+.title {
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: var(--type-section-title, 1.25rem);
+  font-weight: 700;
+  line-height: var(--leading-title, 1.22);
+  color: db.$db-text-primary;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+
+  @include sm {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @include lg {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: center;
+  padding: 1.25rem 0.75rem;
+  border-radius: db.$db-radius-sm;
+  background: db.$db-bg-card;
+  border: 1px solid db.$db-border;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+
+  &:hover {
+    border-color: var(--accent, #d4af37);
+    transform: translateY(-3px);
+  }
+}
+
+.iconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft, rgba(212, 175, 55, 0.15));
+  color: var(--accent, #d4af37);
+}
+
+.label {
+  font-size: var(--type-meta, 0.68rem);
+  font-weight: 600;
+  color: db.$db-text-secondary;
+  line-height: 1.3;
+}

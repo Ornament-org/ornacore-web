@@ -33,9 +33,19 @@
 }
 
 .logoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: $primary-gold;
   font-size: 1.5rem;
   line-height: 1;
+
+  img {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
 }
 
 .logoText {

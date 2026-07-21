@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Search, Heart, ShoppingBag, User, Menu, X } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import { toggleMobileMenu, closeMobileMenu, toggleSearch } from '@/redux/slices/uiSlice';
+import ThemeToggle from '@/components/ui/ThemeToggle/ThemeToggle';
 import styles from './Header.module.scss';
 
 const NAV_LINKS = [
@@ -22,6 +23,8 @@ export default function Header() {
   const wishlistCount = useSelector((s) => s.wishlist.items.length);
   const mobileMenuOpen = useSelector((s) => s.ui.mobileMenuOpen);
   const isAuthenticated = useSelector((s) => s.auth.isAuthenticated);
+  const displayName = useSelector((s) => s.branding.displayName);
+  const logo = useSelector((s) => s.branding.logo);
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -45,9 +48,12 @@ export default function Header() {
 
         {/* Logo */}
         <Link href={ROUTES.HOME} className={styles.logo} onClick={() => dispatch(closeMobileMenu())}>
-          <span className={styles.logoIcon}>✦</span>
+          <span className={styles.logoIcon}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- logo host is admin-configurable (Cloudinary or local storage), so next/image's static domain allowlist can't be relied on */}
+            {logo ? <img src={logo} alt="" /> : '✦'}
+          </span>
           <span className={styles.logoText}>
-            <span className={styles.logoMain}>ORNACORE</span>
+            <span className={styles.logoMain}>{displayName.toUpperCase()}</span>
             <span className={styles.logoSub}>Timeless Elegance</span>
           </span>
         </Link>
@@ -63,6 +69,8 @@ export default function Header() {
 
         {/* Actions */}
         <div className={styles.actions}>
+          <ThemeToggle />
+
           <button className={styles.actionBtn} onClick={() => dispatch(toggleSearch())} aria-label="Search">
             <Search size={20} />
           </button>
@@ -82,7 +90,7 @@ export default function Header() {
               <User size={20} />
             </Link>
           ) : (
-            <Link href={ROUTES.LOGIN} className={styles.signInBtn}>Sign In</Link>
+            <Link href={ROUTES.BUSINESS.LOGIN} className={styles.signInBtn}>Sign In</Link>
           )}
         </div>
       </div>

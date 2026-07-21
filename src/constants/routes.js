@@ -1,9 +1,7 @@
 export const ROUTES = {
   HOME: '/',
-  LOGIN: '/login',
-  REGISTER: '/register',
   PRODUCTS: '/products',
-  PRODUCT_DETAIL: (id) => `/products/${id}`,
+  PRODUCT_DETAIL: (slug) => `/products/${slug}`,
   CATEGORIES: '/categories',
   CATEGORY_DETAIL: (slug) => `/categories/${slug}`,
   CART: '/cart',
@@ -17,7 +15,7 @@ export const ROUTES = {
   BUSINESS: {
     LOGIN: '/business/login',
     REGISTER: '/business/register',
-    DASHBOARD: '/business/dashboard',
+    APPROVAL: '/business/approval',
     CATALOG: '/business/catalog',
     ORDERS: '/business/orders',
     ORDER_DETAIL: (id) => `/business/orders/${id}`,

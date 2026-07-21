@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  loginB2C,
   loginB2B,
-  registerB2C,
   registerB2B,
   fetchCurrentUser,
   changePassword,
@@ -14,7 +12,7 @@ const initialState = {
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
-  actorType: null, // 'b2c' | 'b2b'
+  actorType: null, // always 'b2b' once authenticated — this storefront is B2B-only
   loading: false,
   error: null,
 };
@@ -61,33 +59,35 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ── B2C Login ──
-      .addCase(loginB2C.pending, handlePending)
-      .addCase(loginB2C.fulfilled, handleLoginFulfilled)
-      .addCase(loginB2C.rejected, handleRejected)
-
       // ── B2B Login ──
       .addCase(loginB2B.pending, handlePending)
       .addCase(loginB2B.fulfilled, handleLoginFulfilled)
       .addCase(loginB2B.rejected, handleRejected)
 
       // ── Register ──
-      .addCase(registerB2C.pending, handlePending)
-      .addCase(registerB2C.fulfilled, (state) => { state.loading = false; })
-      .addCase(registerB2C.rejected, handleRejected)
-
+      // registerB2B now carries a real session (same payload shape as
+      // loginB2B) since the backend authenticates a shop immediately on
+      // registration — it just isn't APPROVED yet.
       .addCase(registerB2B.pending, handlePending)
-      .addCase(registerB2B.fulfilled, (state) => { state.loading = false; })
+      .addCase(registerB2B.fulfilled, handleLoginFulfilled)
       .addCase(registerB2B.rejected, handleRejected)
 
       // ── Fetch current user ──
       .addCase(fetchCurrentUser.pending, handlePending)
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.actorType = action.payload.actorType;
         state.isAuthenticated = true;
       })
-      .addCase(fetchCurrentUser.rejected, handleRejected)
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // A stale/invalid token means there's no real session — clear the
+        // stuck "loading" gate so route guards can settle on "logged out"
+        // instead of hanging forever waiting for auth to resolve.
+        state.isAuthenticated = false;
+      })
 
       // ── Change password ──
       .addCase(changePassword.pending, handlePending)

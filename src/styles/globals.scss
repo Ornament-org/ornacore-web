@@ -3,7 +3,148 @@
 @use 'breakpoints' as *;
 
 // ── Google Fonts ─────────────────────────────────────────────
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+// ── Theme tokens ───────────────────────────────────────────────
+// Single source of truth for every color used across the site (both the
+// _colors.scss "site" palette and the _dark-theme.scss "db" app-shell
+// palette used by the Home page). Light values are the default (:root);
+// [data-theme='dark'] on <html> overrides them — see ThemeContext.
+:root {
+  --font-primary: 'Poppins', 'Inter', sans-serif;
+  --font-secondary: 'Poppins', 'Inter', sans-serif;
+  --font-display: 'Poppins', 'Inter', sans-serif;
+
+  --type-page-title: clamp(1.25rem, 2.6vw, 1.75rem);
+  --type-section-title: clamp(1.05rem, 2.1vw, 1.35rem);
+  --type-group-title: clamp(0.9rem, 1.4vw, 1.05rem);
+  --type-card-title: 0.78rem;
+  --type-body: 0.82rem;
+  --type-meta: 0.68rem;
+
+  --leading-title: 1.22;
+  --leading-body: 1.48;
+
+  // Brand gold — intentionally identical in both themes.
+  --primary-gold: #b8860b;
+  --primary-gold-dark: #8b6508;
+  --primary-gold-light: #d4a017;
+  --secondary-gold: #f5c842;
+  --gold-50: #fdf8ec;
+  --gold-100: #faefd0;
+  --gold-200: #f5d990;
+  --gold-300: #f0c050;
+  --gold-400: #e8a820;
+  --gold-500: #b8860b;
+  --gold-600: #8b6508;
+  --gold-700: #5e4406;
+
+  --background: #ffffff;
+  --background-cream: #fdf8f0;
+  --background-light: #fafaf8;
+  --background-section: #f9f5f0;
+  --background-dark: #1a1410;
+  --background-footer: #1c1a16;
+
+  --text-primary: #1a1410;
+  --text-secondary: #5c4f3a;
+  --text-muted: #9e8c72;
+  --text-light: #c8b89a;
+  --text-inverse: #ffffff;
+
+  --border: #e8ddd0;
+  --border-light: #f0e8de;
+  --border-dark: #c8b89a;
+  --border-gold: rgba(184, 134, 11, 0.3);
+
+  --card: #ffffff;
+  --card-hover: #fdf8f0;
+
+  --success: #2d7a4f;
+  --success-light: #e8f5ee;
+  --error: #c0392b;
+  --error-light: #fdeaea;
+  --warning: #d4820a;
+  --warning-light: #fef3e2;
+  --info: #2563eb;
+  --info-light: #eff6ff;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-gold: 0 4px 20px rgba(184, 134, 11, 0.20);
+
+  --overlay: rgba(26, 20, 16, 0.5);
+  --overlay-light: rgba(26, 20, 16, 0.3);
+
+  // Home / app-shell palette ("db" tokens) — light default.
+  --db-bg: #faf8f4;
+  --db-bg-elevated: #ffffff;
+  --db-bg-card: #ffffff;
+  --db-bg-card-hover: #fdf8f0;
+  --db-border: rgba(26, 20, 16, 0.08);
+  --db-border-strong: rgba(26, 20, 16, 0.14);
+
+  --db-text-primary: #1a1410;
+  --db-text-secondary: #5c4f3a;
+  --db-text-muted: #9e8c72;
+
+  --db-shadow-soft: 0 8px 24px rgba(26, 20, 16, 0.10);
+  --db-shadow-lift: 0 16px 40px rgba(26, 20, 16, 0.14);
+
+  --db-glass-bg: rgba(255, 255, 255, 0.65);
+  --db-glass-border: rgba(26, 20, 16, 0.08);
+}
+
+:root[data-theme='dark'] {
+  --background: #14110d;
+  --background-cream: #1c1712;
+  --background-light: #1a1612;
+  --background-section: #1e1a15;
+  --background-dark: #0d0a08;
+  --background-footer: #0d0a08;
+
+  --text-primary: #f5efe4;
+  --text-secondary: #cdbfa8;
+  --text-muted: #93856c;
+  --text-light: #6b6050;
+  --text-inverse: #1a1410;
+
+  --border: #2e2820;
+  --border-light: #262019;
+  --border-dark: #4a4032;
+  --border-gold: rgba(212, 160, 23, 0.3);
+
+  --card: #1c1712;
+  --card-hover: #241d16;
+
+  --success: #4ade80;
+  --success-light: rgba(74, 222, 128, 0.12);
+  --error: #f87171;
+  --error-light: rgba(248, 113, 113, 0.12);
+  --warning: #fbbf24;
+  --warning-light: rgba(251, 191, 36, 0.12);
+  --info: #60a5fa;
+  --info-light: rgba(96, 165, 250, 0.12);
+
+  // Home / app-shell palette — the original dark-luxury look, preserved exactly.
+  --db-bg: #0b0a09;
+  --db-bg-elevated: #151210;
+  --db-bg-card: #1a1613;
+  --db-bg-card-hover: #201b17;
+  --db-border: rgba(255, 255, 255, 0.08);
+  --db-border-strong: rgba(255, 255, 255, 0.14);
+
+  --db-text-primary: #f5efe4;
+  --db-text-secondary: #b8ada0;
+  --db-text-muted: #7d7468;
+
+  --db-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --db-shadow-lift: 0 16px 40px rgba(0, 0, 0, 0.45);
+
+  --db-glass-bg: rgba(26, 22, 19, 0.6);
+  --db-glass-border: rgba(255, 255, 255, 0.1);
+}
 
 // ── Reset ────────────────────────────────────────────────────
 *, *::before, *::after {
@@ -14,19 +155,38 @@
 
 html {
   font-size: 16px;
+  width: 100%;
+  min-width: 0;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  font-family: $font-secondary;
+  font-family: var(--font-secondary);
   font-size: $text-base;
   font-weight: $weight-regular;
   color: $text-primary;
   background-color: $background;
   line-height: $leading-normal;
+  width: 100%;
+  min-width: 0;
+  min-height: 100dvh;
   overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+main,
+section,
+article,
+aside,
+header,
+footer,
+nav,
+div {
+  min-width: 0;
 }
 
 // ── Links ─────────────────────────────────────────────────────
@@ -55,20 +215,24 @@ button {
   border: none;
   background: none;
   padding: 0;
+  min-width: 0;
 }
 
 // ── Inputs ───────────────────────────────────────────────────
 input, textarea, select {
   font-family: inherit;
   outline: none;
+  min-width: 0;
+  max-width: 100%;
 }
 
 // ── Headings ─────────────────────────────────────────────────
 h1, h2, h3, h4, h5, h6 {
-  font-family: $font-primary;
+  font-family: var(--font-display);
   font-weight: $weight-semibold;
   line-height: $leading-tight;
   color: $text-primary;
+  letter-spacing: 0;
 }
 
 // ── Utility classes ──────────────────────────────────────────
@@ -76,7 +240,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 clamp(0.8rem, 3vw, 1rem);
 
   @media (min-width: #{$bp-md}) {
     padding: 0 1.5rem;
@@ -84,6 +248,19 @@ h1, h2, h3, h4, h5, h6 {
 
   @media (min-width: #{$bp-xl}) {
     padding: 0 2rem;
+  }
+}
+
+// A page (currently just the product detail page) can opt into swapping the
+// global storefront header for its own compact, contextual one below
+// $bp-lg — e.g. a back button instead of the full logo/search/account bar,
+// the way Flipkart/Zepto style PDPs do. The page sets/clears this by
+// toggling `data-compact-header` on <body> in an effect; `.app-header` is a
+// plain, unhashed hook on AppHeader specifically for this override, since
+// CSS Modules class names can't be targeted from outside their own file.
+body[data-compact-header='true'] .app-header {
+  @media (max-width: #{$bp-lg - 1}) {
+    display: none;
   }
 }
 

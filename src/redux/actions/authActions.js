@@ -3,9 +3,16 @@ import { authApi } from '@/services/authApi';
 
 // ── Helpers ──────────────────────────────────────────────────
 
+// apiClient's response interceptor already unwraps failed requests down to
+// `error.response.data` before rejecting (backend shape: `{ success, error:
+// { code, message } }`) — so by the time it gets here there's no `.response`
+// wrapper left to dig through. Falling back to the raw axios error shape too,
+// defensively, for the rare case a rejection never passed through that
+// interceptor (e.g. a network error with no response at all).
 const extractError = (err) =>
-  err?.response?.data?.message ||
+  err?.error?.message ||
   err?.response?.data?.error?.message ||
+  err?.response?.data?.message ||
   err?.message ||
   'Something went wrong';
 
@@ -25,38 +32,8 @@ const clearTokens = () => {
   }
 };
 
-// ── B2C Actions ──────────────────────────────────────────────
-
-export const loginB2C = createAsyncThunk(
-  'auth/loginB2C',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      // apiClient interceptor returns response.data (the backend body)
-      // Backend shape: { success, data: { user, accessToken, refreshToken } }
-      const response = await authApi.login(credentials);
-      const { user, accessToken, refreshToken } = response.data;
-
-      saveTokens(accessToken, refreshToken, 'b2c');
-      return { user, accessToken, refreshToken, actorType: 'b2c' };
-    } catch (err) {
-      return rejectWithValue(extractError(err));
-    }
-  }
-);
-
-export const registerB2C = createAsyncThunk(
-  'auth/registerB2C',
-  async (userData, { rejectWithValue }) => {
-    try {
-      const response = await authApi.register(userData);
-      return response.data;
-    } catch (err) {
-      return rejectWithValue(extractError(err));
-    }
-  }
-);
-
 // ── B2B Actions ──────────────────────────────────────────────
+// This storefront is B2B-only — every session belongs to a shopkeeper.
 
 export const loginB2B = createAsyncThunk(
   'auth/loginB2B',
@@ -80,8 +57,15 @@ export const registerB2B = createAsyncThunk(
     try {
       // POST /shopkeeper/auth/register
       // Required: ownerName, shopName, password + (email OR mobile)
+      // The backend already returns a full session on registration (the new
+      // shop is immediately authenticated, just not yet APPROVED) — save it
+      // the same way login does, so there's no separate login step before
+      // landing on the approval screen.
       const response = await authApi.shopkeeperRegister(businessData);
-      return response.data;
+      const { user, accessToken, refreshToken } = response.data;
+
+      saveTokens(accessToken, refreshToken, 'b2b');
+      return { user, accessToken, refreshToken, actorType: 'b2b' };
     } catch (err) {
       return rejectWithValue(extractError(err));
     }
@@ -92,13 +76,10 @@ export const registerB2B = createAsyncThunk(
 
 export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { actorType } = getState().auth;
-      const response = actorType === 'b2b'
-        ? await authApi.shopkeeperMe()
-        : await authApi.me();
-      return response.data?.user ?? response.data;
+      const response = await authApi.shopkeeperMe();
+      return { user: response.data?.user ?? response.data, actorType: 'b2b' };
     } catch (err) {
       return rejectWithValue(extractError(err));
     }
@@ -120,13 +101,14 @@ export const changePassword = createAsyncThunk(
 export const logoutUser = createAsyncThunk(
   'auth/logoutUser',
   async (_, { getState }) => {
-    const { actorType, refreshToken } = getState().auth;
+    // A session rehydrated via fetchCurrentUser() (e.g. after a page
+    // refresh) never populates state.auth.refreshToken — only login/register
+    // do — so fall back to localStorage, the same source apiClient's own
+    // refresh-retry logic already trusts for this exact reason.
+    const refreshToken = getState().auth.refreshToken
+      || (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null);
     try {
-      if (actorType === 'b2b') {
-        await authApi.shopkeeperLogout(refreshToken);
-      } else {
-        await authApi.logout(refreshToken);
-      }
+      await authApi.shopkeeperLogout(refreshToken);
     } catch {
       // Always clear local state even if server call fails
     } finally {

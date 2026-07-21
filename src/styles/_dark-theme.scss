@@ -1,0 +1,50 @@
+// ── B2B app-shell theme tokens ──────────────────────────────────
+// Scoped to the home experience. Named "db" from this file's original
+// dark-only design, but every value below now aliases a CSS custom
+// property that flips between a light default and a dark override —
+// see globals.scss's :root / :root[data-theme='dark'] blocks.
+
+$db-bg: var(--db-bg);
+$db-bg-elevated: var(--db-bg-elevated);
+$db-bg-card: var(--db-bg-card);
+$db-bg-card-hover: var(--db-bg-card-hover);
+$db-border: var(--db-border);
+$db-border-strong: var(--db-border-strong);
+
+$db-text-primary: var(--db-text-primary);
+$db-text-secondary: var(--db-text-secondary);
+$db-text-muted: var(--db-text-muted);
+
+$db-shadow-soft: var(--db-shadow-soft);
+$db-shadow-lift: var(--db-shadow-lift);
+
+$db-radius-lg: 24px;
+$db-radius-md: 18px;
+$db-radius-sm: 12px;
+
+$db-glass-bg: var(--db-glass-bg);
+$db-glass-border: var(--db-glass-border);
+
+@mixin glass {
+  background: $db-glass-bg;
+  border: 1px solid $db-glass-border;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+@mixin db-card {
+  background: $db-bg-card;
+  border: 1px solid $db-border;
+  border-radius: $db-radius-md;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+@mixin accent-transition {
+  transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+@mixin hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}

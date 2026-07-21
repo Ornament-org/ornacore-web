@@ -1,0 +1,241 @@
+@use '@/styles/dark-theme' as db;
+@use '@/styles/breakpoints' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: db.$db-glass-bg;
+  border-bottom: 1px solid db.$db-border;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+
+  &--scrolled {
+    box-shadow: db.$db-shadow-soft;
+  }
+}
+
+.inner {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0.6rem 0.8rem 0.7rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem 0.65rem;
+
+  @include md {
+    grid-template-columns: auto 1fr auto;
+    padding: 0.875rem 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+// ── Brand ─────────────────────────────────────────────
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.brandIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent-gradient, linear-gradient(135deg, #f0cf6b, #a8791f));
+  color: #1a1410;
+  box-shadow: 0 4px 14px var(--accent-soft, rgba(212, 175, 55, 0.3));
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.brandName {
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: db.$db-text-primary;
+  display: none;
+
+  @include sm {
+    display: inline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ── Search ────────────────────────────────────────────
+.search {
+  grid-column: 1 / -1;
+  order: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: db.$db-bg-elevated;
+  border: 1px solid db.$db-border;
+  border-radius: 999px;
+  padding: 0.52rem 0.8rem;
+  min-width: 0;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+  @include md {
+    grid-column: auto;
+    order: initial;
+    gap: 0.6rem;
+    padding: 0.6rem 1.1rem;
+  }
+
+  &:focus-within {
+    border-color: var(--accent, #d4af37);
+    box-shadow: 0 0 0 3px var(--accent-soft, rgba(212, 175, 55, 0.15));
+  }
+}
+
+.searchIcon {
+  color: db.$db-text-muted;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: db.$db-text-primary;
+  font-size: 0.78rem;
+
+  @include md {
+    font-size: 0.9rem;
+  }
+
+  &::placeholder {
+    color: db.$db-text-muted;
+  }
+}
+
+// ── Actions ───────────────────────────────────────────
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  min-width: 0;
+  flex-shrink: 0;
+
+  @include md {
+    gap: 0.6rem;
+  }
+}
+
+.themeToggle {
+  display: none;
+
+  @include sm {
+    display: inline-flex;
+  }
+}
+
+.themeToggle {
+  border-color: db.$db-border;
+  background: db.$db-bg-elevated;
+  color: db.$db-text-muted;
+
+  &:hover {
+    color: var(--accent, #d4af37);
+    border-color: var(--accent, #d4af37);
+  }
+}
+
+// ── Business selector ───────────────────────────────────
+.business {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: db.$db-bg-elevated;
+  border: 1px solid db.$db-border;
+  border-radius: 999px;
+  padding: 0.35rem;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    border-color: var(--accent, #d4af37);
+  }
+
+  @include md {
+    gap: 0.6rem;
+    padding: 0.4rem 0.6rem 0.4rem 0.4rem;
+  }
+}
+
+.businessIconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent-soft, rgba(212, 175, 55, 0.15));
+  color: var(--accent, #d4af37);
+  flex-shrink: 0;
+}
+
+.businessInfo {
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.25;
+  text-align: left;
+
+  @include md {
+    display: flex;
+  }
+}
+
+.businessName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: db.$db-text-primary;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.businessMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  color: db.$db-text-muted;
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.businessChevron {
+  color: db.$db-text-muted;
+  flex-shrink: 0;
+  display: none;
+
+  @include md {
+    display: block;
+  }
+}

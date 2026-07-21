@@ -1,59 +1,65 @@
-// ── Brand Gold ─────────────────────────────────────────────
-$primary-gold: #b8860b;
-$primary-gold-dark: #8b6508;
-$primary-gold-light: #d4a017;
-$secondary-gold: #f5c842;
-$gold-50: #fdf8ec;
-$gold-100: #faefd0;
-$gold-200: #f5d990;
-$gold-300: #f0c050;
-$gold-400: #e8a820;
-$gold-500: #b8860b;
-$gold-600: #8b6508;
-$gold-700: #5e4406;
+// Every variable below aliases a CSS custom property instead of a literal value.
+// The actual light/dark values are declared once in globals.scss's :root and
+// :root[data-theme='dark'] blocks — this file exists only so the ~25 component
+// stylesheets that already do `@use 'colors' as *;` and reference $primary-gold,
+// $background, etc. keep working unchanged while becoming theme-aware for free.
+
+// ── Brand Gold (constant across themes) ───────────────────────
+$primary-gold: var(--primary-gold);
+$primary-gold-dark: var(--primary-gold-dark);
+$primary-gold-light: var(--primary-gold-light);
+$secondary-gold: var(--secondary-gold);
+$gold-50: var(--gold-50);
+$gold-100: var(--gold-100);
+$gold-200: var(--gold-200);
+$gold-300: var(--gold-300);
+$gold-400: var(--gold-400);
+$gold-500: var(--gold-500);
+$gold-600: var(--gold-600);
+$gold-700: var(--gold-700);
 
 // ── Backgrounds ─────────────────────────────────────────────
-$background: #ffffff;
-$background-cream: #fdf8f0;
-$background-light: #fafaf8;
-$background-section: #f9f5f0;
-$background-dark: #1a1410;
-$background-footer: #1c1a16;
+$background: var(--background);
+$background-cream: var(--background-cream);
+$background-light: var(--background-light);
+$background-section: var(--background-section);
+$background-dark: var(--background-dark);
+$background-footer: var(--background-footer);
 
 // ── Text ────────────────────────────────────────────────────
-$text-primary: #1a1410;
-$text-secondary: #5c4f3a;
-$text-muted: #9e8c72;
-$text-light: #c8b89a;
-$text-inverse: #ffffff;
-$text-gold: $primary-gold;
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$text-muted: var(--text-muted);
+$text-light: var(--text-light);
+$text-inverse: var(--text-inverse);
+$text-gold: var(--primary-gold);
 
 // ── Borders ─────────────────────────────────────────────────
-$border: #e8ddd0;
-$border-light: #f0e8de;
-$border-dark: #c8b89a;
-$border-gold: rgba($primary-gold, 0.3);
+$border: var(--border);
+$border-light: var(--border-light);
+$border-dark: var(--border-dark);
+$border-gold: var(--border-gold);
 
 // ── Cards ────────────────────────────────────────────────────
-$card: #ffffff;
-$card-hover: #fdf8f0;
+$card: var(--card);
+$card-hover: var(--card-hover);
 
 // ── Status ──────────────────────────────────────────────────
-$success: #2d7a4f;
-$success-light: #e8f5ee;
-$error: #c0392b;
-$error-light: #fdeaea;
-$warning: #d4820a;
-$warning-light: #fef3e2;
-$info: #2563eb;
-$info-light: #eff6ff;
+$success: var(--success);
+$success-light: var(--success-light);
+$error: var(--error);
+$error-light: var(--error-light);
+$warning: var(--warning);
+$warning-light: var(--warning-light);
+$info: var(--info);
+$info-light: var(--info-light);
 
 // ── Shadows ─────────────────────────────────────────────────
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
-$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-$shadow-gold: 0 4px 20px rgba($primary-gold, 0.20);
+$shadow-sm: var(--shadow-sm);
+$shadow-md: var(--shadow-md);
+$shadow-lg: var(--shadow-lg);
+$shadow-gold: var(--shadow-gold);
 
 // ── Overlay ─────────────────────────────────────────────────
-$overlay: rgba(26, 20, 16, 0.5);
-$overlay-light: rgba(26, 20, 16, 0.3);
+$overlay: var(--overlay);
+$overlay-light: var(--overlay-light);

@@ -1,193 +1,266 @@
-@use '@/styles/colors' as *;
-@use '@/styles/typography' as *;
+@use '@/styles/dark-theme' as db;
 @use '@/styles/breakpoints' as *;
-@use '@/styles/mixins' as *;
 
 .page {
-  padding: 2.5rem 0 5rem;
-  min-height: 70vh;
+  width: min(100%, 1360px);
+  margin: 0 auto;
+  padding: 1rem 0.8rem 6.5rem;
+
+  @include md {
+    padding: 1.25rem 1.25rem 6.75rem;
+  }
+}
+
+.inner {
+  width: 100%;
 }
 
 .title {
-  font-family: $font-primary;
-  font-size: $text-3xl;
-  font-weight: $weight-semibold;
-  color: $text-primary;
-  margin-bottom: 2rem;
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: var(--type-page-title, 1.55rem);
+  font-weight: 700;
+  color: db.$db-text-primary;
+  line-height: var(--leading-title, 1.22);
+  margin-bottom: 1rem;
 }
 
 .layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 0.9rem;
 
-  @include lg { grid-template-columns: 1fr 360px; align-items: start; }
+  @include lg {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+  }
 }
 
 .items {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.65rem;
 }
 
 .item {
-  display: flex;
-  gap: 1.25rem;
-  padding: 1.25rem;
-  background: $card;
-  border: 1px solid $border-light;
-  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 0.7rem;
+  padding: 0.75rem;
+  background: db.$db-bg-card;
+  border: 1px solid db.$db-border;
+  border-radius: db.$db-radius-sm;
   align-items: center;
-  flex-wrap: wrap;
+
+  @include sm {
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+  }
 }
 
 .itemImage {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   border-radius: 8px;
-  background: $background-section;
+  background: linear-gradient(160deg, var(--accent-soft, rgba(212, 175, 55, 0.18)), db.$db-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   flex-shrink: 0;
+
+  @include sm {
+    width: 72px;
+    height: 72px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
-.itemEmoji { font-size: 2.5rem; }
+.itemEmoji {
+  font-size: 1.6rem;
+  color: var(--accent, #d4af37);
+}
 
 .itemInfo {
   flex: 1;
-  min-width: 140px;
+  min-width: 0;
 }
 
 .itemName {
-  font-family: $font-secondary;
-  font-size: $text-sm;
-  font-weight: $weight-medium;
-  color: $text-primary;
-  margin-bottom: 0.375rem;
+  font-size: var(--type-card-title, 0.78rem);
+  font-weight: 600;
+  color: db.$db-text-primary;
+  line-height: 1.32;
 }
 
 .itemPrice {
-  font-family: $font-secondary;
-  font-size: $text-sm;
-  color: $text-muted;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: db.$db-text-primary;
+}
+
+.itemWeight {
+  font-size: var(--type-meta, 0.68rem);
+  color: var(--accent, #d4af37);
+  margin-top: 0.2rem;
 }
 
 .itemControls {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  justify-content: space-between;
+  gap: 0.7rem;
   flex-wrap: wrap;
+  grid-column: 1 / -1;
+
+  @include sm {
+    grid-column: auto;
+    justify-content: flex-end;
+  }
 }
 
 .qtyControl {
   display: flex;
   align-items: center;
-  border: 1.5px solid $border;
-  border-radius: 6px;
+  border: 1px solid db.$db-border;
+  border-radius: 7px;
   overflow: hidden;
 
   button {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: $background-section;
-    font-size: $text-lg;
-    color: $text-secondary;
-    cursor: pointer;
+    background: db.$db-bg-elevated;
+    font-size: 1rem;
+    color: db.$db-text-secondary;
     transition: background 0.15s ease;
     border: none;
 
-    &:hover { background: $gold-50; color: $primary-gold; }
+    &:hover {
+      color: var(--accent, #d4af37);
+    }
   }
 
   span {
-    width: 40px;
+    width: 34px;
     text-align: center;
-    font-family: $font-secondary;
-    font-size: $text-sm;
-    font-weight: $weight-semibold;
-    color: $text-primary;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: db.$db-text-primary;
   }
 }
 
 .itemTotal {
-  font-family: $font-secondary;
-  font-size: $text-base;
-  font-weight: $weight-semibold;
-  color: $text-primary;
-  min-width: 100px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: db.$db-text-primary;
+  min-width: 88px;
   text-align: right;
 }
 
 .removeBtn {
-  color: $text-muted;
-  cursor: pointer;
-  background: none;
-  border: none;
+  color: db.$db-text-muted;
   padding: 6px;
   border-radius: 6px;
   display: flex;
   align-items: center;
   transition: color 0.15s ease, background 0.15s ease;
 
-  &:hover { color: $error; background: $error-light; }
+  &:hover {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.12);
+  }
 }
 
 // ── Summary ──────────────────────────────────────────────────
 .summary {
-  background: $background-section;
-  border: 1px solid $border-light;
-  border-radius: 16px;
-  padding: 1.75rem;
+  background: db.$db-bg-card;
+  border: 1px solid db.$db-border;
+  border-radius: db.$db-radius-md;
+  padding: 1rem;
   position: sticky;
-  top: 90px;
+  top: 150px;
+
+  @include md {
+    top: 90px;
+    padding: 1.25rem;
+  }
 }
 
 .summaryTitle {
-  font-family: $font-primary;
-  font-size: $text-xl;
-  font-weight: $weight-semibold;
-  color: $text-primary;
-  margin-bottom: 1.25rem;
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: var(--type-section-title, 1.25rem);
+  font-weight: 700;
+  color: db.$db-text-primary;
+  margin-bottom: 1rem;
 }
 
 .summaryRows {
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
-  margin-bottom: 1.5rem;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid $border;
+  border-bottom: 1px solid db.$db-border;
 }
 
 .summaryRow {
   display: flex;
   justify-content: space-between;
-  font-family: $font-secondary;
-  font-size: $text-sm;
-  color: $text-secondary;
+  font-size: 0.78rem;
+  color: db.$db-text-secondary;
 
   &--total {
-    font-size: $text-base;
-    font-weight: $weight-semibold;
-    color: $text-primary;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: db.$db-text-primary;
     padding-top: 1rem;
-    border-top: 1px solid $border;
+    border-top: 1px solid db.$db-border;
     margin-top: 0;
   }
+}
+
+.weightNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+  padding: 0.65rem 0.7rem;
+  background: var(--accent-soft, rgba(212, 175, 55, 0.1));
+  border: 1px solid var(--accent-soft, rgba(212, 175, 55, 0.25));
+  border-radius: 8px;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: db.$db-text-secondary;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: var(--accent, #d4af37);
+  }
+}
+
+.summaryFootnote {
+  margin-top: 0.65rem;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: db.$db-text-muted;
+  text-align: center;
 }
 
 .continueShopping {
   display: block;
   text-align: center;
   margin-top: 1rem;
-  font-family: $font-secondary;
-  font-size: $text-sm;
-  color: $text-muted;
+  font-size: 0.78rem;
+  color: db.$db-text-muted;
   transition: color 0.15s ease;
 
-  &:hover { color: $primary-gold; }
+  &:hover { color: var(--accent, #d4af37); }
 }

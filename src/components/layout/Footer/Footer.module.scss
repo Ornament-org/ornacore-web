@@ -68,8 +68,20 @@
 }
 
 .logoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   color: $primary-gold;
   font-size: 1.75rem;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 }
 
 .logoMain {

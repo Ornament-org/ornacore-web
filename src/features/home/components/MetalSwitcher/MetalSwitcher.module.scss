@@ -1,0 +1,92 @@
+@use '@/styles/dark-theme' as db;
+@use '@/styles/breakpoints' as *;
+
+.wrap {
+  position: sticky;
+  top: 94px;
+  z-index: 50;
+  background: db.$db-bg;
+  border-bottom: 1px solid db.$db-border;
+  padding: 0.42rem 0.8rem;
+
+  @include md {
+    top: 68px;
+    padding: 0.65rem 1.5rem;
+  }
+}
+
+.track {
+  max-width: 1360px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  @include db.hide-scrollbar;
+
+  @include md {
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  flex-shrink: 0;
+  padding: 0.42rem 0.7rem;
+  border-radius: 999px;
+  background: db.$db-bg-elevated;
+  border: 1px solid db.$db-border;
+  color: db.$db-text-secondary;
+  transition: border-color 0.3s ease, background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: db.$db-border-strong;
+  }
+
+  &--active {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent), var(--tab-gradient);
+    border-color: var(--tab-accent);
+    color: #1a1410;
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--tab-accent) 35%, transparent);
+
+    .tabSubtitle {
+      color: rgba(26, 20, 16, 0.65);
+    }
+  }
+}
+
+.tabIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.tabText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.tabLabel {
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  @include md {
+    font-size: 0.85rem;
+  }
+}
+
+.tabSubtitle {
+  font-size: 0.66rem;
+  color: db.$db-text-muted;
+  white-space: nowrap;
+
+  @include max-sm {
+    display: none;
+  }
+}

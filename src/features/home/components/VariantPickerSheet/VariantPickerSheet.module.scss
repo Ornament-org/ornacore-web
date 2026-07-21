@@ -1,0 +1,223 @@
+@use '@/styles/dark-theme' as db;
+@use '@/styles/breakpoints' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.18s ease;
+
+  @include md {
+    align-items: center;
+  }
+}
+
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  background: db.$db-bg-elevated;
+  border: 1px solid db.$db-border;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+  animation: slideUp 0.22s ease;
+
+  @include md {
+    max-height: 76vh;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.grabber {
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 0.6rem auto 0;
+  border-radius: 999px;
+  background: db.$db-border-strong;
+
+  @include md {
+    display: none;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem 0.75rem;
+  border-bottom: 1px solid db.$db-border;
+
+  h2 {
+    font-family: var(--font-display, 'Poppins', sans-serif);
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: db.$db-text-primary;
+    line-height: 1.28;
+  }
+
+  p {
+    margin-top: 0.15rem;
+    color: db.$db-text-muted;
+    font-size: 0.76rem;
+  }
+}
+
+.closeBtn {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: db.$db-text-muted;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: db.$db-bg-card;
+    color: db.$db-text-primary;
+  }
+}
+
+.list {
+  overflow-y: auto;
+  padding: 0.4rem 1.1rem 1.1rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+
+  & + & {
+    border-top: 1px solid db.$db-border;
+  }
+
+  &--outOfStock {
+    opacity: 0.55;
+  }
+}
+
+.rowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+
+  strong {
+    color: db.$db-text-primary;
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  span {
+    color: db.$db-text-muted;
+    font-size: 0.72rem;
+  }
+}
+
+.rowRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.rowPrice {
+  color: db.$db-text-primary;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  min-height: 30px;
+  padding: 0;
+  border: 1px solid rgba(240, 207, 107, 0.58);
+  border-radius: 7px;
+  color: var(--accent, #d4af37);
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--accent-gradient, linear-gradient(135deg, #f0cf6b, #a8791f));
+    color: #1a1410;
+  }
+
+  &:disabled {
+    width: auto;
+    padding: 0 0.55rem;
+    color: db.$db-text-muted;
+    border-color: db.$db-border;
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+      color: db.$db-text-muted;
+    }
+  }
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 30px;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid rgba(240, 207, 107, 0.58);
+  border-radius: 7px;
+  background: var(--accent-gradient, linear-gradient(135deg, #f0cf6b, #a8791f));
+
+  span {
+    min-width: 14px;
+    text-align: center;
+    color: #1a1410;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    color: #1a1410;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba(26, 20, 16, 0.14);
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

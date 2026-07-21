@@ -6,6 +6,7 @@ const cartSlice = createSlice({
     items: [],
     total: 0,
     count: 0,
+    totalWeight: 0,
   },
   reducers: {
     addItem(state, action) {
@@ -24,16 +25,19 @@ const cartSlice = createSlice({
     updateQuantity(state, action) {
       const item = state.items.find((i) => i.id === action.payload.id);
       if (item) item.quantity = action.payload.quantity;
+      if (item && item.quantity <= 0) state.items = state.items.filter((i) => i.id !== action.payload.id);
       cartSlice.caseReducers.recalculate(state);
     },
     clearCart(state) {
       state.items = [];
       state.total = 0;
       state.count = 0;
+      state.totalWeight = 0;
     },
     recalculate(state) {
       state.count = state.items.reduce((sum, i) => sum + i.quantity, 0);
       state.total = state.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+      state.totalWeight = state.items.reduce((sum, i) => sum + (Number(i.weight) || 0) * i.quantity, 0);
     },
   },
 });
