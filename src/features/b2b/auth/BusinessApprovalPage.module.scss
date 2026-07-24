@@ -154,7 +154,7 @@ $green: #27a35d;
 
 .content {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.72rem;
 }
 
 .heroCard,
@@ -416,6 +416,10 @@ $green: #27a35d;
 }
 
 .actionsCard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  padding: 0.75rem;
   overflow: hidden;
 }
 
@@ -425,17 +429,22 @@ $green: #27a35d;
   gap: 0.75rem;
   align-items: center;
   width: 100%;
-  min-height: 66px;
-  padding: 0.68rem 0.9rem;
-  border: 0;
-  border-bottom: 1px solid var(--db-border);
-  background: transparent;
+  min-height: 86px;
+  padding: 0.72rem;
+  border: 1px solid var(--db-border);
+  border-radius: 11px;
+  background:
+    linear-gradient(135deg, rgba(233, 154, 5, 0.055), transparent 60%),
+    var(--db-bg-elevated);
   color: inherit;
   text-align: left;
   cursor: pointer;
 
-  &:last-child {
-    border-bottom: 0;
+  &:hover {
+    border-color: rgba(233, 154, 5, 0.34);
+    background:
+      linear-gradient(135deg, rgba(233, 154, 5, 0.1), transparent 62%),
+      var(--db-bg-elevated);
   }
 
   > svg {
@@ -715,14 +724,7 @@ $green: #27a35d;
   }
 
   .nextPanel {
-    padding-left: 0;
-    padding-top: 0.65rem;
-    border-left: 0;
-    border-top: 1px solid var(--db-border);
-  }
-
-  .nextList {
-    grid-template-columns: 1fr;
+    display: none;
   }
 
   .timelineStep h3 {
@@ -762,6 +764,38 @@ $green: #27a35d;
     padding: 0.75rem;
   }
 
+  .heroMain {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.72rem;
+  }
+
+  .heroHalo {
+    width: 62px;
+    height: 62px;
+  }
+
+  .heroIcon {
+    width: 48px;
+    height: 48px;
+
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    span {
+      right: -2px;
+      bottom: 2px;
+      width: 20px;
+      height: 20px;
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+
   .heroCopy h2 {
     font-size: 1.3rem;
   }
@@ -772,9 +806,72 @@ $green: #27a35d;
     font-size: 0.72rem;
   }
 
+  .timelineCard {
+    padding: 0.82rem 0.58rem 0.72rem;
+  }
+
+  .timelineGrid {
+    gap: 0.1rem;
+  }
+
+  .timelineStep h3 {
+    min-height: 30px;
+    font-size: 0.62rem;
+    line-height: 1.18;
+  }
+
+  .timelineStep p {
+    font-size: 0.58rem;
+  }
+
+  .timelineIcon {
+    width: 34px;
+    height: 34px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .timelineTrack {
+    left: 13%;
+    right: 13%;
+    top: 1.82rem;
+  }
+
+  .connector {
+    top: 0.92rem;
+  }
+
+  .notice {
+    align-items: start;
+    padding: 0.72rem;
+  }
+
+  .notice h2 {
+    font-size: 0.82rem;
+  }
+
+  .actionsCard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.58rem;
+    padding: 0.62rem;
+  }
+
   .actionRow {
-    min-height: 58px;
-    padding: 0.6rem 0.72rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    justify-items: start;
+    min-height: 124px;
+    padding: 0.7rem;
+
+    > svg {
+      justify-self: end;
+      align-self: end;
+      width: 18px;
+      height: 18px;
+    }
   }
 
   .actionIcon {
@@ -788,5 +885,14 @@ $green: #27a35d;
 
   .actionCopy span {
     font-size: 0.68rem;
+  }
+
+  .bottomNotice {
+    gap: 0.5rem;
+
+    > div {
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
   }
 }

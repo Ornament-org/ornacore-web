@@ -6,6 +6,11 @@ export const shopkeeperApi = {
   // Backend route is PATCH /shopkeeper/profile (shopkeeper.routes.js) — this
   // was silently sending PUT, which the route doesn't even exist for.
   updateProfile: (data) => apiClient.patch(API_ENDPOINTS.SHOPKEEPER.PROFILE, data),
+  uploadProfilePhoto: (data) => apiClient.post(`${API_ENDPOINTS.SHOPKEEPER.PROFILE}/photo`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000,
+    timeoutErrorMessage: 'Profile photo upload took too long. Please try a smaller image.',
+  }),
   updateAddress: (data) => apiClient.put(`${API_ENDPOINTS.SHOPKEEPER.PROFILE}/address`, data),
 
   getOrders: (params) => apiClient.get(API_ENDPOINTS.SHOPKEEPER.ORDERS, { params }),

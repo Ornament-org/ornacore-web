@@ -1,14 +1,20 @@
 'use client';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Trash2, ShoppingBag, Info } from 'lucide-react';
-import { removeItem, updateQuantity } from '@/redux/slices/cartSlice';
+import { clearCart, removeItem, updateQuantity } from '@/redux/slices/cartSlice';
 import Button from '@/components/ui/Button/Button';
 import EmptyState from '@/components/ui/EmptyState/EmptyState';
 import { ROUTES } from '@/constants/routes';
+import { productApi } from '@/services/productApi';
+import { shopkeeperApi } from '@/services/shopkeeperApi';
 import styles from './CartPage.module.scss';
 
 const formatWeight = (grams) => `${Number(grams).toFixed(3).replace(/\.?0+$/, '')} g`;
+const extractMessage = (err) =>
+  err?.error?.message || err?.response?.data?.error?.message || err?.message || 'Something went wrong';
 
 // Prices here float with the live metal rate, so the summary only commits to
 // what's actually fixed at cart time — the weight. Gold and silver are
@@ -24,7 +30,49 @@ const weightByMetal = (items) => {
 
 export default function CartPage() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const { items, total, totalWeight } = useSelector((s) => s.cart);
+  const [placing, setPlacing] = useState(false);
+  const [error, setError] = useState('');
+
+  const delivery = total > 5000 ? 0 : 99;
+
+  const handlePlaceOrder = async () => {
+    if (!items.length || placing) return;
+    setError('');
+    setPlacing(true);
+
+    try {
+      // The order endpoint converts the authenticated shopkeeper's server-side
+      // cart, so mirror the local cart into it before placing the order.
+      for (const item of items) {
+        let variantId = item.variantId;
+        if (!variantId) {
+          if (!item.productSlug) {
+            throw new Error(`${item.name} is no longer available.`);
+          }
+          const productResponse = await productApi.getBySlug(item.productSlug);
+          const product = productResponse.data;
+          const variant = product?.variants?.find((v) => v.isDefault) ?? product?.variants?.[0];
+          if (!variant) {
+            throw new Error(`${item.name} is no longer available.`);
+          }
+          variantId = variant.id;
+        }
+
+        await shopkeeperApi.addToCart({ productVariantId: variantId, quantity: item.quantity });
+      }
+
+      await shopkeeperApi.placeOrder({ notes: 'Order placed from cart.' });
+
+      dispatch(clearCart());
+      router.push(ROUTES.ORDERS);
+    } catch (err) {
+      setError(extractMessage(err));
+    } finally {
+      setPlacing(false);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -35,7 +83,7 @@ export default function CartPage() {
             icon={<ShoppingBag />}
             title="Your cart is empty"
             description="Discover our exquisite jewellery collection and add your favourites."
-            action={() => {}}
+            action={() => router.push(ROUTES.CATEGORIES)}
             actionLabel="Start Shopping"
           />
         </div>
@@ -43,7 +91,6 @@ export default function CartPage() {
     );
   }
 
-  const delivery = total > 5000 ? 0 : 99;
   const metalWeights = weightByMetal(items);
   const showPerMetal = metalWeights.length > 1;
 
@@ -90,11 +137,17 @@ export default function CartPage() {
           <div className={styles.summary}>
             <h2 className={styles.summaryTitle}>Order Summary</h2>
             <div className={styles.summaryRows}>
+              {items.map((item) => (
+                <div key={item.id} className={styles.summaryRow}>
+                  <span>{item.name} × {item.quantity}</span>
+                  <span>{formatWeight((Number(item.weight) || 0) * item.quantity)}</span>
+                </div>
+              ))}
               {showPerMetal ? (
                 metalWeights.map(([metalName, weight]) => (
                   <div className={styles.summaryRow} key={metalName}>
                     <span>{metalName} Weight</span>
-                    <span className={styles.itemWeight}>{formatWeight(weight)}</span>
+                    <span>{formatWeight(weight)}</span>
                   </div>
                 ))
               ) : (
@@ -119,9 +172,11 @@ export default function CartPage() {
               prepared.
             </p>
 
-            <Link href={ROUTES.CHECKOUT}>
-              <Button fullWidth size="lg">Proceed to Checkout</Button>
-            </Link>
+            {error ? <p className={styles.errorText}>{error}</p> : null}
+
+            <Button fullWidth size="lg" onClick={handlePlaceOrder} loading={placing}>
+              Place Order
+            </Button>
             <Link href={ROUTES.PRODUCTS} className={styles.continueShopping}>← Continue Shopping</Link>
           </div>
         </div>

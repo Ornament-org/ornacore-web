@@ -213,8 +213,14 @@
 .summaryRow {
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
   font-size: 0.78rem;
   color: db.$db-text-secondary;
+
+  span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   &--total {
     font-size: 0.92rem;
@@ -248,10 +254,22 @@
 
 .summaryFootnote {
   margin-top: 0.65rem;
+  margin-bottom: 0.9rem;
   font-size: 0.68rem;
   line-height: 1.4;
   color: db.$db-text-muted;
   text-align: center;
+}
+
+.errorText {
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: db.$db-radius-sm;
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+  font-size: 0.76rem;
+  line-height: 1.45;
 }
 
 .continueShopping {

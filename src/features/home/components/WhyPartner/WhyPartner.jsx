@@ -7,8 +7,6 @@ const REASONS = [
   { icon: ShieldCheck, label: 'Secure Payments' },
   { icon: Headset, label: 'Dedicated Support' },
   { icon: Package, label: 'Large Inventory' },
-  { icon: Truck, label: 'Pan India Delivery' },
-  { icon: Undo2, label: 'Easy Returns' },
   { icon: Store, label: 'Verified Sellers' },
 ];
 

@@ -263,14 +263,14 @@ export default function BusinessApprovalPage() {
       </div>
 
       <header className={styles.header}>
-        <button type="button" className={styles.backButton} onClick={() => window.history.back()} aria-label="Go back">
+        {/* <button type="button" className={styles.backButton} onClick={() => window.history.back()} aria-label="Go back">
           ←
-        </button>
+        </button> */}
         <div className={styles.brandBlock}>
           <strong>{shopkeeper.shopName || 'Akash Jewellers'}</strong>
           <span>B2B Jewellery Platform</span>
         </div>
-        <h1>Shop Approval Status</h1>
+        <h1>Status</h1>
         <div className={styles.headerActions}>
           <button type="button" className={styles.supportButton}>
             <CircleHelp size={18} />
@@ -283,8 +283,8 @@ export default function BusinessApprovalPage() {
       </header>
 
       <div className={styles.content}>
-        <ApprovalHero />
         <ApprovalTimeline submittedDate={submittedDate} />
+        <ApprovalHero />
 
         <section className={styles.notice}>
           <AlertTriangle size={31} />

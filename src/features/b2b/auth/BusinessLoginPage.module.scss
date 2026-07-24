@@ -3,7 +3,7 @@
 .page {
   min-height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(300px, 0.78fr) minmax(460px, 1.22fr);
+  grid-template-columns: minmax(360px, 0.92fr) minmax(520px, 1.08fr);
   color: #fff8ea;
   background:
     radial-gradient(circle at 42% 12%, rgba(222, 154, 39, 0.12), transparent 22%),
@@ -15,7 +15,7 @@
 .brandPanel {
   position: relative;
   min-height: 100dvh;
-  padding: 1.2rem 1.55rem;
+  padding: clamp(1.75rem, 3vw, 3rem);
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.66), rgba(0, 0, 0, 0.24)),
@@ -60,6 +60,15 @@
   border: 1px solid rgba(255, 188, 54, 0.42);
   background: rgba(255, 188, 54, 0.03);
   clip-path: polygon(50% 0, 92% 14%, 84% 78%, 50% 100%, 16% 78%, 8% 14%);
+
+  .brandLogo {
+    display: block;
+    width: 74%;
+    height: 74%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
 }
 
 .heroCopy {
@@ -216,15 +225,15 @@
   display: grid;
   place-items: center;
   min-height: 100dvh;
-  padding: 1.2rem 1.55rem;
+  padding: clamp(1.75rem, 3vw, 3rem);
   background:
     radial-gradient(circle at 50% 8%, rgba(255, 188, 54, 0.08), transparent 24%),
     rgba(0, 0, 0, 0.16);
 }
 
 .card {
-  width: min(100%, 560px);
-  padding: 1.45rem 1.7rem;
+  width: min(100%, 480px);
+  padding: 1.7rem 1.85rem;
   border: 1px solid rgba(255, 188, 54, 0.5);
   border-radius: 16px;
   background:
@@ -275,10 +284,20 @@
   font-size: 0.78rem;
 }
 
+.successAlert {
+  margin-top: 0.9rem;
+  padding: 0.64rem 0.78rem;
+  border: 1px solid rgba(56, 201, 118, 0.34);
+  border-radius: 8px;
+  background: rgba(56, 201, 118, 0.1);
+  color: #9ef0bf;
+  font-size: 0.78rem;
+}
+
 .form {
   display: grid;
-  gap: 0.92rem;
-  margin-top: 1.45rem;
+  gap: 1rem;
+  margin-top: 1.35rem;
 }
 
 .field {
@@ -297,8 +316,8 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.82rem;
   align-items: center;
-  min-height: 50px;
-  padding: 0 0.9rem;
+  min-height: 54px;
+  padding: 0 1rem;
   border: 1px solid rgba(255, 188, 54, 0.54);
   border-radius: 8px;
   background:
@@ -327,6 +346,18 @@
   }
 }
 
+.countryCode {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  min-height: 28px;
+  border-right: 1px solid rgba(255, 188, 54, 0.24);
+  padding-right: 0.72rem;
+  color: #ffbd36;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
 .eyeButton {
   display: grid;
   place-items: center;
@@ -339,12 +370,117 @@
 .forgotLink {
   justify-self: end;
   margin-top: -0.42rem;
+  border: 0;
+  background: transparent;
   color: #ffbd36;
   font-size: 0.82rem;
   font-weight: 700;
   text-decoration: none;
 
   &:hover {
+    text-decoration: underline;
+  }
+}
+
+.loginLinks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: -0.18rem;
+
+  button {
+    min-height: 38px;
+    border: 1px solid rgba(255, 188, 54, 0.24);
+    border-radius: 8px;
+    background: rgba(255, 188, 54, 0.045);
+    color: #ffbd36;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 800;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    &:not(:disabled):hover {
+      border-color: rgba(255, 188, 54, 0.52);
+      background: rgba(255, 188, 54, 0.08);
+    }
+  }
+}
+
+.backInline {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.74);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+
+  &:hover {
+    color: #ffbd36;
+  }
+}
+
+.otpBlock {
+  display: grid;
+  gap: 0.72rem;
+
+  > span {
+    color: #fff;
+    font-size: 0.86rem;
+    font-weight: 800;
+  }
+}
+
+.otpBoxes {
+  display: grid;
+  grid-template-columns: repeat(4, 58px);
+  justify-content: center;
+  gap: 0.82rem;
+}
+
+.otpBox {
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(255, 188, 54, 0.56);
+  border-radius: 8px;
+  outline: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.014);
+  color: #fff8ea;
+  text-align: center;
+  font-size: 1.55rem;
+  font-weight: 900;
+
+  &:focus {
+    border-color: #ffbd36;
+    box-shadow: 0 0 0 3px rgba(255, 188, 54, 0.1), 0 0 20px rgba(255, 188, 54, 0.08);
+  }
+}
+
+.resendButton {
+  justify-self: center;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 189, 54, 0.92);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:not(:disabled):hover {
     text-decoration: underline;
   }
 }
@@ -434,6 +570,40 @@
   }
 }
 
+.googleButton {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.googleFallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.62rem;
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.86rem;
+  font-weight: 800;
+
+  span {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff;
+    color: #4285f4;
+    font-weight: 900;
+  }
+}
+
 @media (max-width: 1120px) {
   .page {
     grid-template-columns: 1fr;
@@ -497,5 +667,16 @@
 
   .form {
     margin-top: 1.1rem;
+  }
+
+  .otpBoxes {
+    grid-template-columns: repeat(4, 50px);
+    gap: 0.56rem;
+  }
+
+  .otpBox {
+    width: 50px;
+    height: 50px;
+    font-size: 1.32rem;
   }
 }

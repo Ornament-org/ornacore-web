@@ -15,6 +15,12 @@ export const API_ENDPOINTS = {
   SHOPKEEPER: {
     LOGIN: '/shopkeeper/auth/login',
     REGISTER: '/shopkeeper/auth/register',
+    GOOGLE_LOGIN: '/shopkeeper/auth/google-login',
+    OTP_LOGIN_REQUEST: '/shopkeeper/auth/otp-login/request',
+    OTP_LOGIN_VERIFY: '/shopkeeper/auth/otp-login/verify',
+    PASSWORD_RESET_REQUEST: '/shopkeeper/auth/password-reset/request',
+    PASSWORD_RESET_VERIFY: '/shopkeeper/auth/password-reset/verify',
+    PASSWORD_RESET_CONFIRM: '/shopkeeper/auth/password-reset/confirm',
     REFRESH: '/shopkeeper/auth/refresh',
     LOGOUT: '/shopkeeper/auth/logout',
     ME: '/shopkeeper/auth/me',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -64,12 +64,28 @@ const formatWeight = (grams) => `${Number(grams ?? 0).toFixed(3).replace(/\.?0+$
 
 const orderWeightByMetal = (order) => {
   const groups = new Map();
-  (order.items ?? []).forEach((item) => {
-    const metalName = item.product?.metal?.name ?? 'Other';
-    const weight = Number(item.variant?.weightGrams ?? 0) * Number(item.quantity ?? 0);
+  orderDisplayItems(order).forEach((item) => {
+    const metalName = item.metalName ?? item.product?.metal?.name ?? 'Other';
+    const weight = item.fulfillmentItem
+      ? Number(item.fineWeight ?? 0)
+      : Number(item.variant?.weightGrams ?? 0) * Number(item.quantity ?? 0);
     groups.set(metalName, (groups.get(metalName) ?? 0) + weight);
   });
   return Array.from(groups.entries());
+};
+
+const orderDisplayItems = (order) => {
+  const fulfillmentItems = order.fulfillmentOrder?.items ?? [];
+  if (fulfillmentItems.length) {
+    const metalName = order.fulfillmentOrder?.metal?.name ?? 'Metal';
+    return fulfillmentItems.map((item) => ({
+      id: `fulfillment-${item.id}`,
+      fulfillmentItem: true,
+      metalName,
+      fineWeight: item.fineWeight,
+    }));
+  }
+  return order.items ?? [];
 };
 
 const formatCreditLimits = (limits = []) => {
@@ -440,7 +456,7 @@ function OrdersPanel() {
         {orders.map((order) => {
           const meta = ORDER_STATUS_META[order.status] ?? ORDER_STATUS_META.REQUESTED;
           const weights = orderWeightByMetal(order);
-          const itemCount = (order.items ?? []).length;
+          const itemCount = orderDisplayItems(order).length;
           return (
             <Link key={order.id} href={ROUTES.ORDER_DETAIL(order.id)} className={styles.orderRow}>
               <div className={styles.orderRowTop}>
@@ -517,7 +533,64 @@ const ledgerBalance = (runningBalance) => {
   return { label: 'Cleared', amount: formatWeight(0), tone: 'cleared' };
 };
 
-function TransactionsPanel() {
+const metalDueTone = (metal) => {
+  const value = `${metal.code ?? ''} ${metal.name ?? ''}`.toLowerCase();
+  if (value.includes('silver')) return 'silver';
+  if (value.includes('gold')) return 'gold';
+  return 'default';
+};
+
+function ShopIdentityCard({ values, profile, photoUrl, onPhotoClick, uploadingPhoto }) {
+  return (
+    <section className={styles.identityCard}>
+      <div className={styles.shopPhotoWrap}>
+        <div className={styles.shopPhoto} aria-hidden="true">
+          {photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- shopkeeper profile photos can come from configured media storage
+            <img src={photoUrl} alt="" />
+          ) : (
+            <>
+              <div className={styles.shopCeiling} />
+              <div className={styles.shopCounter} />
+              <div className={styles.shopLights} />
+            </>
+          )}
+        </div>
+        <button
+          className={styles.cameraButton}
+          type="button"
+          aria-label="Change shop photo"
+          onClick={onPhotoClick}
+          disabled={uploadingPhoto}
+        >
+          <Camera size={20} />
+        </button>
+      </div>
+
+      <div className={styles.identityCopy}>
+        <h2>{values.shopName}</h2>
+        <span
+          className={[styles.verified, profile?.status !== 'APPROVED' && styles.verifiedPending]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {profile?.status === 'APPROVED' ? <ShieldCheck size={16} /> : <ShieldAlert size={16} />}
+          {values.verificationStatus}
+        </span>
+        <p>
+          <MapPin size={16} />
+          {values.city && values.state ? `${values.city}, ${values.state}` : 'Location not added'}
+        </p>
+        <p>
+          <CalendarDays size={16} />
+          Member since {values.memberSince}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function TransactionsPanel({ metalDues = [] }) {
   const [entries, setEntries] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -554,6 +627,14 @@ function TransactionsPanel() {
     () => (metalFilter === 'all' ? entries ?? [] : (entries ?? []).filter((entry) => String(entry.metal?.id) === metalFilter)),
     [entries, metalFilter],
   );
+  const dueCards = useMemo(
+    () => metalDues.filter((metal) => Number(metal.dueGrams ?? 0) > 0.0005),
+    [metalDues],
+  );
+  const visibleDueCards = useMemo(
+    () => (metalFilter === 'all' ? dueCards : dueCards.filter((metal) => String(metal.metalId) === metalFilter)),
+    [dueCards, metalFilter],
+  );
 
   if (loading) {
     return (
@@ -573,18 +654,6 @@ function TransactionsPanel() {
           <IndianRupee size={34} />
           <h3>Something went wrong</h3>
           <p>{error}</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (!entries.length) {
-    return (
-      <section className={styles.formSection}>
-        <div className={styles.ordersEmpty}>
-          <IndianRupee size={34} />
-          <h3>No transactions yet</h3>
-          <p>Deliveries and cash or metal collections against your account will show up here.</p>
         </div>
       </section>
     );
@@ -614,47 +683,76 @@ function TransactionsPanel() {
         ) : null}
       </div>
 
-      <div className={styles.ordersList}>
-        {visibleEntries.map((entry) => {
-          const meta = ledgerEntryMeta(entry);
-          const detail = ledgerEntryDetail(entry);
-          const balance = ledgerBalance(entry.runningBalance);
-          const isCredit = Number(entry.creditFine) > 0;
-          const isDebit = Number(entry.debitFine) > 0;
-          return (
-            <div key={entry.id} className={styles.orderRow}>
-              <div className={styles.orderRowTop}>
+      {visibleDueCards.length ? (
+        <div className={styles.metalDueGrid}>
+          {visibleDueCards.map((metal) => {
+            const tone = metalDueTone(metal);
+            return (
+              <div
+                key={metal.metalId}
+                className={[styles.metalDueCard, styles[`metalDueCard--${tone}`]].join(' ')}
+              >
                 <div>
-                  <strong>{ledgerEntryTitle(entry)}</strong>
-                  <span>{formatDate(entry.entryDate)} · {entry.metal?.name ?? 'Metal'}</span>
+                  <span>Due in {metal.name}</span>
+                  <strong>{formatWeight(metal.dueGrams)} due</strong>
                 </div>
-                <span className={[styles.orderStatusPill, styles[`orderStatusPill--${meta.tone}`]].join(' ')}>
-                  {meta.label}
-                </span>
+                {metal.code ? <em>{metal.code}</em> : null}
               </div>
+            );
+          })}
+        </div>
+      ) : null}
 
-              {detail ? <p className={styles.ledgerDetail}>{detail}</p> : null}
+      {visibleEntries.length ? (
+        <div className={styles.ordersList}>
+          {visibleEntries.map((entry) => {
+            const meta = ledgerEntryMeta(entry);
+            const detail = ledgerEntryDetail(entry);
+            const balance = ledgerBalance(entry.runningBalance);
+            const isCredit = Number(entry.creditFine) > 0;
+            const isDebit = Number(entry.debitFine) > 0;
+            return (
+              <div key={entry.id} className={styles.orderRow}>
+                <div className={styles.orderRowTop}>
+                  <div>
+                    <strong>{ledgerEntryTitle(entry)}</strong>
+                    <span>{formatDate(entry.entryDate)} · {entry.metal?.name ?? 'Metal'}</span>
+                  </div>
+                  <span className={[styles.orderStatusPill, styles[`orderStatusPill--${meta.tone}`]].join(' ')}>
+                    {meta.label}
+                  </span>
+                </div>
 
-              <div className={styles.orderRowBottom}>
-                <span className={[styles.ledgerBalance, styles[`ledgerBalance--${balance.tone}`]].join(' ')}>
-                  {balance.label === 'Cleared' ? 'Cleared' : `${balance.label}: ${balance.amount}`}
-                </span>
-                {isCredit ? (
-                  <span className={styles.ledgerCredit}>+{formatWeight(entry.creditFine)}</span>
-                ) : isDebit ? (
-                  <span className={styles.ledgerDebit}>-{formatWeight(entry.debitFine)}</span>
-                ) : null}
+                {detail ? <p className={styles.ledgerDetail}>{detail}</p> : null}
+
+                <div className={styles.orderRowBottom}>
+                  <span className={[styles.ledgerBalance, styles[`ledgerBalance--${balance.tone}`]].join(' ')}>
+                    {balance.label === 'Cleared' ? 'Cleared' : `${balance.label}: ${balance.amount}`}
+                  </span>
+                  {isCredit ? (
+                    <span className={styles.ledgerCredit}>+{formatWeight(entry.creditFine)}</span>
+                  ) : isDebit ? (
+                    <span className={styles.ledgerDebit}>-{formatWeight(entry.debitFine)}</span>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className={styles.ordersEmpty}>
+          <IndianRupee size={34} />
+          <h3>No transactions yet</h3>
+          <p>Deliveries and cash or metal collections against your account will show up here.</p>
+        </div>
+      )}
     </section>
   );
 }
 
 export default function ProfileClient({ initialTab = 'profile' }) {
   const router = useRouter();
+  const photoInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [editingSections, setEditingSections] = useState({});
   const [sectionErrors, setSectionErrors] = useState({});
@@ -664,6 +762,9 @@ export default function ProfileClient({ initialTab = 'profile' }) {
   const [values, setValues] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoError, setPhotoError] = useState('');
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
 
   const activeMenu = useMemo(
     () => MENU_ITEMS.find((item) => item.id === activeTab) ?? MENU_ITEMS[0],
@@ -701,6 +802,10 @@ export default function ProfileClient({ initialTab = 'profile' }) {
       alive = false;
     };
   }, []);
+
+  useEffect(() => () => {
+    if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+  }, [photoPreviewUrl]);
 
   const overview = useMemo(() => {
     const primary = ledgerSummary.find((row) => row.code === 'GOLD') || ledgerSummary[0];
@@ -749,6 +854,50 @@ export default function ProfileClient({ initialTab = 'profile' }) {
     setValues((current) => ({ ...current, [key]: value }));
   };
 
+  const openPhotoPicker = () => {
+    if (photoUploading) return;
+    photoInputRef.current?.click();
+  };
+
+  const handleProfilePhotoChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || photoUploading) return;
+
+    if (!file.type.startsWith('image/')) {
+      setPhotoError('Please choose an image file.');
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setPhotoPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return previewUrl;
+    });
+    setPhotoUploading(true);
+    setPhotoError('');
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+      const response = await shopkeeperApi.uploadProfilePhoto(formData);
+      const updatedProfile = response.data;
+      setProfile(updatedProfile);
+      setValues((current) => ({ ...current, ...mapProfileToValues(updatedProfile) }));
+      setPhotoPreviewUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return '';
+      });
+    } catch (error) {
+      setPhotoPreviewUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return '';
+      });
+      setPhotoError(extractMessage(error));
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
   // The account sub-views are in-page tabs, so back from one returns to the
   // Profile tab (a Link to the same /profile URL would do nothing); from the
   // Profile tab itself, back leaves the account section for Home.
@@ -788,40 +937,40 @@ export default function ProfileClient({ initialTab = 'profile' }) {
         onBack={handleBack}
       />
 
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/avif"
+        className={styles.photoInput}
+        onChange={handleProfilePhotoChange}
+      />
+
+      <div className={styles.mobileProfileTop}>
+        <ShopIdentityCard
+          values={values}
+          profile={profile}
+          photoUrl={photoPreviewUrl || profile?.profileImageUrl}
+          onPhotoClick={openPhotoPicker}
+          uploadingPhoto={photoUploading}
+        />
+      </div>
+
+      {photoError ? (
+        <div className={styles.photoError}>
+          <AlertTriangle size={16} />
+          <span>{photoError}</span>
+        </div>
+      ) : null}
+
       <div className={styles.workspace}>
         <aside className={styles.sidebar}>
-          <section className={styles.identityCard}>
-            <div className={styles.shopPhotoWrap}>
-              <div className={styles.shopPhoto} aria-hidden="true">
-                <div className={styles.shopCeiling} />
-                <div className={styles.shopCounter} />
-                <div className={styles.shopLights} />
-              </div>
-              <button className={styles.cameraButton} type="button" aria-label="Change shop photo">
-                <Camera size={20} />
-              </button>
-            </div>
-
-            <div className={styles.identityCopy}>
-              <h2>{values.shopName}</h2>
-              <span
-                className={[styles.verified, profile?.status !== 'APPROVED' && styles.verifiedPending]
-                  .filter(Boolean)
-                  .join(' ')}
-              >
-                {profile?.status === 'APPROVED' ? <ShieldCheck size={16} /> : <ShieldAlert size={16} />}
-                {values.verificationStatus}
-              </span>
-              <p>
-                <MapPin size={16} />
-                {values.city && values.state ? `${values.city}, ${values.state}` : 'Location not added'}
-              </p>
-              <p>
-                <CalendarDays size={16} />
-                Member since {values.memberSince}
-              </p>
-            </div>
-          </section>
+          <ShopIdentityCard
+            values={values}
+            profile={profile}
+            photoUrl={photoPreviewUrl || profile?.profileImageUrl}
+            onPhotoClick={openPhotoPicker}
+            uploadingPhoto={photoUploading}
+          />
 
           {overview.length ? (
             <section className={styles.overviewStrip}>
@@ -897,7 +1046,7 @@ export default function ProfileClient({ initialTab = 'profile' }) {
           ) : activeTab === 'orders' ? (
             <OrdersPanel />
           ) : activeTab === 'transactions' ? (
-            <TransactionsPanel />
+            <TransactionsPanel metalDues={profile?.metalDues ?? []} />
           ) : (
             <PlaceholderPanel item={activeMenu} />
           )}

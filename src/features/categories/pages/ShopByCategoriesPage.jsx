@@ -112,6 +112,29 @@ const WEIGHT_BUCKETS = [
   { id: '10-plus', label: '10 gm & above', test: (w) => w >= 10 },
 ];
 
+const collectCategoryIds = (category) => {
+  if (!category) return [];
+  return [
+    category.id,
+    ...(category.children ?? []).flatMap((child) => collectCategoryIds(child)),
+  ];
+};
+
+const findCategoryById = (category, id) => {
+  if (!category || !id) return null;
+  if (String(category.id) === String(id)) return category;
+  for (const child of category.children ?? []) {
+    const match = findCategoryById(child, id);
+    if (match) return match;
+  }
+  return null;
+};
+
+const categoryContains = (category, id) => Boolean(findCategoryById(category, id));
+
+const rootIdFor = (category) =>
+  category?.ancestorIds?.[0] ?? category?.parentId ?? category?.id ?? null;
+
 function CategoryBrowser() {
   const searchParams = useSearchParams();
   const { metalId, metal } = useMetalTheme();
@@ -158,18 +181,29 @@ function CategoryBrowser() {
   // parent id would show nothing. A specific subcategory chip scopes to that
   // one category (plus its own descendants, if any).
   const activeCategoryIds = useMemo(() => {
-    const collect = (category) => {
-      if (!category) return [];
-      const ids = [category.id];
-      (category.children ?? []).forEach((child) => ids.push(...collect(child)));
-      return ids;
-    };
-    if (activeFilterId === 'all') return collect(selectedCategory);
-    const chip = selectedCategory?.children?.find((child) => String(child.id) === String(activeFilterId));
-    return chip ? collect(chip) : activeFilterId ? [activeFilterId] : [];
+    if (activeFilterId === 'all') return collectCategoryIds(selectedCategory);
+    const chip = findCategoryById(selectedCategory, activeFilterId);
+    return chip ? collectCategoryIds(chip) : activeFilterId ? [activeFilterId] : [];
   }, [activeFilterId, selectedCategory]);
   const categoryIdsKey = activeCategoryIds.join(',');
   const requestedCategorySlug = searchParams.get('category');
+
+  const categoryLevels = useMemo(() => {
+    if (!selectedCategory?.children?.length) return [];
+    const levels = [];
+    let parent = selectedCategory;
+
+    while (parent?.children?.length) {
+      levels.push({ parent, children: parent.children });
+      if (activeFilterId === 'all') break;
+      parent = parent.children.find((child) => categoryContains(child, activeFilterId));
+      if (!parent || String(parent.id) === String(activeFilterId)) {
+        if (!parent?.children?.length) break;
+      }
+    }
+
+    return levels;
+  }, [activeFilterId, selectedCategory]);
 
   // Options come straight from what's already in the catalog for this
   // category — no static/hardcoded list — so the dropdown only ever offers
@@ -261,7 +295,7 @@ function CategoryBrowser() {
           // categories, so a subcategory slug like "drops" would never match there and
           // silently fall back to whatever root sorts first (e.g. "Anklets").
           const requestedCategory = flat.find((category) => category.slug === requestedCategorySlug);
-          const requestedRootId = requestedCategory ? requestedCategory.parentId ?? requestedCategory.id : null;
+          const requestedRootId = requestedCategory ? rootIdFor(requestedCategory) : null;
           setGroupedCategories(groups);
           setSelectedCategoryId(requestedRootId ?? groups[0]?.items[0]?.id ?? null);
           setActiveFilterId(requestedCategory?.parentId ? requestedCategory.id : 'all');
@@ -288,7 +322,7 @@ function CategoryBrowser() {
         // then resolve up to the root so the sidebar highlights the right parent and
         // the subcategory itself becomes the active chip filter.
         const requestedCategory = flat.find((category) => category.slug === requestedCategorySlug);
-        const requestedRootId = requestedCategory ? requestedCategory.parentId ?? requestedCategory.id : null;
+        const requestedRootId = requestedCategory ? rootIdFor(requestedCategory) : null;
         setCategories(source);
         setSelectedCategoryId(requestedRootId ?? source[0]?.id ?? null);
         setActiveFilterId(requestedCategory?.parentId ? requestedCategory.id : 'all');
@@ -423,22 +457,33 @@ function CategoryBrowser() {
             </div>
           </div>
 
-          {selectedCategory?.children?.length ? (
-            <div className={styles.chips} aria-label="Subcategories">
-              <button
-                type="button"
-                className={[styles.chip, activeFilterId === 'all' && styles['chip--active']].filter(Boolean).join(' ')}
-                onClick={() => setActiveFilterId('all')}
-              >
-                All
-              </button>
-              {selectedCategory.children.map((child) => {
-                const ChildIcon = getCategoryIcon(child.name);
-                return (
+          {categoryLevels.length ? (
+            <div className={styles.categoryLevels} aria-label="Subcategories">
+              {categoryLevels.map((level, index) => (
+                <div className={styles.categoryLevel} key={level.parent.id}>
+                  <span className={styles.categoryLevelLabel}>
+                    {index === 0 ? 'Subcategories' : `Inside ${level.parent.name}`}
+                  </span>
+                  <div className={styles.chips}>
+                    <button
+                      type="button"
+                      className={[
+                        styles.chip,
+                        (index === 0 ? activeFilterId === 'all' : String(activeFilterId) === String(level.parent.id)) &&
+                          styles['chip--active'],
+                      ].filter(Boolean).join(' ')}
+                      onClick={() => setActiveFilterId(index === 0 ? 'all' : level.parent.id)}
+                    >
+                      All
+                    </button>
+                    {level.children.map((child) => {
+                      const ChildIcon = getCategoryIcon(child.name);
+                      const active = String(activeFilterId) === String(child.id) || categoryContains(child, activeFilterId);
+                      return (
                   <button
                     type="button"
                     key={child.id}
-                    className={[styles.chip, String(activeFilterId) === String(child.id) && styles['chip--active']].filter(Boolean).join(' ')}
+                    className={[styles.chip, active && styles['chip--active']].filter(Boolean).join(' ')}
                     onClick={() => setActiveFilterId(child.id)}
                   >
                     <span className={styles.chipIcon}>
@@ -451,8 +496,11 @@ function CategoryBrowser() {
                     </span>
                     {child.name}
                   </button>
-                );
-              })}
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           ) : null}
 

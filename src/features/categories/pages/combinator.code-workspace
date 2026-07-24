@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../../../../.."
+		},
+		{
+			"path": "../../../../../../commerce-engine"
+		},
+		{
+			"path": "../../../../../../jipanditji-docker"
+		},
+		{
+			"path": "../../../../../../pet-marketplace"
+		}
+	],
+	"settings": {}
+}

@@ -51,6 +51,36 @@ export const loginB2B = createAsyncThunk(
   }
 );
 
+export const loginB2BWithGoogle = createAsyncThunk(
+  'auth/loginB2BWithGoogle',
+  async ({ idToken }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.shopkeeperGoogleLogin({ idToken });
+      const { user, accessToken, refreshToken } = response.data;
+
+      saveTokens(accessToken, refreshToken, 'b2b');
+      return { user, accessToken, refreshToken, actorType: 'b2b' };
+    } catch (err) {
+      return rejectWithValue(extractError(err));
+    }
+  }
+);
+
+export const loginB2BWithOtp = createAsyncThunk(
+  'auth/loginB2BWithOtp',
+  async ({ identifier, otp }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.verifyShopkeeperOtpLogin({ identifier, otp });
+      const { user, accessToken, refreshToken } = response.data;
+
+      saveTokens(accessToken, refreshToken, 'b2b');
+      return { user, accessToken, refreshToken, actorType: 'b2b' };
+    } catch (err) {
+      return rejectWithValue(extractError(err));
+    }
+  }
+);
+
 export const registerB2B = createAsyncThunk(
   'auth/registerB2B',
   async (businessData, { rejectWithValue }) => {

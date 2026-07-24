@@ -28,11 +28,31 @@ const formatDate = (value, withTime = false) =>
 const weightByMetal = (items) => {
   const groups = new Map();
   items.forEach((item) => {
-    const metalName = item.product?.metal?.name ?? 'Other';
-    const weight = Number(item.variant?.weightGrams ?? 0) * Number(item.quantity ?? 0);
+    const metalName = item.metalName ?? item.product?.metal?.name ?? 'Other';
+    const weight =
+      item.fulfillmentItem
+        ? Number(item.fineWeight ?? 0)
+        : Number(item.variant?.weightGrams ?? 0) * Number(item.quantity ?? 0);
     groups.set(metalName, (groups.get(metalName) ?? 0) + weight);
   });
   return Array.from(groups.entries());
+};
+
+const orderDisplayItems = (order) => {
+  const fulfillmentItems = order.fulfillmentOrder?.items ?? [];
+  if (fulfillmentItems.length) {
+    const metalName = order.fulfillmentOrder?.metal?.name ?? 'Metal';
+    return fulfillmentItems.map((item) => ({
+      id: `fulfillment-${item.id}`,
+      fulfillmentItem: true,
+      productNameSnapshot: item.itemName,
+      metalName,
+      grossWeight: item.grossWeight,
+      tunch: item.tunch,
+      fineWeight: item.fineWeight,
+    }));
+  }
+  return order.items ?? [];
 };
 
 export default function OrderDetailPage({ id }) {
@@ -87,7 +107,7 @@ export default function OrderDetailPage({ id }) {
     );
   }
 
-  const items = order.items ?? [];
+  const items = orderDisplayItems(order);
   const weights = weightByMetal(items);
   const meta = ORDER_STATUS_META[order.status] ?? ORDER_STATUS_META.REQUESTED;
   const delivery = order.delivery;
@@ -125,14 +145,24 @@ export default function OrderDetailPage({ id }) {
                   </span>
                   <div className={styles.itemInfo}>
                     <p className={styles.itemName}>{item.productNameSnapshot}</p>
-                    <p className={styles.itemMeta}>
-                      SKU {item.skuSnapshot} · {item.product?.metal?.name ?? 'Metal'} ·{' '}
-                      {formatWeight(item.variant?.weightGrams)} each
-                    </p>
+                    {item.fulfillmentItem ? (
+                      <p className={styles.itemMeta}>
+                        {item.metalName} · Gross {formatWeight(item.grossWeight)} · Tunch {Number(item.tunch).toLocaleString('en-IN')}
+                      </p>
+                    ) : (
+                      <p className={styles.itemMeta}>
+                        SKU {item.skuSnapshot} · {item.product?.metal?.name ?? 'Metal'} ·{' '}
+                        {formatWeight(item.variant?.weightGrams)} each
+                      </p>
+                    )}
                   </div>
                   <div className={styles.itemQty}>
-                    <span>Qty {Number(item.quantity)}</span>
-                    <strong>{formatWeight(Number(item.variant?.weightGrams ?? 0) * Number(item.quantity ?? 0))}</strong>
+                    {item.fulfillmentItem ? <span>Fine wt</span> : <span>Qty {Number(item.quantity)}</span>}
+                    <strong>
+                      {item.fulfillmentItem
+                        ? formatWeight(item.fineWeight)
+                        : formatWeight(Number(item.variant?.weightGrams ?? 0) * Number(item.quantity ?? 0))}
+                    </strong>
                   </div>
                 </div>
               );

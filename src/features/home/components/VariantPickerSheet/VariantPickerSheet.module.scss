@@ -20,7 +20,8 @@
 .sheet {
   width: 100%;
   max-width: 480px;
-  max-height: 82vh;
+  min-height: min(68dvh, 620px);
+  max-height: calc(100dvh - 72px);
   display: flex;
   flex-direction: column;
   background: db.$db-bg-elevated;
@@ -30,6 +31,7 @@
   animation: slideUp 0.22s ease;
 
   @include md {
+    min-height: auto;
     max-height: 76vh;
     border-radius: 18px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -89,8 +91,10 @@
 }
 
 .list {
+  flex: 1;
   overflow-y: auto;
-  padding: 0.4rem 1.1rem 1.1rem;
+  padding: 0.4rem 1.1rem calc(8.4rem + env(safe-area-inset-bottom, 0px));
+  overscroll-behavior: contain;
 }
 
 .row {

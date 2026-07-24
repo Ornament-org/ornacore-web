@@ -29,6 +29,7 @@ import { productApi } from '@/services/productApi';
 import { ROUTES } from '@/constants/routes';
 import Button from '@/components/ui/Button/Button';
 import { isVariantOutOfStock } from '@/utils/inventory';
+import FloatingCartBar from '@/features/home/components/FloatingCartBar/FloatingCartBar';
 import styles from './ProductDetailPage.module.scss';
 
 const formatWeight = (grams) => {
@@ -483,15 +484,21 @@ export default function ProductDetailPage({ slug }) {
 
             <div className={styles.actionRow}>
               {!outOfStock && quantity > 0 ? (
-                <div className={styles.qtyControl}>
-                  <button onClick={handleDecrement} className={styles.qtyBtn} aria-label="Decrease quantity">
-                    <Minus size={16} strokeWidth={2.5} />
-                  </button>
-                  <span className={styles.qtyValue}>{quantity}</span>
-                  <button onClick={handleIncrement} className={styles.qtyBtn} aria-label="Increase quantity">
-                    <Plus size={16} strokeWidth={2.5} />
-                  </button>
-                </div>
+                <>
+                  <div className={styles.qtyControl}>
+                    <button onClick={handleDecrement} className={styles.qtyBtn} aria-label="Decrease quantity">
+                      <Minus size={16} strokeWidth={2.5} />
+                    </button>
+                    <span className={styles.qtyValue}>{quantity}</span>
+                    <button onClick={handleIncrement} className={styles.qtyBtn} aria-label="Increase quantity">
+                      <Plus size={16} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                  <Link href={ROUTES.CART} className={styles.goToCartBtn}>
+                    Go to Cart
+                    <ChevronRight size={16} />
+                  </Link>
+                </>
               ) : (
                 <Button
                   className={styles.addToCartBtn}
@@ -516,7 +523,6 @@ export default function ProductDetailPage({ slug }) {
             <div className={styles.deliveryBadges}>
               <div className={styles.deliveryBadge}><Shield size={16} /><span>100% Hallmarked</span></div>
               <div className={styles.deliveryBadge}><Truck size={16} /><span>Free Delivery</span></div>
-              <div className={styles.deliveryBadge}><RefreshCw size={16} /><span>7 Day Returns</span></div>
             </div>
           </motion.div>
         </div>
@@ -566,6 +572,7 @@ export default function ProductDetailPage({ slug }) {
           </div>
         </div>
       </div>
+      <FloatingCartBar />
     </div>
   );
 }

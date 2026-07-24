@@ -20,7 +20,8 @@ apiClient.interceptors.request.use((config) => {
 // dead refresh token) — none of these should trigger the refresh-and-redirect
 // flow below, or a plain "wrong password" turns into a forced navigation to
 // the login page instead of an inline error on the form.
-const AUTH_ENDPOINT_PATTERN = /\/auth\/(login|register|refresh)$/;
+const AUTH_ENDPOINT_PATTERN =
+  /\/auth\/(login|register|refresh|google-login|otp-login\/(?:request|verify)|password-reset\/(?:request|verify|confirm))$/;
 
 // The backend rotates the refresh token on every use and revokes the entire
 // session if an already-spent one is replayed. Two things follow from that:

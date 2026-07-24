@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   loginB2B,
+  loginB2BWithGoogle,
+  loginB2BWithOtp,
   registerB2B,
   fetchCurrentUser,
   changePassword,
@@ -63,6 +65,14 @@ const authSlice = createSlice({
       .addCase(loginB2B.pending, handlePending)
       .addCase(loginB2B.fulfilled, handleLoginFulfilled)
       .addCase(loginB2B.rejected, handleRejected)
+
+      .addCase(loginB2BWithGoogle.pending, handlePending)
+      .addCase(loginB2BWithGoogle.fulfilled, handleLoginFulfilled)
+      .addCase(loginB2BWithGoogle.rejected, handleRejected)
+
+      .addCase(loginB2BWithOtp.pending, handlePending)
+      .addCase(loginB2BWithOtp.fulfilled, handleLoginFulfilled)
+      .addCase(loginB2BWithOtp.rejected, handleRejected)
 
       // ── Register ──
       // registerB2B now carries a real session (same payload shape as

@@ -248,10 +248,6 @@ export default function BusinessRegisterPage() {
             <span>Auto-fill address, city, state and pincode</span>
           </button>
 
-          {(validationError || error) ? (
-            <div className={styles.errorAlert}>{validationError || error}</div>
-          ) : null}
-
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.twoCol}>
               <Field number="1" label="Owner Name" required icon={UserRound}>
@@ -348,7 +344,10 @@ export default function BusinessRegisterPage() {
                 <span />
               </div>
             </section>
-
+            
+              {(validationError || error) ? (
+            <div className={styles.errorAlert}>{validationError || error}</div>
+          ) : null}
             <button className={styles.submitButton} type="submit" disabled={loading}>
               <Store size={21} />
               {loading ? 'Registering...' : 'Register Shop'}

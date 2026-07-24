@@ -25,6 +25,21 @@ export const authApi = {
   // POST /shopkeeper/auth/login  body: { identifier, password }
   shopkeeperLogin: (credentials) => apiClient.post(API_ENDPOINTS.SHOPKEEPER.LOGIN, credentials),
 
+  shopkeeperGoogleLogin: (payload) => apiClient.post(API_ENDPOINTS.SHOPKEEPER.GOOGLE_LOGIN, payload),
+
+  requestShopkeeperOtpLogin: (payload) => apiClient.post(API_ENDPOINTS.SHOPKEEPER.OTP_LOGIN_REQUEST, payload),
+
+  verifyShopkeeperOtpLogin: (payload) => apiClient.post(API_ENDPOINTS.SHOPKEEPER.OTP_LOGIN_VERIFY, payload),
+
+  requestShopkeeperPasswordReset: (payload) =>
+    apiClient.post(API_ENDPOINTS.SHOPKEEPER.PASSWORD_RESET_REQUEST, payload),
+
+  verifyShopkeeperPasswordReset: (payload) =>
+    apiClient.post(API_ENDPOINTS.SHOPKEEPER.PASSWORD_RESET_VERIFY, payload),
+
+  confirmShopkeeperPasswordReset: (payload) =>
+    apiClient.post(API_ENDPOINTS.SHOPKEEPER.PASSWORD_RESET_CONFIRM, payload),
+
   // POST /shopkeeper/auth/register
   shopkeeperRegister: (data) => apiClient.post(API_ENDPOINTS.SHOPKEEPER.REGISTER, data),
 
