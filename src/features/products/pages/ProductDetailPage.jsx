@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { addItem, updateQuantity } from '@/redux/slices/cartSlice';
 import { toggleWishlist } from '@/redux/slices/wishlistSlice';
+import { ProductDetailSkeleton } from '@/components/skeleton/AppSkeletons';
 import { productApi } from '@/services/productApi';
 import { ROUTES } from '@/constants/routes';
 import Button from '@/components/ui/Button/Button';
@@ -197,14 +198,7 @@ export default function ProductDetailPage({ slug }) {
   );
 
   if (loading) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.loadingState}>
-          <PackageSearch size={34} />
-          <p>Loading product…</p>
-        </div>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (notFound || !product) {

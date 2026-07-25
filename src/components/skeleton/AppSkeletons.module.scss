@@ -1,0 +1,477 @@
+@use '@/styles/dark-theme' as db;
+@use '@/styles/breakpoints' as *;
+
+@mixin shimmer {
+  background: linear-gradient(110deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045));
+  background-size: 240% 100%;
+  animation: appSkeletonShimmer 1.15s ease-in-out infinite;
+}
+
+@mixin block($radius: 8px) {
+  border: 1px solid db.$db-border;
+  border-radius: $radius;
+  background-color: db.$db-bg-card;
+  @include shimmer;
+}
+
+.homePage,
+.listPage,
+.categoryPage,
+.profilePage,
+.productDetailPage {
+  width: min(100%, 1360px);
+  margin: 0 auto;
+  padding: 1rem 0.8rem 6.5rem;
+
+  @include md {
+    padding: 1.25rem 1.25rem 6.9rem;
+  }
+}
+
+.heroSkeleton {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.7rem;
+  min-height: 220px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid db.$db-border;
+  background: db.$db-bg-card;
+
+  @include md {
+    grid-template-columns: 0.9fr 1.1fr;
+    min-height: 310px;
+  }
+}
+
+.heroCopy {
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+  padding: 1.2rem;
+
+  span,
+  strong,
+  em,
+  b {
+    display: block;
+    height: 16px;
+    @include block(999px);
+  }
+
+  strong {
+    width: 78%;
+    height: 36px;
+  }
+
+  em {
+    width: 62%;
+  }
+
+  b {
+    width: 150px;
+    height: 34px;
+  }
+}
+
+.heroImage {
+  min-height: 190px;
+  @include block(0);
+}
+
+.homeSection {
+  margin-top: 1rem;
+}
+
+.sectionTitle {
+  width: 190px;
+  height: 22px;
+  margin-bottom: 0.65rem;
+  @include block(999px);
+}
+
+.collectionRow,
+.chipRow {
+  display: flex;
+  gap: 0.55rem;
+  overflow: hidden;
+}
+
+.collectionCard {
+  flex: 0 0 170px;
+  height: 90px;
+  @include block(8px);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+
+  > span {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    @include block(50%);
+  }
+
+  div {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  strong,
+  em {
+    display: block;
+    @include block(999px);
+  }
+
+  strong {
+    width: min(280px, 72vw);
+    height: 24px;
+  }
+
+  em {
+    width: 110px;
+    height: 13px;
+  }
+}
+
+.chip {
+  flex: 0 0 92px;
+  height: 32px;
+  @include block(999px);
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.8rem 0;
+
+  span {
+    height: 42px;
+    @include block(10px);
+
+    &:first-child {
+      flex: 1;
+    }
+
+    &:last-child {
+      width: 120px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+
+    span:last-child {
+      width: 100%;
+    }
+  }
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+
+  @include sm {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include lg {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @include xl {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.productCard {
+  min-height: 210px;
+  @include block(8px);
+}
+
+.categoryShell {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 0.45rem;
+
+  @include md {
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  @include lg {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}
+
+.categorySide,
+.categoryContent {
+  min-height: 560px;
+  padding: 0.5rem;
+  border: 1px solid db.$db-border;
+  border-radius: 12px;
+  background: db.$db-bg-card;
+}
+
+.categorySide {
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+}
+
+.categoryItem {
+  height: 58px;
+  @include block(8px);
+}
+
+.categoryContent {
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+}
+
+.contentHead {
+  display: grid;
+  gap: 0.4rem;
+
+  strong,
+  em {
+    display: block;
+    @include block(999px);
+  }
+
+  strong {
+    width: min(260px, 70%);
+    height: 24px;
+  }
+
+  em {
+    width: min(420px, 86%);
+    height: 14px;
+  }
+}
+
+.profilePage {
+  width: min(100%, 1280px);
+}
+
+.profileWorkspace {
+  display: grid;
+  gap: 0.75rem;
+
+  @include lg {
+    grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.profileSide,
+.profileDetail {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.identitySkeleton,
+.menuSkeleton,
+.secureSkeleton,
+.formSkeleton,
+.orderItems,
+.orderSummary,
+.orderRow,
+.summaryLine {
+  @include block(12px);
+}
+
+.identitySkeleton {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem;
+
+  > span {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    @include shimmer;
+  }
+
+  div {
+    display: grid;
+    align-content: center;
+    gap: 0.45rem;
+  }
+
+  strong,
+  em {
+    display: block;
+    height: 14px;
+    border-radius: 999px;
+    @include shimmer;
+  }
+
+  strong {
+    width: 78%;
+    height: 20px;
+  }
+
+  em {
+    width: 56%;
+  }
+}
+
+.menuSkeleton {
+  height: 58px;
+}
+
+.secureSkeleton {
+  height: 88px;
+}
+
+.formSkeleton {
+  min-height: 150px;
+}
+
+.orderGrid {
+  display: grid;
+  gap: 0.8rem;
+
+  @include lg {
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.7fr);
+  }
+}
+
+.orderItems,
+.orderSummary {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+  padding: 0.8rem;
+}
+
+.orderRow {
+  height: 74px;
+}
+
+.summaryLine {
+  height: 34px;
+}
+
+.detailBreadcrumb {
+  width: min(320px, 72vw);
+  height: 18px;
+  margin-bottom: 0.9rem;
+  @include block(999px);
+}
+
+.productDetailGrid {
+  display: grid;
+  gap: 1rem;
+
+  @include lg {
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    align-items: start;
+  }
+}
+
+.gallerySkeleton {
+  display: grid;
+  gap: 0.65rem;
+
+  @include md {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+}
+
+.thumbColumn {
+  display: none;
+
+  @include md {
+    display: grid;
+    gap: 0.55rem;
+  }
+}
+
+.thumbSkeleton {
+  aspect-ratio: 1;
+  @include block(8px);
+}
+
+.mainProductImage {
+  min-height: min(72vw, 520px);
+  @include block(10px);
+
+  @include lg {
+    min-height: 560px;
+  }
+}
+
+.productInfoSkeleton {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid db.$db-border;
+  border-radius: 12px;
+  background: db.$db-bg-card;
+
+  span,
+  strong,
+  em,
+  b,
+  i {
+    display: block;
+    @include block(999px);
+  }
+
+  span {
+    width: 160px;
+    height: 24px;
+  }
+
+  strong {
+    width: min(460px, 88%);
+    height: 36px;
+  }
+
+  em {
+    width: 180px;
+    height: 28px;
+  }
+
+  b {
+    width: min(100%, 420px);
+    height: 48px;
+  }
+
+  i {
+    width: 82px;
+    height: 44px;
+  }
+}
+
+.specGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.specCard {
+  height: 78px;
+  @include block(10px);
+}
+
+@keyframes appSkeletonShimmer {
+  to {
+    background-position-x: -240%;
+  }
+}

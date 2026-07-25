@@ -11,7 +11,7 @@ const DEFAULT_BRANDING = {
 
 const getBrandingMetadata = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/store-settings/branding`, { cache: 'no-store' });
+    const response = await fetch(`${API_BASE_URL}/store-settings/branding`, { next: { revalidate: 300 } });
 
     if (!response.ok) return DEFAULT_BRANDING;
 
@@ -52,22 +52,24 @@ export const viewport = {
   themeColor: '#0b0a09',
 };
 
-// Runs before React hydrates so a returning visitor who chose dark mode never
-// sees a light-mode flash — the CSS itself already defaults to light (no
-// attribute) whenever this finds nothing stored, so first-ever visits need no
-// script at all.
+// Runs before React hydrates: dark is the storefront default, but a returning
+// visitor who explicitly chose light mode keeps that preference.
 const themeInitScript = `
 (function () {
   try {
     var stored = window.localStorage.getItem('ornacore-theme');
-    if (stored === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    if (stored === 'light') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
   } catch (e) {}
 })();
 `;
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       {/* suppressHydrationWarning: browser extensions (ColorZilla, Grammarly,
           etc.) inject attributes like `cz-shortcut-listen` onto <body> before
           React hydrates, which otherwise trips a hydration mismatch. */}

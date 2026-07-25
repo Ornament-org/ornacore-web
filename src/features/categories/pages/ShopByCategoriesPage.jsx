@@ -25,6 +25,7 @@ import FloatingCartBar from '@/features/home/components/FloatingCartBar/Floating
 import MetalSwitcher from '@/features/home/components/MetalSwitcher/MetalSwitcher';
 import VariantPickerSheet from '@/features/home/components/VariantPickerSheet/VariantPickerSheet';
 import { MetalThemeProvider, useMetalTheme } from '@/features/home/context/MetalThemeContext';
+import { CategoriesSkeleton } from '@/components/skeleton/AppSkeletons';
 import { addItem, updateQuantity } from '@/redux/slices/cartSlice';
 import { productApi } from '@/services/productApi';
 import { ROUTES } from '@/constants/routes';
@@ -397,7 +398,9 @@ function CategoryBrowser() {
         <aside className={styles.sidebar} aria-label={isAllMetals ? 'All categories' : `${metal.label} categories`}>
           <div className={isAllMetals ? styles.categoryScrollerGrouped : styles.categoryScroller}>
             {loadingCategories ? (
-              <div className={styles.emptySide}>Loading categories...</div>
+              <div className={styles.sideSkeleton} aria-busy="true" aria-label="Loading categories">
+                {Array.from({ length: 7 }, (_, index) => <span key={index} />)}
+              </div>
             ) : isAllMetals ? (
               groupedCategories.length ? (
                 groupedCategories.map((group) => (
@@ -727,7 +730,7 @@ function ShopByCategoriesPageInner() {
 
 export default function ShopByCategoriesPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<CategoriesSkeleton />}>
       <ShopByCategoriesPageInner />
     </Suspense>
   );

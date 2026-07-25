@@ -9,6 +9,7 @@ import FloatingCartBar from '@/features/home/components/FloatingCartBar/Floating
 import MetalSwitcher from '@/features/home/components/MetalSwitcher/MetalSwitcher';
 import ProductCardB2B from '@/features/home/components/ProductCardB2B/ProductCardB2B';
 import { MetalThemeProvider, useMetalTheme } from '@/features/home/context/MetalThemeContext';
+import { ProductsSkeleton } from '@/components/skeleton/AppSkeletons';
 import { useMetalIdMap } from '@/hooks/useMetalIdMap';
 import { productApi } from '@/services/productApi';
 import { ROUTES } from '@/constants/routes';
@@ -369,7 +370,7 @@ function ProductsPageInner() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<ProductsSkeleton />}>
       <ProductsPageInner />
     </Suspense>
   );
