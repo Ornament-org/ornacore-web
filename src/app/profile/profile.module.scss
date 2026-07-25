@@ -1217,6 +1217,87 @@
   }
 }
 
+.buttonSpinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: profileButtonSpin 0.65s linear infinite;
+}
+
+.panelSkeletonHead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.62rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+
+  > span {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+  }
+
+  div {
+    display: grid;
+    gap: 0.38rem;
+  }
+
+  strong,
+  em,
+  > span {
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045));
+    background-size: 240% 100%;
+    animation: profileShimmer 1.15s ease-in-out infinite;
+  }
+
+  strong,
+  em {
+    display: block;
+    border-radius: 999px;
+  }
+
+  strong {
+    width: min(260px, 80%);
+    height: 20px;
+  }
+
+  em {
+    width: min(380px, 92%);
+    height: 14px;
+  }
+}
+
+.panelSkeletonRows {
+  display: grid;
+  gap: 0.56rem;
+
+  span {
+    display: block;
+    height: 64px;
+    border: 1px solid db.$db-border;
+    border-radius: 10px;
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045));
+    background-size: 240% 100%;
+    animation: profileShimmer 1.15s ease-in-out infinite;
+  }
+}
+
+@keyframes profileButtonSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes profileShimmer {
+  to {
+    background-position-x: -240%;
+  }
+}
+
 .verifiedPending {
   border-color: rgba(255, 188, 54, 0.5);
   background: rgba(255, 188, 54, 0.14);

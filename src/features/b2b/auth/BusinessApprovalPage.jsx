@@ -454,7 +454,7 @@ export default function BusinessApprovalPage() {
           </div>
           <button type="button" className={styles.refreshButton} onClick={handleRefresh} disabled={loading}>
             <RefreshCw size={18} className={loading ? styles.spin : undefined} />
-            {loading ? 'Refreshing...' : 'Refresh Approval Status'}
+            Refresh Approval Status
           </button>
           <button type="button" className={styles.secondaryButton} onClick={handleLogout}>
             Logout

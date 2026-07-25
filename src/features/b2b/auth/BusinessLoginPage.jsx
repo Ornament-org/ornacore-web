@@ -72,6 +72,10 @@ const subtitleForMode = (mode) => {
   return 'Reset access to your business dashboard';
 };
 
+function ButtonSpinner() {
+  return <span className={styles.buttonSpinner} aria-hidden="true" />;
+}
+
 export default function BusinessLoginPage() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -444,7 +448,8 @@ export default function BusinessLoginPage() {
 
             <div className={styles.loginLinks}>
               <button type="button" onClick={requestLoginOtp} disabled={otpLoginLoading}>
-                {otpLoginLoading ? 'Sending...' : 'Send OTP'}
+                {otpLoginLoading ? <ButtonSpinner /> : null}
+                Send OTP
               </button>
               <button type="button" onClick={() => {
                 setResetForm((current) => ({ ...current, identifier: form.identifier }));
@@ -455,8 +460,8 @@ export default function BusinessLoginPage() {
             </div>
 
             <button className={styles.submitButton} type="submit" disabled={loading}>
-              <Lock size={22} />
-              {loading ? 'Logging in...' : 'Login to Dashboard'}
+              {loading ? <ButtonSpinner /> : <Lock size={22} />}
+              Login to Dashboard
             </button>
 
             <div className={styles.divider}><span>or</span></div>
@@ -501,11 +506,12 @@ export default function BusinessLoginPage() {
                 </div>
               </div>
               <button className={styles.submitButton} type="submit" disabled={loading}>
-                <CheckCircle2 size={22} />
-                {loading ? 'Verifying...' : 'Verify OTP'}
+                {loading ? <ButtonSpinner /> : <CheckCircle2 size={22} />}
+                Verify OTP
               </button>
               <button className={styles.resendButton} type="button" onClick={requestLoginOtp} disabled={otpLoginLoading}>
-                {otpLoginLoading ? 'Sending OTP...' : 'Send OTP again'}
+                {otpLoginLoading ? <ButtonSpinner /> : null}
+                Send OTP again
               </button>
             </form>
           )}
@@ -531,7 +537,8 @@ export default function BusinessLoginPage() {
                 </span>
               </label>
               <button className={styles.submitButton} type="submit" disabled={resetLoading}>
-                {resetLoading ? 'Sending OTP...' : 'Send OTP'}
+                {resetLoading ? <ButtonSpinner /> : null}
+                Send OTP
               </button>
             </form>
           )}
@@ -557,7 +564,8 @@ export default function BusinessLoginPage() {
                 </span>
               </label>
               <button className={styles.submitButton} type="submit" disabled={resetLoading}>
-                {resetLoading ? 'Verifying...' : 'Verify OTP'}
+                {resetLoading ? <ButtonSpinner /> : null}
+                Verify OTP
               </button>
             </form>
           )}
@@ -604,7 +612,8 @@ export default function BusinessLoginPage() {
                 </span>
               </label>
               <button className={styles.submitButton} type="submit" disabled={resetLoading}>
-                {resetLoading ? 'Saving...' : 'Save New Password'}
+                {resetLoading ? <ButtonSpinner /> : null}
+                Save New Password
               </button>
             </form>
           )}

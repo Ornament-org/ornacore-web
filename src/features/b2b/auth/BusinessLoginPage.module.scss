@@ -467,6 +467,9 @@
 }
 
 .resendButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
   justify-self: center;
   border: 0;
   background: transparent;
@@ -482,6 +485,23 @@
 
   &:not(:disabled):hover {
     text-decoration: underline;
+  }
+}
+
+.buttonSpinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: buttonSpin 0.65s linear infinite;
+}
+
+@keyframes buttonSpin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

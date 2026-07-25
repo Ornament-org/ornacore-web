@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Gem, PackageSearch, Truck } from 'lucide-react';
+import { OrderDetailSkeleton } from '@/components/skeleton/AppSkeletons';
 import { shopkeeperApi } from '@/services/shopkeeperApi';
 import { ROUTES } from '@/constants/routes';
 import { ORDER_STATUS_META } from '@/constants/orderStatus';
@@ -84,14 +85,7 @@ export default function OrderDetailPage({ id }) {
   }, [id]);
 
   if (loading) {
-    return (
-      <main className={styles.page}>
-        <div className={styles.stateBlock}>
-          <PackageSearch size={34} />
-          <p>Loading order…</p>
-        </div>
-      </main>
-    );
+    return <OrderDetailSkeleton />;
   }
 
   if (notFound || !order) {

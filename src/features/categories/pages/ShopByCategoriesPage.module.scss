@@ -734,6 +734,21 @@ $pane-max-height: calc(100dvh - #{$sticky-header-offset} - #{$pane-bottom-gutter
   }
 }
 
+.sideSkeleton {
+  display: grid;
+  gap: 0.42rem;
+  padding: 0.42rem;
+
+  span {
+    display: block;
+    height: 58px;
+    border-radius: 8px;
+    background: linear-gradient(110deg, db.$db-bg-card, db.$db-bg-card-hover, db.$db-bg-card);
+    background-size: 240% 100%;
+    animation: shimmer 1.3s ease infinite;
+  }
+}
+
 .emptyProducts {
   grid-column: 1 / -1;
   min-height: 240px;

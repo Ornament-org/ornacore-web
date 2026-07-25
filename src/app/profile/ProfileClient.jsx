@@ -30,6 +30,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import AccountHeader from '@/features/account/components/AccountHeader/AccountHeader';
+import { ProfileSkeleton } from '@/components/skeleton/AppSkeletons';
 import { shopkeeperApi } from '@/services/shopkeeperApi';
 import { ROUTES } from '@/constants/routes';
 import { ORDER_STATUS_META } from '@/constants/orderStatus';
@@ -309,7 +310,8 @@ function SectionCard({ section, values, editing, saving, errorMessage, onEditTog
             disabled={saving}
           >
             <Pencil size={18} />
-            {saving ? 'Saving…' : editing ? 'Save' : 'Edit'}
+            {saving ? <span className={styles.buttonSpinner} aria-hidden="true" /> : null}
+            {editing ? 'Save' : 'Edit'}
           </button>
         ) : null}
       </div>
@@ -468,10 +470,27 @@ function AddressManagerPanel({ profile, onSaved }) {
         ))}
 
         <button type="submit" disabled={saving}>
-          <ShieldCheck size={18} />
-          {saving ? 'Saving...' : 'Save Address'}
+          {saving ? <span className={styles.buttonSpinner} aria-hidden="true" /> : <ShieldCheck size={18} />}
+          Save Address
         </button>
       </form>
+    </section>
+  );
+}
+
+function PanelRowsSkeleton({ rows = 4 }) {
+  return (
+    <section className={styles.formSection} aria-busy="true">
+      <div className={styles.panelSkeletonHead}>
+        <span />
+        <div>
+          <strong />
+          <em />
+        </div>
+      </div>
+      <div className={styles.panelSkeletonRows}>
+        {Array.from({ length: rows }, (_, index) => <span key={index} />)}
+      </div>
     </section>
   );
 }
@@ -505,14 +524,7 @@ function OrdersPanel() {
   }, []);
 
   if (loading) {
-    return (
-      <section className={styles.formSection}>
-        <div className={styles.ordersEmpty}>
-          <PackageSearch size={34} />
-          <p>Loading your orders…</p>
-        </div>
-      </section>
-    );
+    return <PanelRowsSkeleton rows={5} />;
   }
 
   if (error) {
@@ -663,7 +675,7 @@ function ShopIdentityCard({ values, profile, photoUrl, onPhotoClick, uploadingPh
           onClick={onPhotoClick}
           disabled={uploadingPhoto}
         >
-          <Camera size={20} />
+          {uploadingPhoto ? <span className={styles.buttonSpinner} aria-hidden="true" /> : <Camera size={20} />}
         </button>
       </div>
 
@@ -737,14 +749,7 @@ function TransactionsPanel({ metalDues = [] }) {
   );
 
   if (loading) {
-    return (
-      <section className={styles.formSection}>
-        <div className={styles.ordersEmpty}>
-          <IndianRupee size={34} />
-          <p>Loading your transactions…</p>
-        </div>
-      </section>
-    );
+    return <PanelRowsSkeleton rows={6} />;
   }
 
   if (error) {
@@ -1025,11 +1030,7 @@ export default function ProfileClient({ initialTab = 'profile' }) {
   };
 
   if (loading) {
-    return (
-      <main className={styles.page}>
-        <div className={styles.loadingState}>Loading your shop profile…</div>
-      </main>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!values) {

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, LayoutGrid, Zap, User } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import styles from './BottomNav.module.scss';
@@ -15,14 +16,37 @@ const ITEMS = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [optimisticTarget, setOptimisticTarget] = useState(null);
+
+  useEffect(() => {
+    ITEMS.forEach((item) => router.prefetch(item.href));
+  }, [router]);
+
+  const handleNavigate = (event, href) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    if (pathname === href) {
+      event.preventDefault();
+      setOptimisticTarget(null);
+      return;
+    }
+    setOptimisticTarget({ href, from: pathname });
+  };
 
   return (
     <nav className={styles.nav} aria-label="Primary">
       {ITEMS.map((item) => {
-        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const visiblePathname = optimisticTarget?.from === pathname ? optimisticTarget.href : pathname;
+        const active = visiblePathname === item.href || visiblePathname.startsWith(`${item.href}/`);
         if (item.primary) {
           return (
-            <Link key={item.id} href={item.href} className={styles.primaryItem}>
+            <Link
+              key={item.id}
+              href={item.href}
+              className={styles.primaryItem}
+              onClick={(event) => handleNavigate(event, item.href)}
+              aria-current={active ? 'page' : undefined}
+            >
               <span className={styles.primaryBtn}>
                 <item.icon size={22} strokeWidth={2} />
               </span>
@@ -35,6 +59,8 @@ export default function BottomNav() {
             key={item.id}
             href={item.href}
             className={[styles.item, active && styles['item--active']].filter(Boolean).join(' ')}
+            onClick={(event) => handleNavigate(event, item.href)}
+            aria-current={active ? 'page' : undefined}
           >
             <item.icon size={20} strokeWidth={active ? 2.25 : 1.75} />
             <span className={styles.label}>{item.label}</span>

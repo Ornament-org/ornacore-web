@@ -452,6 +452,23 @@
   }
 }
 
+.buttonSpinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: buttonSpin 0.65s linear infinite;
+}
+
+@keyframes buttonSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .emailOtpRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -466,6 +483,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.36rem;
     min-height: 42px;
     padding: 0 0.82rem;
     border: 1px solid rgba(255, 188, 54, 0.5);

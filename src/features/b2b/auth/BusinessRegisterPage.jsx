@@ -81,6 +81,10 @@ function Field({ number, label, required, icon: Icon, children, hint, error }) {
   );
 }
 
+function ButtonSpinner() {
+  return <span className={styles.buttonSpinner} aria-hidden="true" />;
+}
+
 export default function BusinessRegisterPage() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -345,8 +349,8 @@ export default function BusinessRegisterPage() {
                   onClick={requestEmailOtp}
                   disabled={emailOtpLoading || emailVerified}
                 >
-                  {emailVerified ? <CheckCircle2 size={17} /> : null}
-                  {emailVerified ? 'Verified' : emailOtpLoading ? 'Sending...' : 'Send OTP'}
+                  {emailVerified ? <CheckCircle2 size={17} /> : emailOtpLoading ? <ButtonSpinner /> : null}
+                  {emailVerified ? 'Verified' : 'Send OTP'}
                 </button>
               </Field>
             </div>
@@ -365,7 +369,8 @@ export default function BusinessRegisterPage() {
                   />
                 </label>
                 <button type="button" onClick={verifyEmailOtp} disabled={emailOtpLoading || emailVerified}>
-                  {emailVerified ? 'Verified' : emailOtpLoading ? 'Verifying...' : 'Verify Email'}
+                  {emailOtpLoading ? <ButtonSpinner /> : null}
+                  {emailVerified ? 'Verified' : 'Verify Email'}
                 </button>
                 {emailOtpMessage ? <p>{emailOtpMessage}</p> : null}
               </div>
@@ -392,8 +397,8 @@ export default function BusinessRegisterPage() {
               <span className={[styles.label, styles.addressLabel].join(' ')}>
                 <span>6. Shop Address <em>*</em></span>
                 <button type="button" onClick={useCurrentLocation} disabled={locating} aria-label="Use current location">
-                  <Navigation size={16} />
-                  <span>{locating ? 'Locating…' : 'Use current location'}</span>
+                  {locating ? <ButtonSpinner /> : <Navigation size={16} />}
+                  <span>Use current location</span>
                 </button>
               </span>
               <span className={styles.textareaShell}>
@@ -453,8 +458,8 @@ export default function BusinessRegisterPage() {
             <div className={styles.errorAlert}>{validationError || error}</div>
           ) : null}
             <button className={styles.submitButton} type="submit" disabled={loading}>
-              <Store size={21} />
-              {loading ? 'Registering...' : 'Register Shop'}
+              {loading ? <ButtonSpinner /> : <Store size={21} />}
+              Register Shop
             </button>
           </form>
 
