@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import {
   BarChart3,
   BriefcaseBusiness,
   Building2,
+  CheckCircle2,
   Eye,
   EyeOff,
   Lock,
@@ -22,7 +23,9 @@ import {
   UserRound,
 } from 'lucide-react';
 import { registerB2B } from '@/redux/actions/authActions';
+import { fetchBranding } from '@/redux/slices/brandingSlice';
 import { ROUTES } from '@/constants/routes';
+import { authApi } from '@/services/authApi';
 import { fetchCurrentAddress, LocationPermissionDeniedError } from '@/services/locationService';
 import styles from './BusinessRegisterPage.module.scss';
 
@@ -36,6 +39,7 @@ const INITIAL_FORM = {
   city: '',
   state: '',
   pincode: '',
+  emailOtp: '',
   // Captured silently from "Use current location" — sent to the backend but
   // never rendered as a field. Dropped the moment the address is hand-edited
   // afterward, since it may no longer match the typed text.
@@ -61,7 +65,7 @@ const FEATURES = [
   },
 ];
 
-function Field({ number, label, required, icon: Icon, children, hint }) {
+function Field({ number, label, required, icon: Icon, children, hint, error }) {
   return (
     <label className={styles.field}>
       <span className={styles.label}>
@@ -71,6 +75,7 @@ function Field({ number, label, required, icon: Icon, children, hint }) {
         <Icon size={18} />
         {children}
       </span>
+      {error ? <span className={styles.fieldError}>{error}</span> : null}
       {hint ? <span className={styles.hint}>{hint}</span> : null}
     </label>
   );
@@ -80,22 +85,91 @@ export default function BusinessRegisterPage() {
   const dispatch = useDispatch();
   const router = useRouter();
   const { loading, error } = useSelector((state) => state.auth);
+  const displayName = useSelector((state) => state.branding.displayName);
+  const brandingStatus = useSelector((state) => state.branding.status);
   const [form, setForm] = useState(INITIAL_FORM);
   const [showPassword, setShowPassword] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [locating, setLocating] = useState(false);
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailOtpLoading, setEmailOtpLoading] = useState(false);
+  const [emailOtpMessage, setEmailOtpMessage] = useState('');
+  const [emailOtpError, setEmailOtpError] = useState('');
+
+  useEffect(() => {
+    if (brandingStatus === 'idle') dispatch(fetchBranding());
+  }, [dispatch, brandingStatus]);
 
   const set = (key) => (event) => {
     setValidationError('');
+    if (key === 'email') {
+      setEmailOtpSent(false);
+      setEmailVerified(false);
+      setEmailOtpMessage('');
+      setEmailOtpError('');
+    }
     const value = event.target.value;
     setForm((current) => ({
       ...current,
       [key]: value,
+      ...(key === 'email' ? { emailOtp: '' } : null),
       // A manual edit to the address text means it may no longer match the
       // coordinates captured via "Use current location" — drop them rather
       // than send stale coordinates alongside a hand-typed address.
       ...(key === 'addressLine1' ? { latitude: null, longitude: null } : null),
     }));
+  };
+
+  const requestEmailOtp = async () => {
+    const email = form.email.trim();
+    setValidationError('');
+    setEmailOtpMessage('');
+    setEmailOtpError('');
+    if (!email) {
+      setEmailOtpError('Email address is required before sending OTP');
+      return;
+    }
+    setEmailOtpLoading(true);
+    try {
+      const response = await authApi.requestShopkeeperRegistrationEmailOtp({ email });
+      setEmailOtpSent(true);
+      setEmailVerified(false);
+      setEmailOtpMessage(`OTP sent to ${response.data?.destination || email}.`);
+    } catch (otpError) {
+      setEmailOtpSent(false);
+      setEmailVerified(false);
+      setEmailOtpError(otpError?.error?.message || otpError?.message || 'Unable to send email OTP.');
+    } finally {
+      setEmailOtpLoading(false);
+    }
+  };
+
+  const verifyEmailOtp = async () => {
+    const email = form.email.trim();
+    const otp = form.emailOtp.trim();
+    setValidationError('');
+    setEmailOtpMessage('');
+    setEmailOtpError('');
+    if (!email) {
+      setEmailOtpError('Email address is required');
+      return;
+    }
+    if (!/^[0-9]{4,8}$/.test(otp)) {
+      setValidationError('Enter the email OTP');
+      return;
+    }
+    setEmailOtpLoading(true);
+    try {
+      await authApi.verifyShopkeeperRegistrationEmailOtp({ email, otp });
+      setEmailVerified(true);
+      setEmailOtpMessage('Email verified successfully.');
+    } catch (otpError) {
+      setEmailVerified(false);
+      setEmailOtpError(otpError?.error?.message || otpError?.message || 'Invalid email OTP.');
+    } finally {
+      setEmailOtpLoading(false);
+    }
   };
 
   const useCurrentLocation = async () => {
@@ -129,13 +203,12 @@ export default function BusinessRegisterPage() {
     if (!form.shopName.trim()) return 'Shop name is required';
     if (!form.mobile.trim()) return 'Mobile number is required';
     if (!form.email.trim()) return 'Email address is required';
-    if (!form.password) return 'Password is required';
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(form.password)) {
+    if (form.email.trim() && !emailVerified) return 'Verify email with OTP before registering';
+    if (form.password && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(form.password)) {
       return 'Password must include uppercase, lowercase and a number';
     }
     if (!form.addressLine1.trim()) return 'Shop address is required';
     if (!form.city.trim()) return 'City is required';
-    if (!form.state.trim()) return 'State is required';
     if (!/^\d{4,6}$/.test(form.pincode.trim())) return 'Pincode must be 4 to 6 digits';
     return '';
   };
@@ -152,8 +225,9 @@ export default function BusinessRegisterPage() {
       ownerName: form.ownerName.trim(),
       shopName: form.shopName.trim(),
       email: form.email.trim(),
-      mobile: form.mobile.trim(),
-      password: form.password,
+      mobile: form.mobile.trim().replace(/\D/g, '').length === 10 ? `+91${form.mobile.trim().replace(/\D/g, '')}` : form.mobile.trim(),
+      ...(form.password ? { password: form.password } : null),
+      emailOtp: form.emailOtp.trim(),
       addressLine1: form.addressLine1.trim(),
       city: form.city.trim(),
       state: form.state.trim(),
@@ -177,7 +251,7 @@ export default function BusinessRegisterPage() {
             <ShieldCheck size={28} />
           </span>
           <span>
-            <strong>Akash Jewellers</strong>
+            <strong>{displayName}</strong>
             <small>B2B Jewellery Platform</small>
           </span>
         </Link>
@@ -191,7 +265,7 @@ export default function BusinessRegisterPage() {
         <aside className={styles.sidePanel}>
           <div className={styles.sideCopy}>
             <h1>
-              Join <span>Akash Jewellers</span>
+              Join <span>{displayName}</span>
             </h1>
             <p>B2B Jewellery Platform</p>
             <i />
@@ -263,17 +337,45 @@ export default function BusinessRegisterPage() {
                 <input value={form.mobile} onChange={set('mobile')} inputMode="tel" placeholder="Enter mobile number" />
               </Field>
 
-              <Field number="4" label="Email Address" required icon={Mail}>
+              <Field number="4" label="Email Address" required icon={Mail} error={emailOtpError}>
                 <input value={form.email} onChange={set('email')} type="email" placeholder="Enter email address" />
+                <button
+                  className={styles.inlineAction}
+                  type="button"
+                  onClick={requestEmailOtp}
+                  disabled={emailOtpLoading || emailVerified}
+                >
+                  {emailVerified ? <CheckCircle2 size={17} /> : null}
+                  {emailVerified ? 'Verified' : emailOtpLoading ? 'Sending...' : 'Send OTP'}
+                </button>
               </Field>
             </div>
+
+            {emailOtpSent && !emailVerified ? (
+              <div className={styles.emailOtpRow}>
+                <label className={styles.otpField}>
+                  <span>Email OTP</span>
+                  <input
+                    value={form.emailOtp}
+                    onChange={set('emailOtp')}
+                    inputMode="numeric"
+                    maxLength={8}
+                    placeholder="Enter OTP"
+                    disabled={emailVerified}
+                  />
+                </label>
+                <button type="button" onClick={verifyEmailOtp} disabled={emailOtpLoading || emailVerified}>
+                  {emailVerified ? 'Verified' : emailOtpLoading ? 'Verifying...' : 'Verify Email'}
+                </button>
+                {emailOtpMessage ? <p>{emailOtpMessage}</p> : null}
+              </div>
+            ) : null}
 
             <Field
               number="5"
               label="Password"
-              required
               icon={Lock}
-              hint="Minimum 8 characters with uppercase, lowercase and a number"
+              hint="Optional. Use 8+ characters with uppercase, lowercase and a number if you set one."
             >
               <input
                 value={form.password}
@@ -287,7 +389,13 @@ export default function BusinessRegisterPage() {
             </Field>
 
             <label className={[styles.field, styles.addressField].join(' ')}>
-              <span className={styles.label}>6. Shop Address <em>*</em></span>
+              <span className={[styles.label, styles.addressLabel].join(' ')}>
+                <span>6. Shop Address <em>*</em></span>
+                <button type="button" onClick={useCurrentLocation} disabled={locating} aria-label="Use current location">
+                  <Navigation size={16} />
+                  <span>{locating ? 'Locating…' : 'Use current location'}</span>
+                </button>
+              </span>
               <span className={styles.textareaShell}>
                 <MapPin size={18} />
                 <textarea
@@ -296,10 +404,6 @@ export default function BusinessRegisterPage() {
                   rows={3}
                   placeholder="Enter shop address"
                 />
-                <button type="button" onClick={useCurrentLocation} disabled={locating}>
-                  <Navigation size={16} />
-                  {locating ? 'Locating…' : 'Use current location'}
-                </button>
               </span>
               <span className={styles.mutedHint}>Max 3 lines</span>
             </label>
@@ -309,7 +413,7 @@ export default function BusinessRegisterPage() {
                 <input value={form.city} onChange={set('city')} placeholder="Enter city" />
               </Field>
 
-              <Field number="8" label="State" required icon={Map}>
+              <Field number="8" label="State" icon={Map}>
                 <input value={form.state} onChange={set('state')} placeholder="Enter state" />
               </Field>
 

@@ -6,6 +6,10 @@ $gold-soft: rgba(233, 154, 5, 0.11);
 $green: #27a35d;
 
 .page {
+  --approval-accent: #{$gold};
+  --approval-accent-soft: #{$gold-soft};
+  --approval-accent-border: rgba(233, 154, 5, 0.36);
+
   position: relative;
   min-height: 100dvh;
   padding: 0.8rem;
@@ -15,6 +19,18 @@ $green: #27a35d;
     radial-gradient(circle at 10% 0%, rgba(233, 154, 5, 0.08), transparent 24%),
     var(--db-bg);
   font-family: var(--font-body, 'Poppins', sans-serif);
+}
+
+.page--danger {
+  --approval-accent: #d94545;
+  --approval-accent-soft: rgba(217, 69, 69, 0.11);
+  --approval-accent-border: rgba(217, 69, 69, 0.36);
+}
+
+.page--warning {
+  --approval-accent: #{$gold};
+  --approval-accent-soft: #{$gold-soft};
+  --approval-accent-border: rgba(233, 154, 5, 0.36);
 }
 
 .dashboardPreview {
@@ -175,9 +191,9 @@ $green: #27a35d;
   gap: 1rem;
   align-items: center;
   padding: 0.9rem 1rem;
-  border-color: rgba(233, 154, 5, 0.36);
+  border-color: var(--approval-accent-border);
   background:
-    radial-gradient(circle at 10% 50%, rgba(233, 154, 5, 0.08), transparent 28%),
+    radial-gradient(circle at 10% 50%, var(--approval-accent-soft), transparent 28%),
     var(--db-bg-card);
 }
 
@@ -194,7 +210,7 @@ $green: #27a35d;
   width: 92px;
   height: 92px;
   border-radius: 50%;
-  background: $gold-soft;
+  background: var(--approval-accent-soft);
 }
 
 .heroIcon {
@@ -203,10 +219,10 @@ $green: #27a35d;
   place-items: center;
   width: 68px;
   height: 68px;
-  border: 1px solid rgba(233, 154, 5, 0.42);
+  border: 1px solid var(--approval-accent-border);
   border-radius: 50%;
   background: var(--db-bg-elevated);
-  color: $gold;
+  color: var(--approval-accent);
 
   svg {
     width: 38px;
@@ -222,7 +238,7 @@ $green: #27a35d;
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: $gold;
+    background: var(--approval-accent);
     color: #fff;
 
     svg {
@@ -233,7 +249,7 @@ $green: #27a35d;
 }
 
 .heroCopy h2 {
-  color: $gold;
+  color: var(--approval-accent);
   font-size: clamp(1.35rem, 2.4vw, 1.85rem);
   font-weight: 900;
 }
@@ -246,6 +262,30 @@ $green: #27a35d;
   line-height: 1.55;
 }
 
+.reasonBox {
+  display: grid;
+  gap: 0.18rem;
+  width: min(100%, 500px);
+  margin-top: 0.58rem;
+  padding: 0.58rem 0.68rem;
+  border: 1px solid var(--approval-accent-border);
+  border-radius: 9px;
+  background: var(--approval-accent-soft);
+
+  strong {
+    color: var(--approval-accent);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  span {
+    color: var(--db-text-primary);
+    font-size: 0.76rem;
+    line-height: 1.42;
+  }
+}
+
 .etaBadge {
   display: inline-flex;
   align-items: center;
@@ -253,10 +293,10 @@ $green: #27a35d;
   min-height: 30px;
   margin-top: 0.65rem;
   padding: 0 0.62rem;
-  border: 1px solid rgba(233, 154, 5, 0.36);
+  border: 1px solid var(--approval-accent-border);
   border-radius: 8px;
-  background: $gold-soft;
-  color: $gold;
+  background: var(--approval-accent-soft);
+  color: var(--approval-accent);
   font-size: 0.76rem;
   font-weight: 900;
 }
@@ -266,7 +306,7 @@ $green: #27a35d;
   border-left: 1px solid var(--db-border);
 
   h3 {
-    color: $gold;
+    color: var(--approval-accent);
     font-size: 0.94rem;
     font-weight: 900;
   }
@@ -343,8 +383,11 @@ $green: #27a35d;
     font-weight: 600;
   }
 
-  &:nth-child(2) p {
-    color: $gold;
+}
+
+.timelineStepActive {
+  p {
+    color: var(--approval-accent);
   }
 }
 
@@ -358,7 +401,7 @@ $green: #27a35d;
 }
 
 .connectorDone {
-  background: $gold;
+  background: var(--approval-accent);
 }
 
 .timelineIcon {
@@ -380,15 +423,15 @@ $green: #27a35d;
 }
 
 .timelineIcon--done {
-  border-color: $gold;
-  background: $gold;
+  border-color: var(--approval-accent);
+  background: var(--approval-accent);
   color: #fff;
 }
 
 .timelineIcon--active {
-  border-color: $gold;
-  color: $gold;
-  box-shadow: 0 0 0 6px rgba(233, 154, 5, 0.08), 0 0 18px rgba(233, 154, 5, 0.2);
+  border-color: var(--approval-accent);
+  color: var(--approval-accent);
+  box-shadow: 0 0 0 6px var(--approval-accent-soft), 0 0 18px var(--approval-accent-border);
 }
 
 .notice {
@@ -397,10 +440,10 @@ $green: #27a35d;
   gap: 0.72rem;
   align-items: center;
   padding: 0.72rem 0.85rem;
-  border-color: rgba(233, 154, 5, 0.28);
-  border-left: 4px solid $gold;
-  background: rgba(233, 154, 5, 0.08);
-  color: $gold;
+  border-color: var(--approval-accent-border);
+  border-left: 4px solid var(--approval-accent);
+  background: var(--approval-accent-soft);
+  color: var(--approval-accent);
 
   h2 {
     font-size: 0.86rem;
@@ -441,9 +484,9 @@ $green: #27a35d;
   cursor: pointer;
 
   &:hover {
-    border-color: rgba(233, 154, 5, 0.34);
+    border-color: var(--approval-accent-border);
     background:
-      linear-gradient(135deg, rgba(233, 154, 5, 0.1), transparent 62%),
+      linear-gradient(135deg, var(--approval-accent-soft), transparent 62%),
       var(--db-bg-elevated);
   }
 
@@ -460,8 +503,8 @@ $green: #27a35d;
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: $gold-soft;
-  color: $gold;
+  background: var(--approval-accent-soft);
+  color: var(--approval-accent);
 
   svg {
     width: 22px;
@@ -591,8 +634,8 @@ $green: #27a35d;
     min-height: 34px;
     padding: 0 0.62rem;
     border-radius: 9px;
-    background: $gold-soft;
-    color: $gold;
+    background: var(--approval-accent-soft);
+    color: var(--approval-accent);
     font-size: 0.76rem;
     font-weight: 800;
   }
@@ -601,7 +644,7 @@ $green: #27a35d;
 .refreshButton {
   padding: 0 0.82rem;
   border: 0;
-  background: $gold;
+  background: var(--approval-accent);
   color: #fff;
 
   &:disabled {

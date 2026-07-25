@@ -663,30 +663,100 @@
   }
 }
 
-.placeholderPanel {
+.addressCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 0.62rem;
+  border: 1px solid rgba(34, 197, 94, 0.42);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #8ff676;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.sectionSuccessNotice {
+  margin-bottom: 0.58rem;
+  padding: 0.55rem 0.62rem;
+  border: 1px solid rgba(34, 197, 94, 0.32);
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #8ff676;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.addressManager {
   display: grid;
-  place-items: center;
-  min-height: 300px;
-  padding: 1.35rem;
-  text-align: center;
+  gap: 0.58rem;
 
-  svg {
-    color: #ffbd36;
+  @include md {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  h2 {
-    margin-top: 0.7rem;
+  label {
+    display: grid;
+    gap: 0.28rem;
+    padding: 0.58rem;
+    border: 1px solid db.$db-border-strong;
+    border-radius: 10px;
+    background: db.$db-bg-elevated;
+
+    span {
+      color: db.$db-text-secondary;
+      font-size: 0.66rem;
+      font-weight: 700;
+    }
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
     color: db.$db-text-primary;
-    font-size: 1.28rem;
-    font-weight: 700;
+    font: inherit;
+    font-size: 0.84rem;
+
+    &::placeholder {
+      color: db.$db-text-muted;
+    }
   }
 
-  p {
-    margin-top: 0.36rem;
-    max-width: 400px;
-    color: db.$db-text-secondary;
-    font-size: 0.82rem;
-    line-height: 1.5;
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    min-height: 42px;
+    border: 1px solid rgba(255, 188, 54, 0.48);
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f6c55a, #c88523);
+    color: #1e1307;
+    cursor: pointer;
+    font-size: 0.86rem;
+    font-weight: 900;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    @include md {
+      grid-column: 1 / -1;
+      justify-self: end;
+      min-width: 170px;
+      padding: 0 1rem;
+    }
+  }
+}
+
+.addressManagerWide {
+  @include md {
+    grid-column: 1 / -1;
   }
 }
 

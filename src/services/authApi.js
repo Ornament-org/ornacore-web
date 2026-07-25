@@ -43,6 +43,12 @@ export const authApi = {
   // POST /shopkeeper/auth/register
   shopkeeperRegister: (data) => apiClient.post(API_ENDPOINTS.SHOPKEEPER.REGISTER, data),
 
+  requestShopkeeperRegistrationEmailOtp: (payload) =>
+    apiClient.post(API_ENDPOINTS.SHOPKEEPER.REGISTRATION_EMAIL_OTP_REQUEST, payload),
+
+  verifyShopkeeperRegistrationEmailOtp: (payload) =>
+    apiClient.post(API_ENDPOINTS.SHOPKEEPER.REGISTRATION_EMAIL_OTP_VERIFY, payload),
+
   // GET /shopkeeper/auth/me
   shopkeeperMe: () => apiClient.get(API_ENDPOINTS.SHOPKEEPER.ME),
 

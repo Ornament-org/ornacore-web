@@ -44,15 +44,6 @@ const STATUS_LABELS = {
   BLOCKED: 'Blocked',
 };
 
-const INDIA_STATES = [
-  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
-  'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh',
-  'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
-  'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh',
-  'Uttarakhand', 'West Bengal', 'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Puducherry',
-  'Chandigarh',
-];
-
 const formatDate = (value) => {
   if (!value) return '—';
   return new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(
@@ -96,6 +87,9 @@ const formatCreditLimits = (limits = []) => {
     .join(', ');
 };
 
+const getPrimaryAddress = (profile) =>
+  profile?.addresses?.find((address) => address.isPrimary) || profile?.addresses?.[0] || null;
+
 const mapProfileToValues = (profile) => ({
   shopName: profile.shopName || '',
   ownerName: profile.ownerName || '',
@@ -103,11 +97,11 @@ const mapProfileToValues = (profile) => ({
   verificationStatus: STATUS_LABELS[profile.status] || profile.status || '—',
   mobileNumber: profile.user?.mobile || 'Not added',
   emailAddress: profile.user?.email || 'Not added',
-  addressLine1: profile.addressLine1 || '',
-  addressLine2: profile.addressLine2 || '',
-  city: profile.city || '',
-  state: profile.state || '',
-  pincode: profile.pincode || '',
+  addressLine1: getPrimaryAddress(profile)?.addressLine1 || profile.addressLine1 || '',
+  addressLine2: getPrimaryAddress(profile)?.addressLine2 || profile.addressLine2 || '',
+  city: getPrimaryAddress(profile)?.city || profile.city || '',
+  state: getPrimaryAddress(profile)?.state || profile.state || '',
+  pincode: getPrimaryAddress(profile)?.pincode || profile.pincode || '',
   gstNumber: profile.gstNumber || '',
   creditLimit: formatCreditLimits(profile.metalCreditLimits),
   orderAllowed: profile.isOrderAllowed ? 'Yes, you can place orders' : 'Not yet enabled',
@@ -215,8 +209,7 @@ const FORM_SECTIONS = [
         key: 'state',
         label: 'State',
         icon: MapPin,
-        type: 'select',
-        options: INDIA_STATES,
+        type: 'text',
       },
       { key: 'pincode', label: 'Pincode', icon: FileText, type: 'text' },
     ],
@@ -364,14 +357,121 @@ function SectionCard({ section, values, editing, saving, errorMessage, onEditTog
   );
 }
 
-function PlaceholderPanel({ item }) {
-  const Icon = item.icon;
+function AddressManagerPanel({ profile, onSaved }) {
+  const primaryAddress = getPrimaryAddress(profile);
+  const [addressValues, setAddressValues] = useState(() => ({
+    label: primaryAddress?.label || 'Primary',
+    contactName: primaryAddress?.contactName || profile?.ownerName || '',
+    contactMobile: primaryAddress?.contactMobile || profile?.user?.mobile || '',
+    addressLine1: primaryAddress?.addressLine1 || profile?.addressLine1 || '',
+    addressLine2: primaryAddress?.addressLine2 || profile?.addressLine2 || '',
+    city: primaryAddress?.city || profile?.city || '',
+    state: primaryAddress?.state || profile?.state || '',
+    pincode: primaryAddress?.pincode || profile?.pincode || '',
+    country: primaryAddress?.country || 'India',
+  }));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+
+  const setAddressValue = (key) => (event) => {
+    setError('');
+    setMessage('');
+    setAddressValues((current) => ({ ...current, [key]: event.target.value }));
+  };
+
+  const saveAddress = async (event) => {
+    event.preventDefault();
+    if (!addressValues.addressLine1.trim()) {
+      setError('Address line 1 is required');
+      return;
+    }
+    if (!addressValues.city.trim()) {
+      setError('City is required');
+      return;
+    }
+    if (!addressValues.pincode.trim()) {
+      setError('Pincode is required');
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+    setMessage('');
+    try {
+      const payload = {
+        label: addressValues.label.trim() || 'Primary',
+        contactName: addressValues.contactName.trim() || null,
+        contactMobile: addressValues.contactMobile.trim() || null,
+        addressLine1: addressValues.addressLine1.trim(),
+        addressLine2: addressValues.addressLine2.trim() || null,
+        city: addressValues.city.trim(),
+        state: addressValues.state.trim(),
+        pincode: addressValues.pincode.trim(),
+        country: addressValues.country.trim() || 'India',
+        isPrimary: true,
+      };
+      const response = await shopkeeperApi.updateAddress(payload);
+      onSaved(response.data);
+      setMessage('Address saved successfully.');
+    } catch (saveError) {
+      setError(extractMessage(saveError));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const fields = [
+    ['label', 'Address Name', 'Primary'],
+    ['contactName', 'Contact Name', 'Owner name'],
+    ['contactMobile', 'Contact Mobile', 'Mobile number'],
+    ['addressLine1', 'Address Line 1', 'Shop address'],
+    ['addressLine2', 'Address Line 2', 'Area, landmark'],
+    ['city', 'City', 'City'],
+    ['state', 'State', 'Optional'],
+    ['pincode', 'Pincode', 'Pincode'],
+    ['country', 'Country', 'Country'],
+  ];
 
   return (
-    <section className={styles.placeholderPanel}>
-      <Icon size={42} />
-      <h2>{item.title}</h2>
-      <p>{item.description}. This screen is ready for UI wiring; API functionality will come later.</p>
+    <section className={styles.formSection}>
+      <div className={styles.formSectionHead}>
+        <span className={styles.sectionIcon}>
+          <MapPinned size={28} />
+        </span>
+        <div>
+          <h3>Shop Addresses</h3>
+          <p>Manage your primary shop address</p>
+        </div>
+        <span className={styles.addressCount}>1 address</span>
+      </div>
+
+      {error ? (
+        <div className={styles.sectionErrorNotice}>
+          <AlertTriangle size={16} />
+          <span>{error}</span>
+        </div>
+      ) : null}
+      {message ? <div className={styles.sectionSuccessNotice}>{message}</div> : null}
+
+      <form className={styles.addressManager} onSubmit={saveAddress}>
+        {fields.map(([key, label, placeholder]) => (
+          <label key={key} className={key === 'addressLine1' || key === 'addressLine2' ? styles.addressManagerWide : undefined}>
+            <span>{label}</span>
+            <input
+              value={addressValues[key]}
+              onChange={setAddressValue(key)}
+              placeholder={placeholder}
+              inputMode={key === 'contactMobile' || key === 'pincode' ? 'numeric' : undefined}
+            />
+          </label>
+        ))}
+
+        <button type="submit" disabled={saving}>
+          <ShieldCheck size={18} />
+          {saving ? 'Saving...' : 'Save Address'}
+        </button>
+      </form>
     </section>
   );
 }
@@ -854,6 +954,21 @@ export default function ProfileClient({ initialTab = 'profile' }) {
     setValues((current) => ({ ...current, [key]: value }));
   };
 
+  const handleAddressSaved = (address) => {
+    const nextAddresses = [address];
+    const merged = {
+      ...profile,
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2,
+      city: address.city,
+      state: address.state,
+      pincode: address.pincode,
+      addresses: nextAddresses,
+    };
+    setProfile(merged);
+    setValues((current) => ({ ...current, ...mapProfileToValues(merged) }));
+  };
+
   const openPhotoPicker = () => {
     if (photoUploading) return;
     photoInputRef.current?.click();
@@ -1048,7 +1163,7 @@ export default function ProfileClient({ initialTab = 'profile' }) {
           ) : activeTab === 'transactions' ? (
             <TransactionsPanel metalDues={profile?.metalDues ?? []} />
           ) : (
-            <PlaceholderPanel item={activeMenu} />
+            <AddressManagerPanel profile={profile} onSaved={handleAddressSaved} />
           )}
         </section>
       </div>

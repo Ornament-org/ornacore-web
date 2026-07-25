@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   AlertTriangle,
@@ -8,6 +8,7 @@ import {
   Check,
   CheckCircle2,
   ChevronRight,
+  CircleOff,
   CircleHelp,
   ClipboardList,
   Clock3,
@@ -16,7 +17,9 @@ import {
   Lock,
   LogOut,
   RefreshCw,
+  ShieldAlert,
   ShieldCheck,
+  XCircle,
 } from 'lucide-react';
 import { fetchCurrentUser, logoutUser } from '@/redux/actions/authActions';
 import styles from './BusinessApprovalPage.module.scss';
@@ -28,7 +31,7 @@ const NEXT_STEPS = [
   'Account Activation',
 ];
 
-const ACTIONS = [
+const BASE_ACTIONS = [
   {
     id: 'progress',
     title: 'Verification in Progress',
@@ -55,12 +58,134 @@ const ACTIONS = [
   },
 ];
 
-const TIMELINE = [
-  { title: 'Submitted', meta: 'Completed', icon: ClipboardList, state: 'done' },
-  { title: 'Under Review', meta: 'In Progress', icon: Hourglass, state: 'active' },
-  { title: 'Verification', meta: 'Pending', icon: ShieldCheck, state: 'pending' },
-  { title: 'Approved', meta: 'Pending', icon: Check, state: 'pending' },
-];
+const STATUS_VIEW = {
+  DRAFT: {
+    tone: 'warning',
+    title: 'Application Draft',
+    headline: 'Application Draft',
+    description: 'Your shop registration is not ready for approval yet. Please complete the required details and submit it for review.',
+    badge: 'Submit your profile to continue',
+    badgeIcon: Clock3,
+    icon: ClipboardList,
+    nextTitle: 'What happens next?',
+    nextCopy: ['Complete your shop profile.', 'Submit it for admin review when ready.'],
+    nextSteps: ['Complete Details', 'Submit for Review', 'Admin Verification', 'Account Activation'],
+    noticeTitle: 'Your shop application is still in draft.',
+    noticeDescription: 'Dashboard access stays disabled until your shop is submitted and approved.',
+    bottomNotice: 'Dashboard access is disabled until your shop is approved.',
+    actions: BASE_ACTIONS,
+    timeline: [
+      { title: 'Started', meta: 'In Progress', icon: ClipboardList, state: 'active' },
+      { title: 'Submitted', meta: 'Pending', icon: Hourglass, state: 'pending' },
+      { title: 'Verification', meta: 'Pending', icon: ShieldCheck, state: 'pending' },
+      { title: 'Approved', meta: 'Pending', icon: Check, state: 'pending' },
+    ],
+  },
+  PENDING_REVIEW: {
+    tone: 'warning',
+    title: 'Under Review',
+    headline: 'Under Review',
+    description: 'We are reviewing your shop details and documents. Your account will become active once approved by our admin team.',
+    badge: 'Usually takes 1-2 business days',
+    badgeIcon: Clock3,
+    icon: ClipboardList,
+    nextTitle: 'What happens next?',
+    nextCopy: ['Our team is carefully verifying your information.', 'You will be notified once there is an update.'],
+    nextSteps: NEXT_STEPS,
+    noticeTitle: 'Your shop has not been activated yet.',
+    noticeDescription: 'Until approval is complete you cannot browse products, place orders or access the B2B dashboard.',
+    bottomNotice: 'Dashboard access is disabled until your shop is approved.',
+    actions: BASE_ACTIONS,
+    timeline: [
+      { title: 'Submitted', meta: 'Completed', icon: ClipboardList, state: 'done' },
+      { title: 'Under Review', meta: 'In Progress', icon: Hourglass, state: 'active' },
+      { title: 'Verification', meta: 'Pending', icon: ShieldCheck, state: 'pending' },
+      { title: 'Approved', meta: 'Pending', icon: Check, state: 'pending' },
+    ],
+  },
+  REJECTED: {
+    tone: 'danger',
+    title: 'Rejected',
+    headline: 'Registration Rejected',
+    description: 'Your shop registration was rejected by the admin team. Review the reason and contact support before requesting another review.',
+    badge: 'Action required',
+    badgeIcon: AlertTriangle,
+    icon: XCircle,
+    nextTitle: 'What can you do next?',
+    nextCopy: ['Check the rejection reason and submitted details.', 'Contact support if you need help reopening the review.'],
+    nextSteps: ['Review Reason', 'Contact Support', 'Update Details', 'Request Review'],
+    noticeTitle: 'Your shop registration was rejected.',
+    noticeDescription: 'You cannot browse products, place orders or access the B2B dashboard until your shop is approved.',
+    bottomNotice: 'Dashboard access is disabled because your shop was rejected.',
+    actions: [
+      {
+        id: 'progress',
+        title: 'Review Required',
+        description: 'Check the current decision and contact support for the next step.',
+        icon: ShieldAlert,
+      },
+      ...BASE_ACTIONS.slice(1),
+    ],
+    timeline: [
+      { title: 'Submitted', meta: 'Completed', icon: ClipboardList, state: 'done' },
+      { title: 'Under Review', meta: 'Completed', icon: Hourglass, state: 'done' },
+      { title: 'Rejected', meta: 'Action Required', icon: XCircle, state: 'active' },
+      { title: 'Approved', meta: 'Pending', icon: Check, state: 'pending' },
+    ],
+  },
+  SUSPENDED: {
+    tone: 'danger',
+    title: 'Suspended',
+    headline: 'Account Suspended',
+    description: 'Your shop account has been suspended by the admin team. Please contact support to understand the reason and restore access.',
+    badge: 'Contact support to restore access',
+    badgeIcon: Lock,
+    icon: CircleOff,
+    nextTitle: 'What can you do next?',
+    nextCopy: ['Your dashboard and ordering access are paused.', 'Contact support for account review and reinstatement.'],
+    nextSteps: ['Access Paused', 'Contact Support', 'Admin Review', 'Account Reinstatement'],
+    noticeTitle: 'Your shop account is suspended.',
+    noticeDescription: 'You cannot browse products, place orders or access the B2B dashboard until suspension is removed.',
+    bottomNotice: 'Dashboard access is disabled because your shop is suspended.',
+    actions: [
+      {
+        id: 'progress',
+        title: 'Access Paused',
+        description: 'Your shop access is paused until an admin reinstates the account.',
+        icon: CircleOff,
+      },
+      ...BASE_ACTIONS.slice(1),
+    ],
+    timeline: [
+      { title: 'Submitted', meta: 'Completed', icon: ClipboardList, state: 'done' },
+      { title: 'Approved', meta: 'Completed', icon: Check, state: 'done' },
+      { title: 'Suspended', meta: 'Access Paused', icon: CircleOff, state: 'active' },
+      { title: 'Reinstated', meta: 'Pending', icon: ShieldCheck, state: 'pending' },
+    ],
+  },
+  BLOCKED: {
+    tone: 'danger',
+    title: 'Blocked',
+    headline: 'Account Blocked',
+    description: 'Your shop account is blocked. Please contact support for help with your account access.',
+    badge: 'Support required',
+    badgeIcon: Lock,
+    icon: ShieldAlert,
+    nextTitle: 'What can you do next?',
+    nextCopy: ['Your access is currently blocked.', 'Contact support for account assistance.'],
+    nextSteps: ['Access Blocked', 'Contact Support', 'Admin Review', 'Resolution'],
+    noticeTitle: 'Your shop account is blocked.',
+    noticeDescription: 'You cannot use the B2B dashboard until your account access is restored.',
+    bottomNotice: 'Dashboard access is disabled because your shop is blocked.',
+    actions: BASE_ACTIONS,
+    timeline: [
+      { title: 'Submitted', meta: 'Completed', icon: ClipboardList, state: 'done' },
+      { title: 'Reviewed', meta: 'Completed', icon: Hourglass, state: 'done' },
+      { title: 'Blocked', meta: 'Support Required', icon: ShieldAlert, state: 'active' },
+      { title: 'Resolved', meta: 'Pending', icon: Check, state: 'pending' },
+    ],
+  },
+};
 
 const formatDate = (date) => {
   if (!date) return '18 May 2025';
@@ -80,9 +205,11 @@ const statusLabel = (status) =>
 
 const getShopkeeper = (user) => user?.shopkeeper || user?.shopkeeperProfile || {};
 
+const getStatusView = (status) => STATUS_VIEW[status] || STATUS_VIEW.PENDING_REVIEW;
+
 const buildDetails = (shopkeeper, submittedDate) => {
   const address = shopkeeper?.addresses?.find((item) => item.isPrimary) || shopkeeper?.addresses?.[0] || {};
-  return [
+  const rows = [
     ['Owner Name', shopkeeper.ownerName || shopkeeper.owner?.name || 'Akash Gupta'],
     ['Shop Name', shopkeeper.shopName || 'Akash Jewellers'],
     ['Mobile', shopkeeper.mobile || '+91 98765 43210'],
@@ -94,40 +221,48 @@ const buildDetails = (shopkeeper, submittedDate) => {
     ['Submission Date', submittedDate],
     ['Current Status', statusLabel(shopkeeper.status)],
   ];
+  if (shopkeeper.rejectionReason) rows.push(['Admin Note', shopkeeper.rejectionReason]);
+  return rows;
 };
 
-function ApprovalHero() {
+function ApprovalHero({ view, reason }) {
+  const Icon = view.icon;
+  const BadgeIcon = view.badgeIcon;
   return (
     <section className={styles.heroCard}>
       <div className={styles.heroMain}>
         <div className={styles.heroHalo}>
           <div className={styles.heroIcon}>
-            <ClipboardList size={58} />
+            <Icon size={58} />
             <span>
-              <Clock3 size={20} />
+              <BadgeIcon size={20} />
             </span>
           </div>
         </div>
 
         <div className={styles.heroCopy}>
-          <h2>Under Review</h2>
-          <p>
-            We are reviewing your shop details and documents. Your account will become active once
-            approved by our admin team.
-          </p>
+          <h2>{view.headline}</h2>
+          <p>{view.description}</p>
+          {reason ? (
+            <div className={styles.reasonBox}>
+              <strong>Admin note</strong>
+              <span>{reason}</span>
+            </div>
+          ) : null}
           <div className={styles.etaBadge}>
-            <Clock3 size={16} />
-            Usually takes 1-2 business days
+            <BadgeIcon size={16} />
+            {view.badge}
           </div>
         </div>
       </div>
 
       <aside className={styles.nextPanel}>
-        <h3>What happens next?</h3>
-        <p>Our team is carefully verifying your information.</p>
-        <p>You will be notified once there is an update.</p>
+        <h3>{view.nextTitle}</h3>
+        {view.nextCopy.map((copy) => (
+          <p key={copy}>{copy}</p>
+        ))}
         <div className={styles.nextList}>
-          {NEXT_STEPS.map((step) => (
+          {view.nextSteps.map((step) => (
             <span key={step}>
               <CheckCircle2 size={16} />
               {step}
@@ -139,16 +274,20 @@ function ApprovalHero() {
   );
 }
 
-function ApprovalTimeline({ submittedDate }) {
+function ApprovalTimeline({ submittedDate, steps }) {
   return (
     <section className={styles.timelineCard}>
       <div className={styles.timelineTrack} />
       <div className={styles.timelineGrid}>
-        {TIMELINE.map((step, index) => {
+        {steps.map((step, index) => {
           const Icon = step.icon;
+          const isCompletedConnector = index > 0 && ['done', 'active'].includes(step.state);
           return (
-            <article key={step.title} className={styles.timelineStep}>
-              {index > 0 ? <span className={[styles.connector, index === 1 && styles.connectorDone].filter(Boolean).join(' ')} /> : null}
+            <article
+              key={step.title}
+              className={[styles.timelineStep, step.state === 'active' && styles.timelineStepActive].filter(Boolean).join(' ')}
+            >
+              {index > 0 ? <span className={[styles.connector, isCompletedConnector && styles.connectorDone].filter(Boolean).join(' ')} /> : null}
               <span className={[styles.timelineIcon, styles[`timelineIcon--${step.state}`]].join(' ')}>
                 <Icon size={27} />
               </span>
@@ -225,8 +364,14 @@ export default function BusinessApprovalPage() {
   const { user, loading } = useSelector((state) => state.auth);
   const [showDetails, setShowDetails] = useState(false);
   const shopkeeper = getShopkeeper(user);
+  const view = getStatusView(shopkeeper.status);
   const submittedDate = formatDate(shopkeeper.createdAt || user?.createdAt);
   const details = useMemo(() => buildDetails(shopkeeper, submittedDate), [shopkeeper, submittedDate]);
+  const reason = ['REJECTED', 'SUSPENDED', 'BLOCKED'].includes(shopkeeper.status) ? shopkeeper.rejectionReason : '';
+
+  useEffect(() => {
+    void dispatch(fetchCurrentUser());
+  }, [dispatch]);
 
   const handleRefresh = () => {
     void dispatch(fetchCurrentUser());
@@ -249,7 +394,7 @@ export default function BusinessApprovalPage() {
   };
 
   return (
-    <main className={styles.page}>
+    <main className={[styles.page, styles[`page--${view.tone}`]].join(' ')}>
       <div className={styles.dashboardPreview} aria-hidden="true">
         <div className={styles.previewHeader} />
         <div className={styles.previewGrid}>
@@ -270,7 +415,7 @@ export default function BusinessApprovalPage() {
           <strong>{shopkeeper.shopName || 'Akash Jewellers'}</strong>
           <span>B2B Jewellery Platform</span>
         </div>
-        <h1>Status</h1>
+        <h1>{view.title}</h1>
         <div className={styles.headerActions}>
           <button type="button" className={styles.supportButton}>
             <CircleHelp size={18} />
@@ -283,21 +428,19 @@ export default function BusinessApprovalPage() {
       </header>
 
       <div className={styles.content}>
-        <ApprovalTimeline submittedDate={submittedDate} />
-        <ApprovalHero />
+        <ApprovalTimeline submittedDate={submittedDate} steps={view.timeline} />
+        <ApprovalHero view={view} reason={reason} />
 
         <section className={styles.notice}>
           <AlertTriangle size={31} />
           <div>
-            <h2>Your shop has not been activated yet.</h2>
-            <p>
-              Until approval is complete you cannot browse products, place orders or access the B2B dashboard.
-            </p>
+            <h2>{view.noticeTitle}</h2>
+            <p>{view.noticeDescription}</p>
           </div>
         </section>
 
         <section className={styles.actionsCard}>
-          {ACTIONS.map((item) => (
+          {view.actions.map((item) => (
             <ActionRow key={item.id} item={item} onPress={() => handleAction(item.id)} />
           ))}
         </section>
@@ -307,7 +450,7 @@ export default function BusinessApprovalPage() {
         <section className={styles.bottomNotice}>
           <div>
             <Lock size={22} />
-            <span>Dashboard access is disabled until your shop is approved.</span>
+            <span>{view.bottomNotice}</span>
           </div>
           <button type="button" className={styles.refreshButton} onClick={handleRefresh} disabled={loading}>
             <RefreshCw size={18} className={loading ? styles.spin : undefined} />

@@ -15,6 +15,8 @@ export const API_ENDPOINTS = {
   SHOPKEEPER: {
     LOGIN: '/shopkeeper/auth/login',
     REGISTER: '/shopkeeper/auth/register',
+    REGISTRATION_EMAIL_OTP_REQUEST: '/shopkeeper/auth/registration-email-otp/request',
+    REGISTRATION_EMAIL_OTP_VERIFY: '/shopkeeper/auth/registration-email-otp/verify',
     GOOGLE_LOGIN: '/shopkeeper/auth/google-login',
     OTP_LOGIN_REQUEST: '/shopkeeper/auth/otp-login/request',
     OTP_LOGIN_VERIFY: '/shopkeeper/auth/otp-login/verify',
