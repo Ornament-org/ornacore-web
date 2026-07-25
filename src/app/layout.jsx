@@ -2,6 +2,7 @@ import '@/styles/globals.scss';
 import ReduxProvider from '@/redux/ReduxProvider';
 import { ThemeProvider } from '@/context/ThemeContext';
 import SiteChrome from '@/components/layout/SiteChrome/SiteChrome';
+import { API_BASE_URL } from '@/constants/api';
 
 const DEFAULT_BRANDING = {
   displayName: 'OrnaCore',
@@ -9,10 +10,8 @@ const DEFAULT_BRANDING = {
 };
 
 const getBrandingMetadata = async () => {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-
   try {
-    const response = await fetch(`${apiBaseUrl}/store-settings/branding`, { cache: 'no-store' });
+    const response = await fetch(`${API_BASE_URL}/store-settings/branding`, { cache: 'no-store' });
 
     if (!response.ok) return DEFAULT_BRANDING;
 

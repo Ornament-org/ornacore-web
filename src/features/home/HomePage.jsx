@@ -10,6 +10,7 @@ import LiveRateCard from './components/LiveRateCard/LiveRateCard';
 import HomeFooter from './components/HomeFooter/HomeFooter';
 import FloatingCartBar from './components/FloatingCartBar/FloatingCartBar';
 import BottomNav from './components/BottomNav/BottomNav';
+import { API_BASE_URL } from '@/constants/api';
 
 // One-to-one with the CMS's SECTION_TYPES (ornacore-admin/src/features/cms/data/sectionTypes.js)
 // — every manageable section in the toolbox renders through exactly one of
@@ -35,10 +36,8 @@ const FALLBACK_SECTIONS = [
 ];
 
 async function getHomeSections() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-
   try {
-    const response = await fetch(`${apiBaseUrl}/homepage?audience=B2B`, { cache: 'no-store' });
+    const response = await fetch(`${API_BASE_URL}/homepage?audience=B2B`, { cache: 'no-store' });
     if (!response.ok) return FALLBACK_SECTIONS;
 
     const body = await response.json();
