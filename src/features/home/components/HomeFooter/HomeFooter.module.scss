@@ -4,7 +4,7 @@
 .footer {
   background: db.$db-bg-elevated;
   border-top: 1px solid db.$db-border;
-  padding: 2.5rem 1rem 6.5rem;
+  padding: 1rem 0.7rem 5.4rem;
 
   @include md {
     padding: 3.5rem 1.5rem 3.5rem;
@@ -16,10 +16,11 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 0.65rem;
 
   @include sm {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   @include lg {
@@ -30,9 +31,17 @@
 
 .brandCol {
   grid-column: 1 / -1;
+  padding: 0.7rem;
+  border: 1px solid db.$db-border;
+  border-radius: 14px;
+  background: db.$db-bg-card;
 
   @include sm {
     grid-column: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 }
 
@@ -67,87 +76,182 @@
 }
 
 .tagline {
-  margin-top: 0.9rem;
-  font-size: var(--type-body, 0.82rem);
-  line-height: var(--leading-body, 1.48);
+  margin-top: 0.45rem;
+  font-size: 0.72rem;
+  line-height: 1.38;
   color: db.$db-text-secondary;
   max-width: 320px;
+
+  @include md {
+    margin-top: 0.9rem;
+    font-size: var(--type-body, 0.82rem);
+    line-height: var(--leading-body, 1.48);
+  }
 }
 
 .contact {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.32rem;
+  margin-top: 0.55rem;
+
+  @include md {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
 }
 
 .contactItem {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.78rem;
+  min-height: 30px;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid db.$db-border;
+  border-radius: 10px;
+  background: db.$db-bg-elevated;
+  font-size: 0.68rem;
   color: db.$db-text-secondary;
+
+  @include md {
+    min-height: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 0.78rem;
+  }
 }
 
 .socials {
   display: flex;
-  gap: 0.6rem;
-  margin-top: 1.1rem;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+
+  @include md {
+    gap: 0.6rem;
+    margin-top: 1.1rem;
+  }
 }
 
 .socialIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: db.$db-bg-card;
   border: 1px solid db.$db-border;
   color: db.$db-text-secondary;
+
+  @include md {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+.linkCol {
+  padding: 0.65rem;
+  border: 1px solid db.$db-border;
+  border-radius: 14px;
+  background: db.$db-bg-card;
+
+  @include sm {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
 }
 
 .linkHeading {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: db.$db-text-primary;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.45rem;
+
+  @include md {
+    font-size: 0.8rem;
+    margin-bottom: 0.9rem;
+  }
 }
 
 .linkList {
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+
+  @include sm {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
 }
 
 .link {
-  font-size: 0.82rem;
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0.24rem 0.48rem;
+  border: 1px solid db.$db-border;
+  border-radius: 999px;
+  background: db.$db-bg-elevated;
+  font-size: 0.68rem;
   color: db.$db-text-secondary;
   transition: color 0.2s ease;
 
   &:hover {
     color: var(--accent, #d4af37);
   }
+
+  @include sm {
+    display: inline;
+    min-height: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 0.82rem;
+  }
 }
 
 .hours {
-  font-size: 0.82rem;
+  display: inline-flex;
+  margin: 0 0.35rem 0.35rem 0;
+  padding: 0.25rem 0.48rem;
+  border: 1px solid db.$db-border;
+  border-radius: 999px;
+  background: db.$db-bg-elevated;
+  font-size: 0.68rem;
   color: db.$db-text-secondary;
-  margin-bottom: 0.4rem;
+
+  @include sm {
+    display: block;
+    margin: 0 0 0.4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 0.82rem;
+  }
 }
 
 .bottom {
   max-width: 1360px;
-  margin: 2.5rem auto 0;
-  padding-top: 1.5rem;
+  margin: 0.75rem auto 0;
+  padding-top: 0.7rem;
   border-top: 1px solid db.$db-border;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 
   @include sm {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -155,11 +259,19 @@
 }
 
 .copy {
-  font-size: 0.75rem;
+  font-size: 0.64rem;
   color: db.$db-text-muted;
+
+  @include md {
+    font-size: 0.75rem;
+  }
 }
 
 .badge {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   color: db.$db-text-muted;
+
+  @include md {
+    font-size: 0.72rem;
+  }
 }

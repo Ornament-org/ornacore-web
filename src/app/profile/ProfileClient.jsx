@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Coins,
   FileText,
+  Gem,
   Home,
   IndianRupee,
   Info,
@@ -53,6 +54,7 @@ const formatDate = (value) => {
 };
 
 const formatWeight = (grams) => `${Number(grams ?? 0).toFixed(3).replace(/\.?0+$/, '')} g`;
+const formatDueWeight = (grams) => `${Number(grams ?? 0).toFixed(3).replace(/\.?0+$/, '')} gm`;
 
 const orderWeightByMetal = (order) => {
   const groups = new Map();
@@ -160,6 +162,12 @@ const MENU_ITEMS = [
     icon: MapPinned,
   },
 ];
+
+const ACCOUNT_HOME = {
+  id: 'account',
+  title: 'Profile',
+  description: 'View and manage your shop profile',
+};
 
 const FORM_SECTIONS = [
   {
@@ -645,12 +653,33 @@ const ledgerBalance = (runningBalance) => {
   return { label: 'Cleared', amount: formatWeight(0), tone: 'cleared' };
 };
 
-const metalDueTone = (metal) => {
-  const value = `${metal.code ?? ''} ${metal.name ?? ''}`.toLowerCase();
-  if (value.includes('silver')) return 'silver';
-  if (value.includes('gold')) return 'gold';
-  return 'default';
+const getAccountDueItems = (profile) => {
+  const metalItems = (profile?.metalDues ?? [])
+    .filter((metal) => Number(metal.dueGrams ?? 0) > 0.0005)
+    .map((metal) => ({
+      key: `metal-${metal.metalId ?? metal.code ?? metal.name}`,
+      value: `${formatDueWeight(metal.dueGrams)} due`,
+      label: metal.name || 'Metal',
+      tone: String(metal.code || metal.name || 'metal').toLowerCase(),
+      icon: Gem,
+    }));
+
+  const cashDue = Number(profile?.dueAmount ?? 0);
+  const cashItems = cashDue > 0.005
+    ? [{
+      key: 'cash',
+      value: `${formatMoneyINR(cashDue)} cash due`,
+      label: 'Cash',
+      tone: 'cash',
+      icon: IndianRupee,
+    }]
+    : [];
+
+  return [...metalItems, ...cashItems];
 };
+
+const getPrimaryLedgerSummary = (ledgerSummary = []) =>
+  ledgerSummary.find((row) => row.code === 'GOLD') || ledgerSummary[0] || null;
 
 function ShopIdentityCard({ values, profile, photoUrl, onPhotoClick, uploadingPhoto }) {
   return (
@@ -702,7 +731,93 @@ function ShopIdentityCard({ values, profile, photoUrl, onPhotoClick, uploadingPh
   );
 }
 
-function TransactionsPanel({ metalDues = [] }) {
+function AccountDueCards({ items, onClick }) {
+  const Container = onClick ? 'button' : 'div';
+
+  return (
+    <Container type={onClick ? 'button' : undefined} className={styles.accountDueGrid} onClick={onClick}>
+      {items.length ? items.map((item) => (
+        <span
+          key={item.key}
+          className={[
+            styles.accountDueMiniCard,
+            styles[`accountDueMiniCard--${item.tone}`],
+          ].filter(Boolean).join(' ')}
+        >
+          <span className={styles.accountDueIcon}>
+            <item.icon size={16} />
+          </span>
+          <span className={styles.accountDueCopy}>
+            <strong>{item.value}</strong>
+            <span>{item.label}</span>
+          </span>
+        </span>
+      )) : (
+        <span className={[styles.accountDueMiniCard, styles.accountDueMiniCardEmpty].join(' ')}>
+          <strong>No dues</strong>
+          <span>(Account clear)</span>
+        </span>
+      )}
+    </Container>
+  );
+}
+
+function AccountHomePanel({
+  values,
+  profile,
+  photoUrl,
+  onPhotoClick,
+  uploadingPhoto,
+  dueItems,
+  onNavigate,
+}) {
+  return (
+    <section className={styles.accountHomePanel}>
+      <ShopIdentityCard
+        values={values}
+        profile={profile}
+        photoUrl={photoUrl}
+        onPhotoClick={onPhotoClick}
+        uploadingPhoto={uploadingPhoto}
+      />
+
+      <AccountDueCards items={dueItems} onClick={() => onNavigate('transactions')} />
+
+      <nav className={styles.accountMenuPanel} aria-label="Account menu">
+        {MENU_ITEMS.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={[styles.menuRow, index === 0 && styles.menuRowActive].filter(Boolean).join(' ')}
+              onClick={() => onNavigate(item.id)}
+            >
+              <span className={styles.menuIcon}>
+                <Icon size={24} />
+              </span>
+              <span className={styles.menuCopy}>
+                <strong>{item.title}</strong>
+                <span>{item.description}</span>
+              </span>
+              <ChevronRight className={styles.chevron} size={21} />
+            </button>
+          );
+        })}
+      </nav>
+
+      <section className={styles.securityPanel}>
+        <LockKeyhole size={30} />
+        <div>
+          <h2>Your Information is Secure</h2>
+          <p>Protected profile and transaction data.</p>
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function TransactionsPanel({ dueItems = [] }) {
   const [entries, setEntries] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -739,15 +854,6 @@ function TransactionsPanel({ metalDues = [] }) {
     () => (metalFilter === 'all' ? entries ?? [] : (entries ?? []).filter((entry) => String(entry.metal?.id) === metalFilter)),
     [entries, metalFilter],
   );
-  const dueCards = useMemo(
-    () => metalDues.filter((metal) => Number(metal.dueGrams ?? 0) > 0.0005),
-    [metalDues],
-  );
-  const visibleDueCards = useMemo(
-    () => (metalFilter === 'all' ? dueCards : dueCards.filter((metal) => String(metal.metalId) === metalFilter)),
-    [dueCards, metalFilter],
-  );
-
   if (loading) {
     return <PanelRowsSkeleton rows={6} />;
   }
@@ -788,25 +894,7 @@ function TransactionsPanel({ metalDues = [] }) {
         ) : null}
       </div>
 
-      {visibleDueCards.length ? (
-        <div className={styles.metalDueGrid}>
-          {visibleDueCards.map((metal) => {
-            const tone = metalDueTone(metal);
-            return (
-              <div
-                key={metal.metalId}
-                className={[styles.metalDueCard, styles[`metalDueCard--${tone}`]].join(' ')}
-              >
-                <div>
-                  <span>Due in {metal.name}</span>
-                  <strong>{formatWeight(metal.dueGrams)} due</strong>
-                </div>
-                {metal.code ? <em>{metal.code}</em> : null}
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
+      <AccountDueCards items={dueItems} />
 
       {visibleEntries.length ? (
         <div className={styles.ordersList}>
@@ -855,7 +943,7 @@ function TransactionsPanel({ metalDues = [] }) {
   );
 }
 
-export default function ProfileClient({ initialTab = 'profile' }) {
+export default function ProfileClient({ initialTab = 'account' }) {
   const router = useRouter();
   const photoInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -872,7 +960,7 @@ export default function ProfileClient({ initialTab = 'profile' }) {
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
 
   const activeMenu = useMemo(
-    () => MENU_ITEMS.find((item) => item.id === activeTab) ?? MENU_ITEMS[0],
+    () => (activeTab === 'account' ? ACCOUNT_HOME : MENU_ITEMS.find((item) => item.id === activeTab) ?? ACCOUNT_HOME),
     [activeTab]
   );
 
@@ -912,8 +1000,15 @@ export default function ProfileClient({ initialTab = 'profile' }) {
     if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
   }, [photoPreviewUrl]);
 
+  useEffect(() => {
+    const resetToAccount = () => setActiveTab('account');
+    window.addEventListener('ornacore:account-home', resetToAccount);
+    return () => window.removeEventListener('ornacore:account-home', resetToAccount);
+  }, []);
+
+  const dueItems = useMemo(() => getAccountDueItems(profile), [profile]);
   const overview = useMemo(() => {
-    const primary = ledgerSummary.find((row) => row.code === 'GOLD') || ledgerSummary[0];
+    const primary = getPrimaryLedgerSummary(ledgerSummary);
     if (!primary) return [];
     return [
       { label: `Current Due (${primary.name})`, value: `${primary.due} gm`, tone: 'warning' },
@@ -921,6 +1016,7 @@ export default function ProfileClient({ initialTab = 'profile' }) {
       { label: 'Received', value: `${primary.received} gm`, tone: 'info' },
     ];
   }, [ledgerSummary]);
+  const detailTab = activeTab === 'account' ? 'profile' : activeTab;
 
   const toggleEditing = async (sectionId) => {
     const isEditing = Boolean(editingSections[sectionId]);
@@ -1019,13 +1115,12 @@ export default function ProfileClient({ initialTab = 'profile' }) {
   };
 
   // The account sub-views are in-page tabs, so back from one returns to the
-  // Profile tab (a Link to the same /profile URL would do nothing); from the
-  // Profile tab itself, back leaves the account section for Home.
+  // Account overview. From the overview itself, back leaves Account for Home.
   const handleBack = () => {
-    if (activeTab === 'profile') {
+    if (activeTab === 'account') {
       router.push(ROUTES.HOME);
     } else {
-      setActiveTab('profile');
+      setActiveTab('account');
     }
   };
 
@@ -1049,8 +1144,9 @@ export default function ProfileClient({ initialTab = 'profile' }) {
       <AccountHeader
         title={activeMenu.title}
         description={activeMenu.description}
-        backLabel={activeTab === 'profile' ? 'Home' : 'Profile'}
+        backLabel={activeMenu.title}
         onBack={handleBack}
+        compactOnMobile
       />
 
       <input
@@ -1061,16 +1157,6 @@ export default function ProfileClient({ initialTab = 'profile' }) {
         onChange={handleProfilePhotoChange}
       />
 
-      <div className={styles.mobileProfileTop}>
-        <ShopIdentityCard
-          values={values}
-          profile={profile}
-          photoUrl={photoPreviewUrl || profile?.profileImageUrl}
-          onPhotoClick={openPhotoPicker}
-          uploadingPhoto={photoUploading}
-        />
-      </div>
-
       {photoError ? (
         <div className={styles.photoError}>
           <AlertTriangle size={16} />
@@ -1078,7 +1164,45 @@ export default function ProfileClient({ initialTab = 'profile' }) {
         </div>
       ) : null}
 
-      <div className={styles.workspace}>
+      <div className={styles.mobileAccountShell}>
+        {activeTab === 'account' ? (
+          <AccountHomePanel
+            values={values}
+            profile={profile}
+            photoUrl={photoPreviewUrl || profile?.profileImageUrl}
+            onPhotoClick={openPhotoPicker}
+            uploadingPhoto={photoUploading}
+            dueItems={dueItems}
+            onNavigate={setActiveTab}
+          />
+        ) : (
+          <section className={[styles.detailPane, styles.detailPaneSingle].join(' ')}>
+            {activeTab === 'profile' ? (
+              FORM_SECTIONS.map((section) => (
+                <SectionCard
+                  key={section.id}
+                  section={section}
+                  values={values}
+                  editing={Boolean(editingSections[section.id])}
+                  saving={savingSection === section.id}
+                  errorMessage={sectionErrors[section.id]}
+                  onEditToggle={toggleEditing}
+                  onChange={updateValue}
+                  onManageAddresses={() => setActiveTab('addresses')}
+                />
+              ))
+            ) : activeTab === 'orders' ? (
+              <OrdersPanel />
+            ) : activeTab === 'transactions' ? (
+              <TransactionsPanel dueItems={dueItems} />
+            ) : (
+              <AddressManagerPanel profile={profile} onSaved={handleAddressSaved} />
+            )}
+          </section>
+        )}
+      </div>
+
+      <div className={[styles.workspace, styles.desktopAccountShell].join(' ')}>
         <aside className={styles.sidebar}>
           <ShopIdentityCard
             values={values}
@@ -1102,23 +1226,8 @@ export default function ProfileClient({ initialTab = 'profile' }) {
           <nav className={styles.menuPanel} aria-label="Profile menu">
             {MENU_ITEMS.map((item) => {
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
+              const isActive = detailTab === item.id;
               const className = [styles.menuRow, isActive && styles.menuRowActive].filter(Boolean).join(' ');
-
-              if (item.href) {
-                return (
-                  <Link key={item.id} href={item.href} className={className}>
-                    <span className={styles.menuIcon}>
-                      <Icon size={24} />
-                    </span>
-                    <span className={styles.menuCopy}>
-                      <strong>{item.title}</strong>
-                      <span>{item.description}</span>
-                    </span>
-                    <ChevronRight className={styles.chevron} size={21} />
-                  </Link>
-                );
-              }
 
               return (
                 <button key={item.id} type="button" className={className} onClick={() => setActiveTab(item.id)}>
@@ -1145,7 +1254,7 @@ export default function ProfileClient({ initialTab = 'profile' }) {
         </aside>
 
         <section className={styles.detailPane}>
-          {activeTab === 'profile' ? (
+          {detailTab === 'profile' ? (
             FORM_SECTIONS.map((section) => (
               <SectionCard
                 key={section.id}
@@ -1159,10 +1268,10 @@ export default function ProfileClient({ initialTab = 'profile' }) {
                 onManageAddresses={() => setActiveTab('addresses')}
               />
             ))
-          ) : activeTab === 'orders' ? (
+          ) : detailTab === 'orders' ? (
             <OrdersPanel />
-          ) : activeTab === 'transactions' ? (
-            <TransactionsPanel metalDues={profile?.metalDues ?? []} />
+          ) : detailTab === 'transactions' ? (
+            <TransactionsPanel dueItems={dueItems} />
           ) : (
             <AddressManagerPanel profile={profile} onSaved={handleAddressSaved} />
           )}

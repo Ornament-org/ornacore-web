@@ -16,6 +16,8 @@ export default function AccountHeader({
   backHref = ROUTES.PROFILE,
   backLabel = 'Profile',
   onBack,
+  compact = false,
+  compactOnMobile = false,
 }) {
   const dispatch = useDispatch();
   const cartCount = useSelector((state) => state.cart.count);
@@ -37,8 +39,12 @@ export default function AccountHeader({
             {backLabel}
           </Link>
         )}
-        <h1>{title}</h1>
-        {description ? <p>{description}</p> : null}
+        {!compact && title ? (
+          <h1 className={compactOnMobile ? styles.mobileHiddenTitle : undefined}>{title}</h1>
+        ) : null}
+        {!compact && description ? (
+          <p className={compactOnMobile ? styles.mobileHiddenTitle : undefined}>{description}</p>
+        ) : null}
       </div>
       <div className={styles.actionGroup}>
         <ThemeToggle className={styles.iconButton} />

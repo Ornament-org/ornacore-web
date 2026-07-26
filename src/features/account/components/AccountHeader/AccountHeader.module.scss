@@ -37,6 +37,10 @@
   cursor: pointer;
 }
 
+.mobileHiddenTitle {
+  display: block;
+}
+
 .actionGroup {
   display: flex;
   align-items: center;
@@ -115,6 +119,10 @@
 
   .backLink {
     font-size: 0.78rem;
+  }
+
+  .mobileHiddenTitle {
+    display: none;
   }
 }
 

@@ -23,10 +23,14 @@ export default function BottomNav() {
     ITEMS.forEach((item) => router.prefetch(item.href));
   }, [router]);
 
-  const handleNavigate = (event, href) => {
+  const handleNavigate = (event, item) => {
+    const { href } = item;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
     if (pathname === href) {
       event.preventDefault();
+      if (item.id === 'account') {
+        window.dispatchEvent(new CustomEvent('ornacore:account-home'));
+      }
       setOptimisticTarget(null);
       return;
     }
@@ -44,7 +48,7 @@ export default function BottomNav() {
               key={item.id}
               href={item.href}
               className={styles.primaryItem}
-              onClick={(event) => handleNavigate(event, item.href)}
+              onClick={(event) => handleNavigate(event, item)}
               aria-current={active ? 'page' : undefined}
             >
               <span className={styles.primaryBtn}>
@@ -59,7 +63,7 @@ export default function BottomNav() {
             key={item.id}
             href={item.href}
             className={[styles.item, active && styles['item--active']].filter(Boolean).join(' ')}
-            onClick={(event) => handleNavigate(event, item.href)}
+            onClick={(event) => handleNavigate(event, item)}
             aria-current={active ? 'page' : undefined}
           >
             <item.icon size={20} strokeWidth={active ? 2.25 : 1.75} />
