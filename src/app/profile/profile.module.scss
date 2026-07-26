@@ -431,6 +431,389 @@
   min-width: 0;
 }
 
+.detailPaneSingle {
+  width: min(100%, 720px);
+  margin: 0 auto;
+}
+
+.mobileAccountShell {
+  display: none;
+}
+
+.desktopAccountShell {
+  display: grid;
+}
+
+.accountHomePanel {
+  display: grid;
+  gap: 0.72rem;
+  width: min(100%, 720px);
+  margin: 0 auto;
+
+  .identityCard {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.15rem;
+    border-radius: 22px;
+  }
+
+  .shopPhotoWrap {
+    width: 96px;
+    height: 96px;
+  }
+
+  .cameraButton {
+    width: 40px;
+    height: 40px;
+  }
+
+  .identityCopy h2 {
+    font-size: clamp(1.22rem, 4vw, 1.72rem);
+    font-weight: 800;
+  }
+
+  .verified {
+    padding: 0.28rem 0.54rem;
+    font-size: 0.82rem;
+  }
+
+  .identityCopy p {
+    font-size: 0.98rem;
+  }
+
+  .securityPanel {
+    display: grid;
+    padding: 1rem 1.1rem;
+    border-radius: 22px;
+  }
+
+  .securityPanel h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+
+  .securityPanel p {
+    font-size: 0.92rem;
+  }
+}
+
+.accountDueGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 0.48rem;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.accountHomePanel .accountDueGrid {
+  cursor: pointer;
+}
+
+.accountDueMiniCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.42rem;
+  align-items: center;
+  min-width: 0;
+  min-height: 54px;
+  padding: 0.52rem 0.58rem;
+  border: 1px solid rgba(218, 164, 56, 0.42);
+  border-radius: 13px;
+  background: db.$db-bg-card;
+  text-align: left;
+  box-shadow: db.$db-shadow-soft;
+
+  strong {
+    color: #f87171;
+    font-size: clamp(0.88rem, 3.2vw, 1.08rem);
+    font-weight: 900;
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.accountDueIcon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 188, 54, 0.35);
+  border-radius: 10px;
+  color: #ffbd36;
+  background: rgba(255, 188, 54, 0.08);
+}
+
+.accountDueCopy {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 18px;
+    padding: 0.1rem 0.42rem;
+    border: 1px solid rgba(255, 188, 54, 0.28);
+    border-radius: 999px;
+    color: db.$db-text-secondary;
+    font-size: 0.58rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  :global(:root:not([data-theme='dark'])) {
+    .page {
+      background:
+        radial-gradient(circle at 20% 0%, rgba(200, 157, 74, 0.08), transparent 32%),
+        #f6f3ef;
+    }
+
+  .identityCard,
+  .menuPanel,
+  .accountMenuPanel,
+  .securityPanel,
+  .formSection,
+  .placeholderPanel {
+    border-color: #e3d9c9;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(44, 35, 23, 0.08);
+  }
+
+  .accountHomePanel {
+    .identityCard,
+    .securityPanel {
+      border-radius: 18px;
+    }
+  }
+
+  .shopPhoto {
+    border-color: #e5c07b;
+    background:
+      linear-gradient(180deg, rgba(255, 250, 238, 0.98), rgba(229, 192, 123, 0.42)),
+      radial-gradient(circle at 50% 28%, #ffffff, transparent 30%),
+      linear-gradient(90deg, #e8d7bc, #b08b57 48%, #efe4d4);
+    box-shadow: 0 8px 22px rgba(44, 35, 23, 0.12);
+  }
+
+  .shopCounter {
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.38) 1px, transparent 1px) 0 0 / 18px 100%,
+      linear-gradient(180deg, #c8aa7a, #77634a);
+    box-shadow: 0 6px 0 rgba(44, 35, 23, 0.18);
+  }
+
+  .cameraButton {
+    border-color: #ffffff;
+    background: #2b241c;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(44, 35, 23, 0.22);
+  }
+
+  .identityCopy h2,
+  .menuCopy strong,
+  .securityPanel h2,
+  .orderRowTop strong,
+  .fieldValue {
+    color: #2b241c;
+  }
+
+  .identityCopy p,
+  .menuCopy span,
+  .securityPanel p,
+  .fieldLabel,
+  .orderRowTop span,
+  .orderRowBottom,
+  .ledgerDetail {
+    color: #574b3d;
+  }
+
+  .verified,
+  .greenBadge {
+    border-color: rgba(76, 141, 102, 0.28);
+    background: #eaf5ed;
+    color: #2d7a4f;
+  }
+
+  .accountDueMiniCard {
+    border-color: #e3d9c9;
+    background: #fbf9f7;
+    box-shadow: 0 4px 12px rgba(44, 35, 23, 0.06);
+
+    strong {
+      color: #c85d4a;
+      font-weight: 900;
+    }
+
+    .accountDueCopy span {
+      color: #2b241c;
+      font-weight: 600;
+      border-color: rgba(200, 157, 74, 0.26);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    &--gold {
+      border-color: rgba(200, 157, 74, 0.34);
+      background: linear-gradient(135deg, #fbf5e9, #fffdf9);
+    }
+
+    &--silver {
+      border-color: rgba(79, 111, 159, 0.22);
+      background: linear-gradient(135deg, #edf3fb, #ffffff);
+    }
+
+    &--cash {
+      border-color: rgba(76, 141, 102, 0.22);
+      background: linear-gradient(135deg, #eaf5ed, #ffffff);
+    }
+  }
+
+  .accountDueMiniCardEmpty strong {
+    color: #4c8d66;
+  }
+
+  .accountDueIcon {
+    border-color: #e3d9c9;
+    background: #ffffff;
+    color: #a97628;
+  }
+
+  .accountDueMiniCard--silver .accountDueIcon {
+    color: #4f6f9f;
+  }
+
+  .accountDueMiniCard--cash .accountDueIcon {
+    color: #4c8d66;
+  }
+
+  .accountMenuPanel {
+    border-radius: 18px;
+
+    .menuRow {
+      border-radius: 12px;
+
+      &:hover {
+        background: #fbf5e9;
+      }
+    }
+  }
+
+  .menuRowActive {
+    background: #fbf5e9;
+    box-shadow: inset 0 0 0 1px rgba(200, 157, 74, 0.4);
+  }
+
+  .menuIcon,
+  .sectionIcon {
+    border-color: #e3d9c9;
+    background: #fbf9f7;
+    color: #a97628;
+  }
+
+  .securityPanel > svg {
+    color: #a97628;
+  }
+
+  .formSection {
+    border-radius: 18px;
+  }
+
+  .formSectionHead h3 {
+    color: #2b241c;
+
+    span {
+      color: #a97628;
+    }
+  }
+
+  .sectionEdit,
+  .addressAside button {
+    border-color: #c89d4a;
+    background: #ffffff;
+    color: #8b6a3d;
+    border-radius: 10px;
+  }
+
+  .fieldCard,
+  .addressManager label,
+  .orderRow,
+  .ledgerDetail {
+    border-color: #e3d9c9;
+    background: #fbf9f7;
+    border-radius: 12px;
+  }
+
+  .orderStatusPill {
+    border-radius: 999px;
+  }
+
+  .ledgerBalance--due {
+    color: #c85d4a;
+    font-weight: 900;
+  }
+
+  .ledgerCredit {
+    color: #4c8d66;
+  }
+
+  .ledgerDebit {
+    color: #c85d4a;
+  }
+
+    .ledgerMetalFilter {
+      border-color: #e3d9c9;
+      background: #ffffff;
+      color: #2b241c;
+      border-radius: 12px;
+    }
+  }
+}
+
+.accountDueMiniCardEmpty {
+  grid-column: 1 / -1;
+}
+
+.accountMenuPanel {
+  padding: 0.42rem;
+  border: 1px solid db.$db-border-strong;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(221, 170, 66, 0.07), transparent 36%),
+    db.$db-bg-card;
+  box-shadow: db.$db-shadow-soft;
+
+  .menuRow {
+    min-height: 78px;
+    padding: 0.56rem 0.68rem;
+    border-radius: 14px;
+  }
+
+  .menuIcon {
+    width: 52px;
+    height: 52px;
+    border-radius: 13px;
+  }
+
+  .menuCopy strong {
+    font-size: 1.02rem;
+    font-weight: 800;
+  }
+
+  .menuCopy span {
+    font-size: 0.86rem;
+    line-height: 1.25;
+  }
+}
+
 .formSection {
   padding: 0.68rem;
 
@@ -1011,6 +1394,14 @@
     padding: 0.72rem 0.55rem 6.45rem;
   }
 
+  .mobileAccountShell {
+    display: block;
+  }
+
+  .desktopAccountShell {
+    display: none;
+  }
+
   .topBar {
     gap: 0.48rem;
     margin-bottom: 0.65rem;
@@ -1054,6 +1445,133 @@
   .overviewStrip,
   .securityPanel {
     display: none;
+  }
+
+  .accountHomePanel {
+    gap: 0.62rem;
+
+    .identityCard,
+    .securityPanel {
+      display: grid;
+    }
+
+    .identityCard {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.72rem;
+      padding: 0.72rem;
+      border-radius: 16px;
+    }
+
+    .shopPhotoWrap {
+      width: 86px;
+      height: 86px;
+    }
+
+    .identityCopy h2 {
+      font-size: 1.16rem;
+    }
+
+    .verified {
+      font-size: 0.7rem;
+    }
+
+    .identityCopy p {
+      font-size: 0.8rem;
+    }
+
+    .securityPanel {
+      padding: 0.8rem;
+      border-radius: 16px;
+    }
+
+    .securityPanel h2 {
+      font-size: 0.98rem;
+    }
+
+    .securityPanel p {
+      font-size: 0.82rem;
+    }
+  }
+
+  .accountDueGrid {
+    grid-template-columns: 1fr;
+    gap: 0.28rem;
+  }
+
+  .accountDueMiniCard {
+    gap: 0.38rem;
+    min-height: 38px;
+    padding: 0.34rem 0.46rem;
+    border-radius: 10px;
+  }
+
+  .accountDueIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  .accountDueCopy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+  }
+
+  .accountDueCopy span {
+    flex: 0 0 auto;
+    min-height: 16px;
+    padding: 0.08rem 0.36rem;
+    font-size: 0.54rem;
+  }
+
+  .accountDueMiniCard strong {
+    font-size: 0.84rem;
+  }
+
+  .accountMenuPanel {
+    padding: 0.36rem;
+    border-radius: 16px;
+
+    .menuRow {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      place-items: stretch;
+      width: 100%;
+      height: auto;
+      min-height: 70px;
+      padding: 0.5rem;
+      border-radius: 12px;
+    }
+
+    .menuIcon {
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(255, 202, 86, 0.28);
+      border-radius: 12px;
+      background: db.$db-bg-elevated;
+    }
+
+    .menuCopy,
+    .chevron {
+      display: grid;
+    }
+
+    .chevron {
+      align-self: center;
+    }
+
+    .menuCopy strong {
+      font-size: 0.96rem;
+    }
+
+    .menuCopy span {
+      font-size: 0.76rem;
+    }
   }
 
   .menuPanel {

@@ -73,14 +73,13 @@
   font-weight: 700;
   letter-spacing: 0;
   color: db.$db-text-primary;
-  // Shown on every screen size now (matches the desktop header); truncates
-  // rather than hiding so it never pushes the account selector off-screen.
-  display: inline;
+  display: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 
   @include md {
+    display: inline;
     font-size: 1.05rem;
   }
 }
@@ -380,4 +379,76 @@
   color: db.$db-text-muted;
   flex-shrink: 0;
   display: block;
+}
+
+@media (max-width: 760px) {
+  :global(:root:not([data-theme='dark'])) {
+    .header {
+      background: rgba(251, 249, 247, 0.88);
+      border-bottom-color: #e3d9c9;
+
+      &--scrolled {
+        box-shadow: 0 4px 16px rgba(44, 35, 23, 0.08);
+      }
+    }
+
+    .brandIcon,
+    .search,
+    .business,
+    .themeToggle,
+    .results {
+      border-color: #e3d9c9;
+      background: #ffffff;
+      color: #2b241c;
+      box-shadow: 0 1px 3px rgba(44, 35, 23, 0.06);
+    }
+
+    .brandIcon--fallback {
+      background: #ffffff;
+      color: #c89d4a;
+      box-shadow: 0 4px 12px rgba(200, 157, 74, 0.16);
+    }
+
+    .brandName,
+    .businessName,
+    .searchInput,
+    .resultInfo strong {
+      color: #2b241c;
+    }
+
+    .businessMeta,
+    .businessChevron,
+    .searchIcon,
+    .searchInput::placeholder,
+    .resultInfo span,
+    .resultsState,
+    .resultsLabel {
+      color: #8a7d6b;
+    }
+
+    .search:focus-within {
+      border-color: #c89d4a;
+      box-shadow: 0 0 0 3px rgba(200, 157, 74, 0.14);
+    }
+
+    .businessIconWrap {
+      background: #fbf5e9;
+      color: #a97628;
+    }
+
+    .verifiedBadge {
+      color: #4c8d66;
+    }
+
+    .resultThumb,
+    .resultRow:hover {
+      border-color: #e3d9c9;
+      background: #fbf9f7;
+    }
+
+    .resultsAll {
+      border-top-color: #e3d9c9;
+      color: #8b6a3d;
+    }
+  }
 }
