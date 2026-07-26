@@ -9,7 +9,7 @@
 .bar {
   position: fixed;
   left: 50%;
-  bottom: 96px;
+  bottom: calc(120px + env(safe-area-inset-bottom, 0px));
   z-index: 65;
   display: flex;
   align-items: center;
