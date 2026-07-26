@@ -48,8 +48,8 @@ export default function HomeFooter() {
             India&apos;s trusted B2B jewellery marketplace — wholesale pricing, hallmarked purity, pan-India delivery.
           </p>
           <div className={styles.contact}>
-            <span className={styles.contactItem}><Phone size={13} /> +91 98765 43210</span>
-            <span className={styles.contactItem}><Mail size={13} /> partners@swarnasetu.com</span>
+            <span className={styles.contactItem}><Phone size={13} /> +91 8434381886</span>
+            <span className={styles.contactItem}><Mail size={13} /> akashgupta.workspace@gmail.com</span>
           </div>
           <div className={styles.socials}>
             {SOCIALS.map((s) => (
