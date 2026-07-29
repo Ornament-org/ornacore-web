@@ -9,6 +9,8 @@ import { useMetalTheme } from '../../context/MetalThemeContext';
 import styles from './CategoryScroller.module.scss';
 
 const DEFAULT_MAX_CATEGORIES = 4;
+const skeletonItems = (count) =>
+  Array.from({ length: count }, (_, index) => <div key={index} className={styles.itemSkeleton} />);
 
 function CategoryItem({ category, metalId }) {
   return (
@@ -38,7 +40,7 @@ function CategoryItem({ category, metalId }) {
 export default function CategoryScroller({ title = 'Shop by Category', config = {} }) {
   const { metalId } = useMetalTheme();
   const metalIdMap = useMetalIdMap();
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(null);
   const showAll = Boolean(config.showAllCategories);
   const maxItems = Number(config.maxItems) > 0 ? Number(config.maxItems) : DEFAULT_MAX_CATEGORIES;
   const curatedIds = Array.isArray(config.categoryIds) ? config.categoryIds : [];
@@ -68,6 +70,18 @@ export default function CategoryScroller({ title = 'Shop by Category', config = 
       alive = false;
     };
   }, [metalId, metalIdMap, showAll, curatedKey]);
+
+  if (categories === null) {
+    return (
+      <section className={styles.section} aria-busy="true" aria-label="Loading categories">
+        <div className={styles.header}>
+          <div className={styles.titleSkeleton} />
+          <div className={styles.viewAllSkeleton} />
+        </div>
+        <div className={styles.scroller}>{skeletonItems(maxItems)}</div>
+      </section>
+    );
+  }
 
   if (!categories.length) return null;
 

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Gem, PackageSearch, Truck } from 'lucide-react';
+import { Gem, PackageSearch, Truck, XCircle } from 'lucide-react';
 import { OrderDetailSkeleton } from '@/components/skeleton/AppSkeletons';
 import { shopkeeperApi } from '@/services/shopkeeperApi';
 import { ROUTES } from '@/constants/routes';
@@ -11,10 +11,28 @@ import styles from './OrderDetailPage.module.scss';
 
 const formatWeight = (grams) => `${Number(grams ?? 0).toFixed(3).replace(/\.?0+$/, '')} g`;
 
-const primaryImage = (product) =>
+const primaryProductImage = (product) =>
   product?.images?.find((image) => image.isPrimary)?.media?.secureUrl
   ?? product?.images?.[0]?.media?.secureUrl
   ?? null;
+
+const itemImage = (item) => item.imageUrlSnapshot ?? primaryProductImage(item.product);
+
+const normalizeText = (value) => String(value ?? '').toLowerCase().trim();
+
+const findSourceItem = (sourceItems, fulfillmentItem, index) => {
+  const fulfillmentName = normalizeText(fulfillmentItem.itemName);
+  const exactMatch = sourceItems.find((sourceItem) => {
+    const productName = normalizeText(sourceItem.productNameSnapshot);
+    const sku = normalizeText(sourceItem.skuSnapshot);
+    return (
+      productName === fulfillmentName
+      || fulfillmentName.includes(productName)
+      || (sku && fulfillmentName.includes(sku))
+    );
+  });
+  return exactMatch ?? sourceItems[index] ?? null;
+};
 
 const formatDate = (value, withTime = false) =>
   value
@@ -43,15 +61,23 @@ const orderDisplayItems = (order) => {
   const fulfillmentItems = order.fulfillmentOrder?.items ?? [];
   if (fulfillmentItems.length) {
     const metalName = order.fulfillmentOrder?.metal?.name ?? 'Metal';
-    return fulfillmentItems.map((item) => ({
-      id: `fulfillment-${item.id}`,
-      fulfillmentItem: true,
-      productNameSnapshot: item.itemName,
-      metalName,
-      grossWeight: item.grossWeight,
-      tunch: item.tunch,
-      fineWeight: item.fineWeight,
-    }));
+    const sourceItems = order.items ?? [];
+    return fulfillmentItems.map((item, index) => {
+      const sourceItem = findSourceItem(sourceItems, item, index);
+      return {
+        id: `fulfillment-${item.id}`,
+        fulfillmentItem: true,
+        productNameSnapshot: item.itemName,
+        imageUrlSnapshot: sourceItem?.imageUrlSnapshot ?? null,
+        product: sourceItem?.product ?? null,
+        variant: sourceItem?.variant ?? null,
+        skuSnapshot: sourceItem?.skuSnapshot ?? null,
+        metalName,
+        grossWeight: item.grossWeight,
+        tunch: item.tunch,
+        fineWeight: item.fineWeight,
+      };
+    });
   }
   return order.items ?? [];
 };
@@ -60,6 +86,8 @@ export default function OrderDetailPage({ id }) {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -67,6 +95,7 @@ export default function OrderDetailPage({ id }) {
     const load = async () => {
       setLoading(true);
       setNotFound(false);
+      setError('');
       try {
         const response = await shopkeeperApi.getOrderById(id);
         if (!alive) return;
@@ -83,6 +112,22 @@ export default function OrderDetailPage({ id }) {
       alive = false;
     };
   }, [id]);
+
+  const cancelOrder = async () => {
+    if (!order || order.status !== 'REQUESTED' || cancelling) return;
+    if (!window.confirm(`Cancel ${order.orderNumber}?`)) return;
+
+    setCancelling(true);
+    setError('');
+    try {
+      const response = await shopkeeperApi.cancelOrder(order.id);
+      setOrder(response.data);
+    } catch {
+      setError('Could not cancel this order. Refresh and try again.');
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   if (loading) {
     return <OrderDetailSkeleton />;
@@ -119,14 +164,26 @@ export default function OrderDetailPage({ id }) {
         <span className={[styles.statusPill, styles[`statusPill--${meta.tone}`]].join(' ')}>
           {meta.label}
         </span>
+        {order.status === 'REQUESTED' ? (
+          <button
+            type="button"
+            className={styles.cancelButton}
+            disabled={cancelling}
+            onClick={cancelOrder}
+          >
+            <XCircle size={15} />
+            {cancelling ? 'Cancelling' : 'Cancel Order'}
+          </button>
+        ) : null}
       </div>
+      {error ? <p className={styles.errorText}>{error}</p> : null}
 
       <div className={styles.grid}>
         <section className={styles.card}>
           <h2>Items</h2>
           <div className={styles.itemsTable}>
             {items.map((item) => {
-              const imageUrl = primaryImage(item.product);
+              const imageUrl = itemImage(item);
               return (
                 <div className={styles.itemRow} key={item.id}>
                   <span className={styles.itemThumb}>
@@ -234,6 +291,7 @@ export default function OrderDetailPage({ id }) {
                         {(ORDER_STATUS_META[entry.toStatus] ?? { label: entry.toStatus }).label}
                       </p>
                       <p className={styles.timelineDate}>{formatDate(entry.createdAt, true)}</p>
+                      {entry.note ? <p className={styles.timelineNote}>{entry.note}</p> : null}
                     </div>
                   </div>
                 ))}

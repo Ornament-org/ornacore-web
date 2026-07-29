@@ -10,6 +10,8 @@ import ProductCardB2B from '../ProductCardB2B/ProductCardB2B';
 import styles from './FeaturedProducts.module.scss';
 
 const DEFAULT_MAX_PRODUCTS = 6;
+const skeletonItems = (count) =>
+  Array.from({ length: count }, (_, index) => <div key={index} className={styles.cardSkeleton} />);
 
 const toCardProduct = (product) => {
   const defaultVariant = product.variants?.find((v) => v.isDefault) ?? product.variants?.[0] ?? {};
@@ -32,7 +34,7 @@ const toCardProduct = (product) => {
 export default function FeaturedProducts({ title = 'Top Picks for Your Business', config = {} }) {
   const { metalId, metal } = useMetalTheme();
   const metalIdMap = useMetalIdMap();
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(null);
   const limit = Number(config.limit) > 0 ? Number(config.limit) : DEFAULT_MAX_PRODUCTS;
 
   useEffect(() => {
@@ -55,6 +57,19 @@ export default function FeaturedProducts({ title = 'Top Picks for Your Business'
       alive = false;
     };
   }, [metalId, metalIdMap, limit]);
+
+  if (products === null) {
+    return (
+      <section className={styles.section} aria-busy="true" aria-label="Loading featured products">
+        <div className={styles.header}>
+          <div className={styles.titleSkeleton} />
+          <div className={styles.viewAllSkeleton} />
+        </div>
+        <div className={styles.subSkeleton} />
+        <div className={styles.grid}>{skeletonItems(Math.min(limit, 6))}</div>
+      </section>
+    );
+  }
 
   if (!products.length) return null;
 

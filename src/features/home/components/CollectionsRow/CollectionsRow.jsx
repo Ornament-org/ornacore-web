@@ -11,6 +11,8 @@ import styles from './CollectionsRow.module.scss';
 
 const DEFAULT_PRODUCTS_PER_ROW = 6;
 const DEFAULT_PRODUCT_ROWS = 1;
+const skeletonItems = (count, className) =>
+  Array.from({ length: count }, (_, index) => <div key={index} className={className} />);
 
 const toCardProduct = (product) => {
   const defaultVariant = product.variants?.find((v) => v.isDefault) ?? product.variants?.[0] ?? {};
@@ -66,18 +68,44 @@ function CollectionProductGrid({ collection, metalId, backendMetalId, columns, m
           View All <ArrowRight size={12} />
         </Link>
       </div>
-      <div className={styles.productGrid} style={{ '--cols': columns }}>
-        {(products ?? []).map((product) => (
-          <ProductCardB2B key={product.id} product={product} />
-        ))}
+      <div className={styles.productGrid} style={{ '--cols': columns }} aria-busy={products === null}>
+        {products === null
+          ? skeletonItems(Math.min(maxProducts, 6), styles.productCardSkeleton)
+          : products.map((product) => (
+              <ProductCardB2B key={product.id} product={product} />
+            ))}
       </div>
     </div>
   );
 }
 
-// `config.collectionIds`, when set via Homepage Management, hand-picks which
-// collections show here and in what order. Left unset, every active
-// collection for the current metal shows automatically.
+function CollectionsSkeleton() {
+  return (
+    <section className={styles.section} aria-busy="true" aria-label="Loading collections">
+      <div className={styles.groups}>
+        <div className={styles.group}>
+          <div className={styles.groupHeader}>
+            <div className={styles.groupTitleSkeleton} />
+            <div className={styles.viewAllSkeleton} />
+          </div>
+          <div className={styles.scroller}>{skeletonItems(4, styles.collectionItemSkeleton)}</div>
+        </div>
+        <div className={styles.group}>
+          <div className={styles.groupHeader}>
+            <div className={styles.groupTitleSkeleton} />
+            <div className={styles.viewAllSkeleton} />
+          </div>
+          <div className={styles.productGrid}>{skeletonItems(4, styles.productCardSkeleton)}</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// `config.collectionIds`, set via Homepage Management, is authoritative:
+// only those collections show here, in that exact order. An empty list means
+// the section is intentionally blank, so new catalog collections never leak
+// onto the storefront just because they are active.
 //
 // Each collection renders as its own row. A CATEGORY-type collection with
 // multiple picked categories expands into one circle per category (same
@@ -88,7 +116,7 @@ function CollectionProductGrid({ collection, metalId, backendMetalId, columns, m
 export default function CollectionsRow({ config = {} }) {
   const { metalId } = useMetalTheme();
   const metalIdMap = useMetalIdMap();
-  const [collections, setCollections] = useState([]);
+  const [collectionResult, setCollectionResult] = useState({ key: '', rows: null });
   const curatedIds = Array.isArray(config.collectionIds) ? config.collectionIds : [];
   const curatedKey = curatedIds.join(',');
   const productsPerRow = Number(config.productsPerRow) > 0
@@ -96,29 +124,37 @@ export default function CollectionsRow({ config = {} }) {
     : DEFAULT_PRODUCTS_PER_ROW;
   const productRows = Number(config.productRows) > 0 ? Number(config.productRows) : DEFAULT_PRODUCT_ROWS;
   const backendMetalId = metalIdMap ? (metalId === 'all' ? undefined : metalIdMap[metalId]) : undefined;
+  const requestKey = `${backendMetalId ?? 'all'}:${curatedKey}`;
 
   useEffect(() => {
     if (!metalIdMap) return undefined;
+    if (!curatedKey) return undefined;
 
     const params = {};
     if (backendMetalId) params.metalId = backendMetalId;
-    if (curatedKey) params.ids = curatedKey;
+    params.ids = curatedKey;
 
     let alive = true;
     productApi
       .getCollections(Object.keys(params).length ? params : undefined)
       .then((response) => {
         if (!alive) return;
-        setCollections(response.data ?? []);
+        setCollectionResult({ key: requestKey, rows: response.data ?? [] });
       })
       .catch(() => {
-        if (alive) setCollections([]);
+        if (alive) setCollectionResult({ key: requestKey, rows: [] });
       });
     return () => {
       alive = false;
     };
-  }, [metalIdMap, backendMetalId, curatedKey]);
+  }, [metalIdMap, backendMetalId, curatedKey, requestKey]);
 
+  if (!curatedKey) return null;
+  if (!metalIdMap || collectionResult.key !== requestKey || collectionResult.rows === null) {
+    return <CollectionsSkeleton />;
+  }
+
+  const collections = collectionResult.rows;
   if (!collections.length) return null;
 
   return (

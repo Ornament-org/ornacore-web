@@ -46,6 +46,10 @@
 }
 
 .statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
   margin-bottom: 0.9rem;
 }
 
@@ -65,6 +69,36 @@
   &--cyan { background: rgba(34, 211, 238, 0.16); color: #67e8f9; }
   &--green { background: rgba(74, 222, 128, 0.16); color: #86efac; }
   &--red { background: rgba(248, 113, 113, 0.16); color: #fca5a5; }
+}
+
+.cancelButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 32px;
+  padding: 0.35rem 0.72rem;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 999px;
+  background: rgba(248, 113, 113, 0.12);
+  color: #fca5a5;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+}
+
+.errorText {
+  margin: -0.3rem 0 0.9rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 8px;
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+  font-size: 0.72rem;
 }
 
 .grid {
@@ -269,6 +303,13 @@
 .timelineDate {
   font-size: 0.66rem;
   color: db.$db-text-muted;
+}
+
+.timelineNote {
+  margin-top: 0.15rem;
+  color: db.$db-text-secondary;
+  font-size: 0.68rem;
+  line-height: 1.4;
 }
 
 .stateBlock {

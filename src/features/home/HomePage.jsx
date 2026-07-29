@@ -37,7 +37,7 @@ const FALLBACK_SECTIONS = [
 
 async function getHomeSections() {
   try {
-    const response = await fetch(`${API_BASE_URL}/homepage?audience=B2B`, { next: { revalidate: 120 } });
+    const response = await fetch(`${API_BASE_URL}/homepage?audience=B2B`, { cache: 'no-store' });
     if (!response.ok) return FALLBACK_SECTIONS;
 
     const body = await response.json();
