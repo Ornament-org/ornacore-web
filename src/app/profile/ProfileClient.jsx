@@ -29,6 +29,7 @@ import {
   ShoppingCart,
   Store,
   UserRound,
+  XCircle,
 } from 'lucide-react';
 import AccountHeader from '@/features/account/components/AccountHeader/AccountHeader';
 import { ProfileSkeleton } from '@/components/skeleton/AppSkeletons';
@@ -507,11 +508,11 @@ function OrdersPanel() {
   const [orders, setOrders] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cancellingId, setCancellingId] = useState(null);
 
   useEffect(() => {
     let alive = true;
-
-    const load = async () => {
+    const loadOrders = async () => {
       setLoading(true);
       setError('');
       try {
@@ -525,11 +526,36 @@ function OrdersPanel() {
       }
     };
 
-    void load();
+    const timeout = window.setTimeout(() => {
+      void loadOrders();
+    }, 0);
+
     return () => {
       alive = false;
+      window.clearTimeout(timeout);
     };
   }, []);
+
+  const cancelOrder = async (event, order) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (order.status !== 'REQUESTED' || cancellingId) return;
+    if (!window.confirm(`Cancel ${order.orderNumber}?`)) return;
+
+    setCancellingId(order.id);
+    setError('');
+    try {
+      const response = await shopkeeperApi.cancelOrder(order.id);
+      const cancelled = response.data;
+      setOrders((current) =>
+        (current ?? []).map((item) => (String(item.id) === String(order.id) ? cancelled : item)),
+      );
+    } catch {
+      setError('Could not cancel this order. Refresh and try again.');
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   if (loading) {
     return <PanelRowsSkeleton rows={5} />;
@@ -578,23 +604,36 @@ function OrdersPanel() {
           const weights = orderWeightByMetal(order);
           const itemCount = orderDisplayItems(order).length;
           return (
-            <Link key={order.id} href={ROUTES.ORDER_DETAIL(order.id)} className={styles.orderRow}>
-              <div className={styles.orderRowTop}>
-                <div>
-                  <strong>{order.orderNumber}</strong>
-                  <span>{formatDate(order.createdAt)}</span>
+            <article key={order.id} className={styles.orderRow}>
+              <Link href={ROUTES.ORDER_DETAIL(order.id)} className={styles.orderRowLink}>
+                <div className={styles.orderRowTop}>
+                  <div>
+                    <strong>{order.orderNumber}</strong>
+                    <span>{formatDate(order.createdAt)}</span>
+                  </div>
+                  <span className={[styles.orderStatusPill, styles[`orderStatusPill--${meta.tone}`]].join(' ')}>
+                    {meta.label}
+                  </span>
                 </div>
-                <span className={[styles.orderStatusPill, styles[`orderStatusPill--${meta.tone}`]].join(' ')}>
-                  {meta.label}
-                </span>
-              </div>
-              <div className={styles.orderRowBottom}>
-                <span>{itemCount} item{itemCount === 1 ? '' : 's'}</span>
-                {weights.map(([metalName, weight]) => (
-                  <span key={metalName}>{metalName}: {formatWeight(weight)}</span>
-                ))}
-              </div>
-            </Link>
+                <div className={styles.orderRowBottom}>
+                  <span>{itemCount} item{itemCount === 1 ? '' : 's'}</span>
+                  {weights.map(([metalName, weight]) => (
+                    <span key={metalName}>{metalName}: {formatWeight(weight)}</span>
+                  ))}
+                </div>
+              </Link>
+              {order.status === 'REQUESTED' ? (
+                <button
+                  type="button"
+                  className={styles.orderCancelButton}
+                  disabled={cancellingId === order.id}
+                  onClick={(event) => cancelOrder(event, order)}
+                >
+                  <XCircle size={13} />
+                  {cancellingId === order.id ? 'Cancelling' : 'Cancel'}
+                </button>
+              ) : null}
+            </article>
           );
         })}
       </div>

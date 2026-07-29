@@ -36,7 +36,7 @@ export default function HeroCarousel({ config = {} }) {
   const { metalId } = useMetalTheme();
   const metalIdMap = useMetalIdMap();
   const [index, setIndex] = useState(0);
-  const [bannerSlides, setBannerSlides] = useState(DEFAULT_BANNERS);
+  const [bannerSlides, setBannerSlides] = useState(null);
   const curatedIds = Array.isArray(config.bannerIds) ? config.bannerIds : [];
   const curatedKey = curatedIds.join(',');
 
@@ -66,10 +66,24 @@ export default function HeroCarousel({ config = {} }) {
   }, [metalId, metalIdMap, curatedKey]);
 
   useEffect(() => {
+    if (!bannerSlides?.length) return undefined;
     const slideCount = bannerSlides.length;
     const timer = setInterval(() => setIndex((i) => (i + 1) % slideCount), 5000);
     return () => clearInterval(timer);
-  }, [bannerSlides.length]);
+  }, [bannerSlides]);
+
+  if (!bannerSlides) {
+    return (
+      <section className={styles.hero} aria-busy="true" aria-label="Loading featured promotions">
+        <div className={styles.bannerFrameSkeleton} />
+        <div className={styles.dots} aria-hidden="true">
+          <span className={[styles.dot, styles['dot--active']].join(' ')} />
+          <span className={styles.dot} />
+          <span className={styles.dot} />
+        </div>
+      </section>
+    );
+  }
 
   const goTo = (i) => setIndex(((i % bannerSlides.length) + bannerSlides.length) % bannerSlides.length);
   const banner = bannerSlides[index] ?? bannerSlides[0];

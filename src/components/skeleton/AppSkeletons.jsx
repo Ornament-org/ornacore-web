@@ -29,20 +29,33 @@ export function HomeSkeleton() {
     <MetalThemeProvider>
       <HeaderSkeleton />
       <main className={styles.homePage} aria-busy="true" aria-label="Loading home">
-        <section className={styles.heroSkeleton}>
-          <div className={styles.heroCopy}>
+        <section className={styles.homeHeroSkeleton}>
+          <div className={styles.homeHeroBanner} />
+          <div className={styles.homeDots}>
             <span />
-            <strong />
-            <em />
-            <b />
+            <span />
+            <span />
           </div>
-          <div className={styles.heroImage} />
         </section>
         <section className={styles.homeSection}>
-          <div className={styles.sectionTitle} />
-          <div className={styles.collectionRow}>{shimmerItems(4, styles.collectionCard)}</div>
+          <div className={styles.homeSectionHeader}>
+            <div className={styles.sectionTitle} />
+            <div className={styles.viewAllLine} />
+          </div>
+          <div className={styles.collectionRow}>{shimmerItems(4, styles.collectionCircle)}</div>
         </section>
-        <ProductGridSkeleton count={8} />
+        <section className={styles.homeSection}>
+          <div className={styles.homeSectionHeader}>
+            <div className={styles.sectionTitleWide} />
+            <div className={styles.viewAllLine} />
+          </div>
+          <div className={styles.sectionSubLine} />
+          <ProductGridSkeleton count={4} />
+        </section>
+        <section className={styles.trustSkeleton}>
+          <div className={styles.trustTitleLine} />
+          <div className={styles.trustGrid}>{shimmerItems(6, styles.trustCard)}</div>
+        </section>
       </main>
       <BottomNav />
     </MetalThemeProvider>

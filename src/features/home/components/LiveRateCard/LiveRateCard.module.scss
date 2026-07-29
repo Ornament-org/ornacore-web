@@ -1,6 +1,17 @@
 @use '@/styles/dark-theme' as db;
 @use '@/styles/breakpoints' as *;
 
+@mixin shimmer {
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0.045),
+    rgba(255, 255, 255, 0.14),
+    rgba(255, 255, 255, 0.045)
+  );
+  background-size: 240% 100%;
+  animation: liveRateCardShimmer 1.15s ease-in-out infinite;
+}
+
 .section {
   max-width: 1360px;
   margin: 0 auto;
@@ -96,6 +107,11 @@
   border-radius: db.$db-radius-sm;
   background: db.$db-bg-card;
   border: 1px solid db.$db-border;
+
+  &:empty {
+    min-height: 118px;
+    @include shimmer;
+  }
 }
 
 .rateLabel {
@@ -114,6 +130,12 @@
 
   @include md {
     font-size: 1.55rem;
+  }
+}
+
+@keyframes liveRateCardShimmer {
+  to {
+    background-position-x: -240%;
   }
 }
 

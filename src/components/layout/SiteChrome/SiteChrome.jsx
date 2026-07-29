@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import TopBar from '@/components/layout/TopBar/TopBar';
 import Header from '@/components/layout/Header/Header';
 import Footer from '@/components/layout/Footer/Footer';
+import ScrollToTop from '@/components/layout/ScrollToTop/ScrollToTop';
 import AppHeader from '@/features/home/components/AppHeader/AppHeader';
 import BottomNav from '@/features/home/components/BottomNav/BottomNav';
 import { MetalThemeProvider } from '@/features/home/context/MetalThemeContext';
@@ -31,6 +32,15 @@ const HEADERLESS_APP_ROUTES = [ROUTES.PROFILE, ROUTES.ORDERS];
 // the storefront's only entry point now — the legacy B2C `/login`/`/register`
 // pages have been removed.
 const RAW_PASSTHROUGH_PREFIX = '/business';
+
+const withScrollReset = (content) => (
+  <>
+    <Suspense fallback={null}>
+      <ScrollToTop />
+    </Suspense>
+    {content}
+  </>
+);
 
 export default function SiteChrome({ children }) {
   const pathname = usePathname();
@@ -113,34 +123,34 @@ export default function SiteChrome({ children }) {
     }
   }, [isGateExempt, checkedSession, isAuthenticated, actorType, isApproved, router]);
 
-  if (isRawPassthrough) return <>{children}</>;
+  if (isRawPassthrough) return withScrollReset(<>{children}</>);
 
   // Still resolving the session, or a redirect above is about to fire —
   // render nothing rather than flashing the storefront/dashboard first.
   if (!isGateExempt && (!checkedSession || !isAuthenticated || actorType !== 'b2b' || !isApproved)) return null;
 
-  if (usesSelfManagedAppShell) return <>{children}</>;
+  if (usesSelfManagedAppShell) return withScrollReset(<>{children}</>);
 
   if (usesStorefrontAppShell) {
     const showAppHeader = !HEADERLESS_APP_ROUTES.some((route) =>
       pathname === route || pathname.startsWith(`${route}/`)
     );
 
-    return (
+    return withScrollReset(
       <MetalThemeProvider>
         {showAppHeader ? <AppHeader /> : null}
         {children}
         <BottomNav />
-      </MetalThemeProvider>
+      </MetalThemeProvider>,
     );
   }
 
-  return (
+  return withScrollReset(
     <>
       <TopBar />
       <Header />
       {children}
       <Footer />
-    </>
+    </>,
   );
 }

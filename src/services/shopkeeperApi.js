@@ -15,6 +15,7 @@ export const shopkeeperApi = {
 
   getOrders: (params) => apiClient.get(API_ENDPOINTS.SHOPKEEPER.ORDERS, { params }),
   getOrderById: (id) => apiClient.get(`${API_ENDPOINTS.SHOPKEEPER.ORDERS}/${id}`),
+  cancelOrder: (id, data = {}) => apiClient.post(`${API_ENDPOINTS.SHOPKEEPER.ORDERS}/${id}/cancel`, data),
   placeOrder: (data) => apiClient.post(API_ENDPOINTS.SHOPKEEPER.ORDERS, data),
 
   // Real routes (cart.routes.js): GET /, POST /items, PATCH /items/:id,
