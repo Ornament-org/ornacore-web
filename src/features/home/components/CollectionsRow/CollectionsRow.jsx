@@ -102,6 +102,17 @@ function CollectionsSkeleton() {
   );
 }
 
+function CollectionsEmpty({ title }) {
+  return (
+    <section className={styles.section}>
+      <div className={styles.emptySection}>
+        <h2>{title}</h2>
+        <p>New collections are coming soon.</p>
+      </div>
+    </section>
+  );
+}
+
 // `config.collectionIds`, set via Homepage Management, is authoritative:
 // only those collections show here, in that exact order. An empty list means
 // the section is intentionally blank, so new catalog collections never leak
@@ -113,7 +124,7 @@ function CollectionsSkeleton() {
 // its actual picked products as a real card grid — `config.productsPerRow` /
 // `config.productRows` control the grid shape, with a "View All" link for
 // the rest.
-export default function CollectionsRow({ config = {} }) {
+export default function CollectionsRow({ title = 'Our Collections', config = {} }) {
   const { metalId } = useMetalTheme();
   const metalIdMap = useMetalIdMap();
   const [collectionResult, setCollectionResult] = useState({ key: '', rows: null });
@@ -149,13 +160,13 @@ export default function CollectionsRow({ config = {} }) {
     };
   }, [metalIdMap, backendMetalId, curatedKey, requestKey]);
 
-  if (!curatedKey) return null;
+  if (!curatedKey) return <CollectionsEmpty title={title} />;
   if (!metalIdMap || collectionResult.key !== requestKey || collectionResult.rows === null) {
     return <CollectionsSkeleton />;
   }
 
   const collections = collectionResult.rows;
-  if (!collections.length) return null;
+  if (!collections.length) return <CollectionsEmpty title={title} />;
 
   return (
     <section className={styles.section}>

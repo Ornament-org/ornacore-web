@@ -83,7 +83,16 @@ export default function CategoryScroller({ title = 'Shop by Category', config = 
     );
   }
 
-  if (!categories.length) return null;
+  if (!categories.length) {
+    return (
+      <section className={styles.section}>
+        <div className={styles.emptySection}>
+          <h2>{title}</h2>
+          <p>New category shortcuts are coming soon.</p>
+        </div>
+      </section>
+    );
+  }
 
   // Grouped-by-metal only makes sense when showing everything on the mixed
   // "All Metals" tab — a curated pick or a single-metal tab is already one

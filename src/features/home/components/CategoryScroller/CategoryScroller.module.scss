@@ -73,6 +73,27 @@
   gap: 1.35rem;
 }
 
+.emptySection {
+  border: 1px dashed db.$db-border;
+  border-radius: db.$db-radius-sm;
+  padding: 0.9rem;
+  color: db.$db-text-secondary;
+  background: rgba(255, 255, 255, 0.02);
+
+  h2 {
+    margin: 0 0 0.25rem;
+    font-family: var(--font-display, 'Poppins', sans-serif);
+    font-size: var(--type-section-title, 1.25rem);
+    font-weight: 700;
+    color: db.$db-text-primary;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--type-meta, 0.68rem);
+  }
+}
+
 .group {
   display: flex;
   flex-direction: column;
