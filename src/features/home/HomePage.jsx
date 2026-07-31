@@ -35,6 +35,32 @@ const FALLBACK_SECTIONS = [
   { sectionType: 'RATE_BANNER' },
 ];
 
+const normalizeConfig = (config) => {
+  if (!config) return {};
+  if (typeof config === 'string') {
+    try {
+      return JSON.parse(config);
+    } catch {
+      return {};
+    }
+  }
+  return config;
+};
+
+const normalizeSection = (section, index) => {
+  const sectionType = section.sectionType ?? section.section_type;
+  if (!sectionType) return null;
+
+  return {
+    sectionType,
+    sectionKey: section.sectionKey ?? section.section_key ?? sectionType,
+    title: section.title ?? null,
+    subtitle: section.subtitle ?? null,
+    config: normalizeConfig(section.config ?? section.configJson ?? section.config_json),
+    sortOrder: section.sortOrder ?? section.sort_order ?? index,
+  };
+};
+
 async function getHomeSections() {
   const apiCandidates = [
     API_BASE_URL,
@@ -48,7 +74,12 @@ async function getHomeSections() {
 
       const body = await response.json();
       const sections = body?.data?.sections;
-      if (Array.isArray(sections)) return sections;
+      if (Array.isArray(sections)) {
+        return sections
+          .map((section, index) => normalizeSection(section, index))
+          .filter(Boolean)
+          .sort((a, b) => a.sortOrder - b.sortOrder);
+      }
     } catch {
       // Try the next configured API origin before falling back to the default shell.
     }

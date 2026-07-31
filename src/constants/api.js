@@ -30,9 +30,11 @@ const configuredApiOrigin = trimTrailingSlashes(
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 );
 const browserApiOrigin = inferBrowserApiOrigin();
+const shouldUseHostedApi = isLocalUrl(configuredApiOrigin)
+  && (Boolean(browserApiOrigin) || process.env.NODE_ENV === 'production');
 
-export const API_ORIGIN = browserApiOrigin && isLocalUrl(configuredApiOrigin)
-  ? browserApiOrigin
+export const API_ORIGIN = shouldUseHostedApi
+  ? (browserApiOrigin || HOSTED_API_ORIGIN)
   : configuredApiOrigin;
 export const API_BASE_URL = withApiPrefix(API_ORIGIN);
 export const HOSTED_API_BASE_URL = withApiPrefix(HOSTED_API_ORIGIN);
