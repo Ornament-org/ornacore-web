@@ -26,7 +26,7 @@ FROM base AS builder
 ENV NODE_ENV=production
 
 ARG APP_ENV=prod
-ARG NEXT_PUBLIC_API_URL=https://backend.wolfan.jipanditji.com
+ARG NEXT_PUBLIC_API_URL=https://backend.orna.vedantaa.in
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \

@@ -6,7 +6,7 @@ const withApiPrefix = (baseUrl) => {
 };
 
 const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
-const HOSTED_API_ORIGIN = 'https://backend.wolfan.jipanditji.com';
+const HOSTED_API_ORIGIN = 'https://backend.orna.vedantaa.in';
 
 const isLocalUrl = (value) => {
   try {
@@ -20,7 +20,7 @@ const inferBrowserApiOrigin = () => {
   if (typeof window === 'undefined') return '';
   const { hostname } = window.location;
   if (LOCAL_HOSTNAMES.has(hostname)) return '';
-  if (hostname === 'wolfan.jipanditji.com' || hostname.endsWith('.wolfan.jipanditji.com')) {
+  if (hostname === 'orna.vedantaa.in' || hostname.endsWith('.orna.vedantaa.in')) {
     return HOSTED_API_ORIGIN;
   }
   return '';
