@@ -10,7 +10,7 @@ import LiveRateCard from './components/LiveRateCard/LiveRateCard';
 import HomeFooter from './components/HomeFooter/HomeFooter';
 import FloatingCartBar from './components/FloatingCartBar/FloatingCartBar';
 import BottomNav from './components/BottomNav/BottomNav';
-import { API_BASE_URL } from '@/constants/api';
+import { API_BASE_URL, HOSTED_API_BASE_URL, USES_LOCAL_API } from '@/constants/api';
 
 // One-to-one with the CMS's SECTION_TYPES (ornacore-admin/src/features/cms/data/sectionTypes.js)
 // — every manageable section in the toolbox renders through exactly one of
@@ -36,16 +36,25 @@ const FALLBACK_SECTIONS = [
 ];
 
 async function getHomeSections() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/homepage?audience=B2B`, { cache: 'no-store' });
-    if (!response.ok) return FALLBACK_SECTIONS;
+  const apiCandidates = [
+    API_BASE_URL,
+    ...(process.env.NODE_ENV === 'production' && USES_LOCAL_API ? [HOSTED_API_BASE_URL] : []),
+  ];
 
-    const body = await response.json();
-    const sections = body?.data?.sections;
-    return Array.isArray(sections) ? sections : FALLBACK_SECTIONS;
-  } catch {
-    return FALLBACK_SECTIONS;
+  for (const apiBaseUrl of apiCandidates) {
+    try {
+      const response = await fetch(`${apiBaseUrl}/homepage?audience=B2B`, { cache: 'no-store' });
+      if (!response.ok) continue;
+
+      const body = await response.json();
+      const sections = body?.data?.sections;
+      if (Array.isArray(sections)) return sections;
+    } catch {
+      // Try the next configured API origin before falling back to the default shell.
+    }
   }
+
+  return FALLBACK_SECTIONS;
 }
 
 export default async function HomePage() {

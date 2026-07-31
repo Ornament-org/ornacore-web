@@ -5,10 +5,38 @@ const withApiPrefix = (baseUrl) => {
   return normalized.endsWith('/api/v1') ? normalized : `${normalized}/api/v1`;
 };
 
-export const API_ORIGIN = trimTrailingSlashes(
+const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
+const HOSTED_API_ORIGIN = 'https://backend.wolfan.jipanditji.com';
+
+const isLocalUrl = (value) => {
+  try {
+    return LOCAL_HOSTNAMES.has(new URL(value).hostname);
+  } catch {
+    return false;
+  }
+};
+
+const inferBrowserApiOrigin = () => {
+  if (typeof window === 'undefined') return '';
+  const { hostname } = window.location;
+  if (LOCAL_HOSTNAMES.has(hostname)) return '';
+  if (hostname === 'wolfan.jipanditji.com' || hostname.endsWith('.wolfan.jipanditji.com')) {
+    return HOSTED_API_ORIGIN;
+  }
+  return '';
+};
+
+const configuredApiOrigin = trimTrailingSlashes(
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 );
+const browserApiOrigin = inferBrowserApiOrigin();
+
+export const API_ORIGIN = browserApiOrigin && isLocalUrl(configuredApiOrigin)
+  ? browserApiOrigin
+  : configuredApiOrigin;
 export const API_BASE_URL = withApiPrefix(API_ORIGIN);
+export const HOSTED_API_BASE_URL = withApiPrefix(HOSTED_API_ORIGIN);
+export const USES_LOCAL_API = isLocalUrl(API_ORIGIN);
 
 export const API_ENDPOINTS = {
   // Auth
