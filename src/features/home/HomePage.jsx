@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { MetalThemeProvider } from './context/MetalThemeContext';
 import AppHeader from './components/AppHeader/AppHeader';
 import MetalSwitcher from './components/MetalSwitcher/MetalSwitcher';
@@ -69,10 +70,17 @@ async function getHomeSections() {
 
   for (const apiBaseUrl of apiCandidates) {
     try {
-      const response = await fetch(`${apiBaseUrl}/homepage?audience=B2B`, { cache: 'no-store' });
-      if (!response.ok) continue;
-
-      const body = await response.json();
+      const response = await axios.get(`${apiBaseUrl}/homepage`, {
+        params: { audience: 'B2B', _ts: Date.now() },
+        timeout: 15000,
+        headers: {
+          Accept: 'application/json',
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+        validateStatus: (status) => status >= 200 && status < 300,
+      });
+      const body = response.data;
       const sections = body?.data?.sections;
       if (Array.isArray(sections)) {
         return sections
