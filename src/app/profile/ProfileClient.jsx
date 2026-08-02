@@ -666,8 +666,9 @@ const ledgerEntryDetail = (entry) => {
   const metal = entry.metal?.name ?? 'metal';
   if (entry.entryType === 'ADJUSTMENT') {
     const dueFine = Number(entry.debitFine ?? 0);
-    const adminNote = entry.description ? ` · ${entry.description}` : '';
-    return dueFine > 0.0005 ? `${formatWeight(dueFine)} fine ${metal} due added${adminNote}` : entry.description;
+    const description = entry.description ?? '';
+    if (description.match(/^(\d|₹)/)) return description;
+    return dueFine > 0.0005 ? `${formatWeight(dueFine)} fine ${metal} due added${description ? ` · ${description}` : ''}` : description;
   }
   if (entry.entryType === 'DELIVERY') {
     return `${formatWeight(entry.debitFine)} fine ${metal} delivered`;
@@ -941,6 +942,7 @@ function TransactionsPanel({ dueItems = [] }) {
             const meta = ledgerEntryMeta(entry);
             const detail = ledgerEntryDetail(entry);
             const balance = ledgerBalance(entry.runningBalance);
+            const isDueAdjustment = entry.entryType === 'ADJUSTMENT' && Number(entry.debitFine ?? 0) > 0;
             const isCredit = Number(entry.creditFine) > 0;
             const isDebit = Number(entry.debitFine) > 0;
             return (
@@ -961,7 +963,9 @@ function TransactionsPanel({ dueItems = [] }) {
                   <span className={[styles.ledgerBalance, styles[`ledgerBalance--${balance.tone}`]].join(' ')}>
                     {balance.label === 'Cleared' ? 'Cleared' : `${balance.label}: ${balance.amount}`}
                   </span>
-                  {isCredit ? (
+                  {isDueAdjustment ? (
+                    <span className={styles.ledgerDebit}>Due +{formatWeight(entry.debitFine)}</span>
+                  ) : isCredit ? (
                     <span className={styles.ledgerCredit}>+{formatWeight(entry.creditFine)}</span>
                   ) : isDebit ? (
                     <span className={styles.ledgerDebit}>-{formatWeight(entry.debitFine)}</span>
